@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/800x200?text=ChunkLab+Banner" alt="ChunkLab Banner" width="100%">
+  <img src="frontend/public/logo.png" alt="ChunkLab Banner" width="500">
   
   # ChunkLab
 
@@ -26,7 +26,9 @@
 
 ### 📸 Screenshot
 
-![ChunkLab Dashboard](https://via.placeholder.com/1280x720?text=ChunkLab+Dashboard+Screenshot+Placeholder)
+<div align="center">
+  <img src="frontend/public/screenshot.png" alt="ChunkLab Dashboard" width="800">
+</div>
 
 ---
 

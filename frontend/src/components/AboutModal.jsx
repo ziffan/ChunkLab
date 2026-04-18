@@ -31,6 +31,9 @@ export default function AboutModal({ open, onClose }) {
           </button>
         </div>
         <div className="px-5 py-4 space-y-4 text-[13px] text-slate-300 leading-relaxed max-h-[70vh] overflow-y-auto">
+          <div className="flex justify-center mb-6">
+            <img src="/logo.png" alt="ChunkLab Logo" className="h-24 w-auto" />
+          </div>
           <div>
             <h3 className="text-[14px] font-bold text-slate-100 mb-1">ChunkLab</h3>
             <p>

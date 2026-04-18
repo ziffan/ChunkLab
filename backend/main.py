@@ -24,22 +24,22 @@ from backend.models.responses import HealthResponse
 from backend.routers import chunk, tokenize, regex, models
 
 # Handle paths for PyInstaller frozen state
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     bundle_dir = sys._MEIPASS
 else:
     bundle_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load .env relative to the executable or script
-env_path = os.path.join(os.getcwd(), '.env')
+env_path = os.path.join(os.getcwd(), ".env")
 if not os.path.exists(env_path):
-    env_path = os.path.join(bundle_dir, '.env')
+    env_path = os.path.join(bundle_dir, ".env")
 load_dotenv(env_path)
 
 app = FastAPI(title="ChunkLab API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all for local native app
+    allow_origins=["*"],  # Allow all for local native app
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -57,8 +57,9 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
+
     # Required for pyinstaller --onefile multiprocessing issues
     multiprocessing.freeze_support()
-    
+
     port = int(os.getenv("BACKEND_PORT", "8000"))
     uvicorn.run(app, host="127.0.0.1", port=port)

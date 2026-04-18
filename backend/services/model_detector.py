@@ -20,24 +20,39 @@ import httpx
 logger = logging.getLogger(__name__)
 
 OLLAMA_KNOWN_MODELS = [
-    "llama3.1", "llama3", "mistral", "mixtral", "gemma2", "codellama",
-    "phi3", "qwen2", "nomic-embed-text", "mxbai-embed-large",
+    "llama3.1",
+    "llama3",
+    "mistral",
+    "mixtral",
+    "gemma2",
+    "codellama",
+    "phi3",
+    "qwen2",
+    "nomic-embed-text",
+    "mxbai-embed-large",
 ]
 
 LMSTUDIO_KNOWN_MODELS = [
-    "nomic-embed-text", "all-MiniLM-L6-v2", "text-embedding-3-small",
+    "nomic-embed-text",
+    "all-MiniLM-L6-v2",
+    "text-embedding-3-small",
 ]
 
 OPENAI_EMBEDDING_MODELS = [
-    "text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002",
+    "text-embedding-3-small",
+    "text-embedding-3-large",
+    "text-embedding-ada-002",
 ]
 
 GEMINI_EMBEDDING_MODELS = [
-    "text-embedding-004", "embedding-001",
+    "text-embedding-004",
+    "embedding-001",
 ]
 
 ANTHROPIC_MODELS = [
-    "claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229",
+    "claude-3-haiku-20240307",
+    "claude-3-sonnet-20240229",
+    "claude-3-opus-20240229",
     "claude-3-5-sonnet-20241022",
 ]
 
@@ -109,7 +124,9 @@ async def detect_openrouter_models(api_key: str | None = None) -> dict:
         headers["Authorization"] = f"Bearer {key}"
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get("https://openrouter.ai/api/v1/models", headers=headers)
+            resp = await client.get(
+                "https://openrouter.ai/api/v1/models", headers=headers
+            )
             resp.raise_for_status()
             data = resp.json()
             embedding_models = [
@@ -157,7 +174,11 @@ async def detect_models(provider: str, api_key: str | None = None) -> dict:
     }
     detector = detectors.get(provider)
     if not detector:
-        return {"available": False, "models": [], "error": f"Unknown provider: {provider}"}
+        return {
+            "available": False,
+            "models": [],
+            "error": f"Unknown provider: {provider}",
+        }
     result = await detector()
     result["provider"] = provider
     return result

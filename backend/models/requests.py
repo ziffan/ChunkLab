@@ -28,7 +28,7 @@ class ChunkRequest(BaseModel):
     chunk_overlap: int = Field(default=50, ge=0)
     regex_patterns: list[RegexPattern] = Field(default=[], max_length=10)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def validate_overlap(self):
         if len(self.markdown) > 0 and self.chunk_overlap >= self.chunk_size:
             raise ValueError(
@@ -40,7 +40,9 @@ class ChunkRequest(BaseModel):
 class TokenizeRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
     texts: list[str] = Field(..., min_length=1, max_length=500)
-    provider: Literal["mock", "openai", "gemini", "anthropic", "openrouter", "ollama", "lmstudio"]
+    provider: Literal[
+        "mock", "openai", "gemini", "anthropic", "openrouter", "ollama", "lmstudio"
+    ]
     model_name: str | None = Field(default=None, max_length=128)
 
 

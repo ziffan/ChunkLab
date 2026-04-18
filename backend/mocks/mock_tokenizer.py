@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def mock_estimate(texts: list[str]) -> list[int]:
     if not texts:
         return []

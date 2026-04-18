@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[dict]:
     if len(text) == 0:
         return []
@@ -30,13 +31,15 @@ def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[dict]:
         if next_start < len(text):
             overlap_end = min(chunk_overlap, max(0, end - next_start))
 
-        chunks.append({
-            "index": len(chunks),
-            "text": chunk,
-            "char_count": char_count,
-            "overlap_start_chars": overlap_start,
-            "overlap_end_chars": overlap_end,
-        })
+        chunks.append(
+            {
+                "index": len(chunks),
+                "text": chunk,
+                "char_count": char_count,
+                "overlap_start_chars": overlap_start,
+                "overlap_end_chars": overlap_end,
+            }
+        )
         start = next_start
 
     return chunks

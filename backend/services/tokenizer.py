@@ -25,22 +25,24 @@ logger = logging.getLogger(__name__)
 
 async def _tokenize_ollama(texts: list[str], model_name: str) -> list[int]:
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    
+
     async with httpx.AsyncClient(timeout=10.0) as client:
         tasks = []
         for text in texts:
-            tasks.append(client.post(
-                f"{base_url}/api/tokenize",
-                json={"model": model_name or "llama3.1", "prompt": text},
-            ))
-        
+            tasks.append(
+                client.post(
+                    f"{base_url}/api/tokenize",
+                    json={"model": model_name or "llama3.1", "prompt": text},
+                )
+            )
+
         responses = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         results = []
         for i, resp in enumerate(responses):
             if isinstance(resp, Exception):
                 logger.error(f"Error tokenizing chunk {i}: {resp}")
-                # Fallback to character-based estimate if one fails? 
+                # Fallback to character-based estimate if one fails?
                 # Or just raise. Let's raise for now to be consistent with previous behavior.
                 raise resp
             resp.raise_for_status()
@@ -68,6 +70,7 @@ async def estimate_tokens(
     if provider in ("openai", "openrouter", "lmstudio"):
         try:
             import tiktoken
+
             enc = tiktoken.get_encoding("cl100k_base")
             counts = [len(enc.encode(t)) for t in texts]
             return TokenizeResponse(

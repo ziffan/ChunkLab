@@ -1,0 +1,17 @@
+{
+  "markdown": "BAB I Pendahuluan\nPasal 1 Ketentuan Umum",
+  "chunk_size": 100,
+  "chunk_overlap": 10,
+  "regex_patterns": [
+    {
+      "id": "1",
+      "label": "Bab",
+      "pattern": "BAB\\s+[IVXLCDM]+"
+    },
+    {
+      "id": "2",
+      "label": "Pasal",
+      "pattern": "Pasal\\s+\\d+"
+    }
+  ]
+}

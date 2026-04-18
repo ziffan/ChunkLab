@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import MarkdownEditor from './components/MarkdownEditor';
 import ParameterPanel from './components/ParameterPanel';
 import RegexPatternRow from './components/RegexPatternRow';
@@ -13,11 +13,13 @@ import { useRegexPatterns } from './hooks/useRegexPatterns';
 import { useTokenization } from './hooks/useTokenization';
 import { PROVIDERS } from './constants/models';
 
-const INITIAL_REGEX = [
-  { id: crypto.randomUUID(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
-  { id: crypto.randomUUID(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
-  { id: crypto.randomUUID(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
-];
+const generateId = () => {
+  try {
+    return crypto.randomUUID();
+  } catch (e) {
+    return Math.random().toString(36).substring(2, 15);
+  }
+};
 
 export default function App() {
   const [markdown, setMarkdown] = useState('');
@@ -25,6 +27,12 @@ export default function App() {
   const [minTokens, setMinTokens] = useState(50);
   const [maxTokens, setMaxTokens] = useState(512);
   const [aboutOpen, setAboutOpen] = useState(false);
+
+  const initialRegex = useMemo(() => [
+    { id: generateId(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
+    { id: generateId(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
+    { id: generateId(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
+  ], []);
 
   const {
     regexPatterns,
@@ -34,7 +42,7 @@ export default function App() {
     handleLabelChange,
     handlePatternChange,
     handleTestPattern,
-  } = useRegexPatterns(INITIAL_REGEX, markdown);
+  } = useRegexPatterns(initialRegex, markdown);
 
   const {
     provider,

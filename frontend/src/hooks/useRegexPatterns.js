@@ -15,9 +15,15 @@ export function useRegexPatterns(initialPatterns = [], markdown = '') {
   );
 
   const handleAddPattern = useCallback(() => {
+    let id;
+    try {
+      id = crypto.randomUUID();
+    } catch (e) {
+      id = Math.random().toString(36).substring(2, 15);
+    }
     setRegexPatterns((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), label: '', pattern: '', testResult: null, testError: null },
+      { id, label: '', pattern: '', testResult: null, testError: null },
     ]);
   }, []);
 

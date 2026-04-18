@@ -1,0 +1,44 @@
+{
+  "name": "chunklab",
+  "version": "1.0.0",
+  "description": "Native Sandbox for Text Chunking and Regex Validation",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "pyinstaller --noconfirm --onefile --windowed --name backend --paths . backend/main.py",
+    "dist": "npm run build:frontend && npm run build:backend && electron-builder",
+    "postinstall": "cd frontend && npm install"
+  },
+  "build": {
+    "appId": "com.ziffan.chunklab",
+    "productName": "ChunkLab",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraResources": [
+      {
+        "from": "dist/backend.exe",
+        "to": "backend.exe"
+      }
+    ],
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
+}

@@ -62,3 +62,11 @@ htmlcov/
 
 # Build/Frontend
 .vite/
+frontend/dist/
+
+# Electron & Desktop Build
+dist_electron/
+build/
+dist/
+*.spec
+test_req.json

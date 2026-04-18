@@ -1,0 +1,21 @@
+{
+  "_scenario": "Error state: invalid regex pattern triggers INVALID_REGEX error; chunks array is empty",
+  "request": {
+    "markdown": "# Title\n\nSome text.",
+    "chunk_size": 100,
+    "chunk_overlap": 20,
+    "regex_patterns": [
+      {"id": "p1", "label": "Date", "pattern": "\\d{4}-\\d{2}-\\d{2}"},
+      {"id": "p2", "label": "Bad", "pattern": "[unclosed"}
+    ]
+  },
+  "expected_response": {
+    "chunks": [],
+    "total_chunks": 0,
+    "error": {
+      "code": "INVALID_REGEX",
+      "message": "Pattern '[unclosed' is invalid: unterminated character set at position 0",
+      "pattern_id": "p2"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "_scenario": "Mock tokenize: 3 texts processed by MockTokenizer; is_mock=true; error=null",
+  "request": {
+    "texts": [
+      "# Heading\n\nDate: 2024-01-15\nAuthor: Bob\n",
+      "thor: Bob\n\nSome content text here.",
+      "ere."
+    ],
+    "provider": "mock",
+    "model_name": null
+  },
+  "expected_response": {
+    "token_counts": [10, 7, 2],
+    "model_used": "mock",
+    "provider": "mock",
+    "is_mock": true,
+    "error": null
+  }
+}

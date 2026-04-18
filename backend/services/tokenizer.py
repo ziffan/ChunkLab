@@ -1,0 +1,112 @@
+import os
+import logging
+
+import httpx
+
+from backend.models.responses import TokenizeResponse, TokenizeError
+from backend.mocks.mock_tokenizer import mock_estimate
+
+logger = logging.getLogger(__name__)
+
+
+async def _tokenize_ollama(texts: list[str], model_name: str) -> list[int]:
+    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    results = []
+
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        for text in texts:
+            resp = await client.post(
+                f"{base_url}/api/tokenize",
+                json={"model": model_name or "llama3.1", "prompt": text},
+            )
+            resp.raise_for_status()
+            count = resp.json()["count"]
+            results.append(count)
+
+    return results
+
+
+async def estimate_tokens(
+    texts: list[str],
+    provider: str,
+    model_name: str | None,
+    mock_mode: bool,
+) -> TokenizeResponse:
+    if mock_mode or provider == "mock":
+        counts = mock_estimate(texts)
+        return TokenizeResponse(
+            token_counts=counts,
+            model_used="mock",
+            provider="mock",
+            is_mock=True,
+            error=None,
+        )
+
+    if provider in ("openai", "openrouter", "lmstudio"):
+        try:
+            import tiktoken
+            enc = tiktoken.get_encoding("cl100k_base")
+            counts = [len(enc.encode(t)) for t in texts]
+            return TokenizeResponse(
+                token_counts=counts,
+                model_used=model_name or "cl100k_base",
+                provider=provider,
+                is_mock=False,
+                error=None,
+            )
+        except ImportError:
+            counts = mock_estimate(texts)
+            return TokenizeResponse(
+                token_counts=counts,
+                model_used="mock",
+                provider="mock",
+                is_mock=True,
+                error=TokenizeError(
+                    code="PROVIDER_UNAVAILABLE",
+                    message="tiktoken is not installed. Falling back to mock tokenizer.",
+                    original_provider=provider,
+                ),
+            )
+
+    if provider in ("gemini", "anthropic"):
+        counts = mock_estimate(texts)
+        return TokenizeResponse(
+            token_counts=counts,
+            model_used="mock",
+            provider="mock",
+            is_mock=True,
+            error=None,
+        )
+
+    if provider == "ollama":
+        try:
+            counts = await _tokenize_ollama(texts, model_name or "llama3.1")
+            return TokenizeResponse(
+                token_counts=counts,
+                model_used=model_name or "llama3.1",
+                provider=provider,
+                is_mock=False,
+                error=None,
+            )
+        except Exception as e:
+            counts = mock_estimate(texts)
+            return TokenizeResponse(
+                token_counts=counts,
+                model_used="mock",
+                provider="mock",
+                is_mock=True,
+                error=TokenizeError(
+                    code="PROVIDER_UNAVAILABLE",
+                    message=f"Ollama at {os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')} is not reachable. Falling back to mock tokenizer.",
+                    original_provider="ollama",
+                ),
+            )
+
+    counts = mock_estimate(texts)
+    return TokenizeResponse(
+        token_counts=counts,
+        model_used="mock",
+        provider="mock",
+        is_mock=True,
+        error=None,
+    )

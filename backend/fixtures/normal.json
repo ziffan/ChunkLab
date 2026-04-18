@@ -1,0 +1,45 @@
+{
+  "_scenario": "Happy path: 64-char markdown, chunk_size=40, chunk_overlap=10, date+author regex, 3 chunks",
+  "request": {
+    "markdown": "# Heading\n\nDate: 2024-01-15\nAuthor: Bob\n\nSome content text here.",
+    "chunk_size": 40,
+    "chunk_overlap": 10,
+    "regex_patterns": [
+      {"id": "p1", "label": "Date", "pattern": "\\d{4}-\\d{2}-\\d{2}"},
+      {"id": "p2", "label": "Author", "pattern": "Author:\\s*(\\w+)"}
+    ]
+  },
+  "expected_response": {
+    "chunks": [
+      {
+        "index": 0,
+        "text": "# Heading\n\nDate: 2024-01-15\nAuthor: Bob\n",
+        "char_count": 40,
+        "overlap_start_chars": 0,
+        "overlap_end_chars": 10,
+        "metadata": [
+          {"pattern_id": "p1", "label": "Date", "value": "2024-01-15"},
+          {"pattern_id": "p2", "label": "Author", "value": "Bob"}
+        ]
+      },
+      {
+        "index": 1,
+        "text": "thor: Bob\n\nSome content text here.",
+        "char_count": 34,
+        "overlap_start_chars": 10,
+        "overlap_end_chars": 4,
+        "metadata": []
+      },
+      {
+        "index": 2,
+        "text": "ere.",
+        "char_count": 4,
+        "overlap_start_chars": 4,
+        "overlap_end_chars": 0,
+        "metadata": []
+      }
+    ],
+    "total_chunks": 3,
+    "error": null
+  }
+}

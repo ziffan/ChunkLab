@@ -1,0 +1,25 @@
+{
+  "_scenario": "Edge case: chunk_size larger than document; entire text becomes one chunk with zero overlap",
+  "request": {
+    "markdown": "Short document only.",
+    "chunk_size": 200,
+    "chunk_overlap": 50,
+    "regex_patterns": [
+      {"id": "p1", "label": "Digits", "pattern": "\\d+"}
+    ]
+  },
+  "expected_response": {
+    "chunks": [
+      {
+        "index": 0,
+        "text": "Short document only.",
+        "char_count": 20,
+        "overlap_start_chars": 0,
+        "overlap_end_chars": 0,
+        "metadata": []
+      }
+    ],
+    "total_chunks": 1,
+    "error": null
+  }
+}

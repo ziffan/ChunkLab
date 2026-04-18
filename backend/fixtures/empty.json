@@ -1,0 +1,14 @@
+{
+  "_scenario": "Empty state: empty markdown string returns empty chunks array and no error",
+  "request": {
+    "markdown": "",
+    "chunk_size": 512,
+    "chunk_overlap": 50,
+    "regex_patterns": []
+  },
+  "expected_response": {
+    "chunks": [],
+    "total_chunks": 0,
+    "error": null
+  }
+}

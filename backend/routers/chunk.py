@@ -17,7 +17,7 @@ from fastapi import APIRouter
 from backend.models.requests import ChunkRequest
 from backend.models.responses import ChunkResponse, ChunkData, ChunkError, MetadataItem
 from backend.services.chunker import chunk_text
-from backend.services.metadata_extractor import extract_metadata_from_compiled, validate_pattern
+from backend.services.metadata_extractor import extract_metadata_from_compiled
 
 router = APIRouter()
 

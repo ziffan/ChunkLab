@@ -20,6 +20,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.models.responses import HealthResponse
+from backend.routers import chunk, tokenize, regex, models
+
 # Handle paths for PyInstaller frozen state
 if getattr(sys, 'frozen', False):
     bundle_dir = sys._MEIPASS
@@ -31,9 +34,6 @@ env_path = os.path.join(os.getcwd(), '.env')
 if not os.path.exists(env_path):
     env_path = os.path.join(bundle_dir, '.env')
 load_dotenv(env_path)
-
-from backend.models.responses import HealthResponse
-from backend.routers import chunk, tokenize, regex, models
 
 app = FastAPI(title="ChunkLab API", version="1.0.0")
 

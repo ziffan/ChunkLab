@@ -111,7 +111,7 @@ async def estimate_tokens(
                 is_mock=False,
                 error=None,
             )
-        except Exception as e:
+        except Exception:
             counts = mock_estimate(texts)
             return TokenizeResponse(
                 token_counts=counts,

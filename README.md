@@ -3,7 +3,10 @@
   
   # ChunkLab
 
-  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
+  [![Test](https://github.com/ziffan/ChunkLab/actions/workflows/test.yml/badge.svg)](https://github.com/ziffan/ChunkLab/actions/workflows/test.yml)
+  [![Lint](https://github.com/ziffan/ChunkLab/actions/workflows/lint.yml/badge.svg)](https://github.com/ziffan/ChunkLab/actions/workflows/lint.yml)
+  [![Security Scan](https://github.com/ziffan/ChunkLab/actions/workflows/security.yml/badge.svg)](https://github.com/ziffan/ChunkLab/actions/workflows/security.yml)
+  [![DCO](https://img.shields.io/badge/DCO-required-orange)](https://github.com/ziffan/ChunkLab/actions/workflows/dco.yml)
   [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
   [![Python](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/)
   [![React](https://img.shields.io/badge/react-18-61dafb)](https://reactjs.org/)
@@ -32,11 +35,11 @@
 #### Prerequisites
 - Python 3.12+
 - Node.js 18+
-
 #### 1. Clone & Setup Backend
 ```bash
-git clone https://github.com/ziffan/ChunkingSanbox.git
-cd ChunkingSanbox/backend
+git clone https://github.com/ziffan/ChunkLab.git
+cd ChunkLab/backend
+```
 python -m venv .venv
 # Windows:
 .venv\Scripts\activate

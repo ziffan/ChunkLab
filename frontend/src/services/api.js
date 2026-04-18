@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const isElectron = window.navigator.userAgent.toLowerCase().includes(' electron/');
+const baseURL = isElectron 
+  ? 'http://127.0.0.1:8000' 
+  : (import.meta.env.VITE_API_BASE_URL || '');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
-  timeout: 15000,
+  baseURL: baseURL,
+  timeout: 30000, // Tingkatkan timeout untuk native
 });
 
 export async function chunkMarkdown(payload) {

@@ -57,16 +57,18 @@ async def chunk_endpoint(req: ChunkRequest):
 
     for raw in raw_chunks:
         metadata = extract_metadata_from_compiled(raw["text"], compiled_patterns)
-        
+
         metadata_items = [MetadataItem(**m) for m in metadata]
-        chunk_data_list.append(ChunkData(
-            index=raw["index"],
-            text=raw["text"],
-            char_count=raw["char_count"],
-            overlap_start_chars=raw["overlap_start_chars"],
-            overlap_end_chars=raw["overlap_end_chars"],
-            metadata=metadata_items,
-        ))
+        chunk_data_list.append(
+            ChunkData(
+                index=raw["index"],
+                text=raw["text"],
+                char_count=raw["char_count"],
+                overlap_start_chars=raw["overlap_start_chars"],
+                overlap_end_chars=raw["overlap_end_chars"],
+                metadata=metadata_items,
+            )
+        )
 
     return ChunkResponse(
         chunks=chunk_data_list,

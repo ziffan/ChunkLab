@@ -72,4 +72,7 @@ def test_overlap_continuity():
 
     for i in range(len(result) - 1):
         if result[i]["char_count"] == chunk_size:
-            assert result[i]["text"][chunk_size - chunk_overlap:] == result[i + 1]["text"][:chunk_overlap]
+            assert (
+                result[i]["text"][chunk_size - chunk_overlap :]
+                == result[i + 1]["text"][:chunk_overlap]
+            )

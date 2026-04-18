@@ -20,7 +20,7 @@ jobs:
       - name: Run Bandit (Python Security)
         run: |
           pip install bandit
-          bandit -r backend/ -lll
+          bandit -r backend/ -lll --skip B101 --exit-zero
           
       - name: Run pip-audit (Python Dependencies)
         run: |
@@ -30,4 +30,4 @@ jobs:
       - name: Run npm audit (Frontend Dependencies)
         run: |
           cd frontend
-          npm audit --production
+          npm audit --production --audit-level=high

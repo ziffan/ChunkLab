@@ -39,8 +39,10 @@ venv/
 ENV/
 env/
 .pytest_cache/
+.ruff_cache/
 .hypothesis/
 .coverage
+coverage.xml
 htmlcov/
 .mypy_cache/
 .tox/

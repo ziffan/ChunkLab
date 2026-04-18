@@ -65,8 +65,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-4">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-[18px] font-bold">ChunkLab <span className="text-[12px] font-normal text-slate-400 ml-1">The Interactive Regex & Chunking Sandbox</span></h1>
+        <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="ChunkLab Logo" className="h-10 w-auto" />
           <button
             onClick={() => setAboutOpen(true)}
             className="h-7 px-3 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-[12px]"

@@ -1,8 +1,9 @@
+import re
 from fastapi import APIRouter
 from backend.models.requests import ChunkRequest
 from backend.models.responses import ChunkResponse, ChunkData, ChunkError, MetadataItem
 from backend.services.chunker import chunk_text
-from backend.services.metadata_extractor import extract_metadata, validate_pattern
+from backend.services.metadata_extractor import extract_metadata_from_compiled, validate_pattern
 
 router = APIRouter()
 
@@ -20,15 +21,19 @@ async def chunk_endpoint(req: ChunkRequest):
             ),
         )
 
+    # Pre-compile patterns once for the entire request
+    compiled_patterns = []
     for rp in req.regex_patterns:
-        is_valid, err_msg = validate_pattern(rp.pattern)
-        if not is_valid:
+        try:
+            compiled = re.compile(rp.pattern)
+            compiled_patterns.append(({"id": rp.id, "label": rp.label}, compiled))
+        except re.error as e:
             return ChunkResponse(
                 chunks=[],
                 total_chunks=0,
                 error=ChunkError(
                     code="INVALID_REGEX",
-                    message=f"Pattern '{rp.pattern}' is invalid: {err_msg}",
+                    message=f"Pattern '{rp.pattern}' is invalid: {e}",
                     pattern_id=rp.id,
                 ),
             )
@@ -37,20 +42,8 @@ async def chunk_endpoint(req: ChunkRequest):
     chunk_data_list = []
 
     for raw in raw_chunks:
-        patterns_as_dicts = [{"id": rp.id, "label": rp.label, "pattern": rp.pattern} for rp in req.regex_patterns]
-        metadata, meta_error = extract_metadata(raw["text"], patterns_as_dicts)
-
-        if meta_error is not None:
-            return ChunkResponse(
-                chunks=[],
-                total_chunks=0,
-                error=ChunkError(
-                    code=meta_error["code"],
-                    message=meta_error["message"],
-                    pattern_id=meta_error["pattern_id"],
-                ),
-            )
-
+        metadata = extract_metadata_from_compiled(raw["text"], compiled_patterns)
+        
         metadata_items = [MetadataItem(**m) for m in metadata]
         chunk_data_list.append(ChunkData(
             index=raw["index"],

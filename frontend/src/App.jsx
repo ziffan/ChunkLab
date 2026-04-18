@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import MarkdownEditor from './components/MarkdownEditor';
 import ParameterPanel from './components/ParameterPanel';
 import RegexPatternRow from './components/RegexPatternRow';
@@ -9,8 +9,15 @@ import ChunkGrid from './components/ChunkGrid';
 import ExportButton from './components/ExportButton';
 import AboutModal from './components/AboutModal';
 import { useChunker } from './hooks/useChunker';
-import { estimateTokens, testRegexPattern } from './services/api';
+import { useRegexPatterns } from './hooks/useRegexPatterns';
+import { useTokenization } from './hooks/useTokenization';
 import { PROVIDERS } from './constants/models';
+
+const INITIAL_REGEX = [
+  { id: crypto.randomUUID(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
+  { id: crypto.randomUUID(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
+  { id: crypto.randomUUID(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
+];
 
 export default function App() {
   const [markdown, setMarkdown] = useState('');
@@ -18,94 +25,32 @@ export default function App() {
   const [minTokens, setMinTokens] = useState(50);
   const [maxTokens, setMaxTokens] = useState(512);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [regexPatterns, setRegexPatterns] = useState([
-    { id: crypto.randomUUID(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
-    { id: crypto.randomUUID(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
-    { id: crypto.randomUUID(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
-  ]);
-  const [provider, setProvider] = useState('mock');
-  const [modelName, setModelName] = useState('mock');
-  const [tokenCounts, setTokenCounts] = useState([]);
-  const [isTokenizing, setIsTokenizing] = useState(false);
-  const [tokenizeError, setTokenizeError] = useState(null);
-  const [isMockToken, setIsMockToken] = useState(true);
+
+  const {
+    regexPatterns,
+    cleanPatterns,
+    handleAddPattern,
+    handleRemovePattern,
+    handleLabelChange,
+    handlePatternChange,
+    handleTestPattern,
+  } = useRegexPatterns(INITIAL_REGEX, markdown);
+
+  const {
+    provider,
+    setProvider,
+    modelName,
+    setModelName,
+    tokenCounts,
+    isTokenizing,
+    tokenizeError,
+    isMockToken,
+    handleEstimateTokens,
+  } = useTokenization();
 
   const contextLimit = PROVIDERS.find((p) => p.id === provider)?.contextLimit ?? 9999;
 
-  const cleanPatterns = useMemo(
-    () =>
-      regexPatterns.map((p) => ({
-        id: p.id,
-        label: p.label,
-        pattern: p.pattern,
-      })),
-    [regexPatterns]
-  );
-
   const { chunks, isLoading, error } = useChunker(markdown, params, cleanPatterns);
-
-  const handleAddPattern = useCallback(() => {
-    setRegexPatterns((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), label: '', pattern: '', testResult: null, testError: null },
-    ]);
-  }, []);
-
-  const handleRemovePattern = useCallback((id) => {
-    setRegexPatterns((prev) => prev.filter((p) => p.id !== id));
-  }, []);
-
-  const handleLabelChange = useCallback((id, label) => {
-    setRegexPatterns((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, label, testResult: null, testError: null } : p))
-    );
-  }, []);
-
-  const handlePatternChange = useCallback((id, pattern) => {
-    setRegexPatterns((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, pattern, testResult: null, testError: null } : p))
-    );
-  }, []);
-
-  const handleTestPattern = useCallback(
-    async (id) => {
-      const pat = regexPatterns.find((p) => p.id === id);
-      if (!pat || !pat.pattern) return;
-      try {
-        const result = await testRegexPattern({ pattern: pat.pattern, text: markdown });
-        setRegexPatterns((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, testResult: result, testError: null } : p))
-        );
-      } catch (err) {
-        setRegexPatterns((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, testResult: null, testError: err.message } : p))
-        );
-      }
-    },
-    [regexPatterns, markdown]
-  );
-
-  const handleEstimateTokens = useCallback(async () => {
-    if (chunks.length === 0) return;
-    setIsTokenizing(true);
-    setTokenizeError(null);
-    try {
-      const result = await estimateTokens({
-        texts: chunks.map((c) => c.text),
-        provider,
-        model_name: modelName,
-      });
-      setTokenCounts(result.token_counts);
-      setIsMockToken(result.is_mock);
-      if (result.error) {
-        setTokenizeError(result.error.message);
-      }
-    } catch (err) {
-      setTokenizeError(err.message);
-    } finally {
-      setIsTokenizing(false);
-    }
-  }, [chunks, provider, modelName]);
 
   const totalChars = chunks.reduce((sum, c) => sum + c.char_count, 0);
 
@@ -188,7 +133,7 @@ export default function App() {
                 modelName={modelName}
                 onProviderChange={setProvider}
                 onModelNameChange={setModelName}
-                onEstimate={handleEstimateTokens}
+                onEstimate={() => handleEstimateTokens(chunks)}
               />
             </ResizablePanel>
           </div>

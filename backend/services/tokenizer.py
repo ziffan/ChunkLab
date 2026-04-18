@@ -1,6 +1,6 @@
 import os
 import logging
-
+import asyncio
 import httpx
 
 from backend.models.responses import TokenizeResponse, TokenizeError
@@ -11,17 +11,26 @@ logger = logging.getLogger(__name__)
 
 async def _tokenize_ollama(texts: list[str], model_name: str) -> list[int]:
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    results = []
-
-    async with httpx.AsyncClient(timeout=5.0) as client:
+    
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        tasks = []
         for text in texts:
-            resp = await client.post(
+            tasks.append(client.post(
                 f"{base_url}/api/tokenize",
                 json={"model": model_name or "llama3.1", "prompt": text},
-            )
+            ))
+        
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        results = []
+        for i, resp in enumerate(responses):
+            if isinstance(resp, Exception):
+                logger.error(f"Error tokenizing chunk {i}: {resp}")
+                # Fallback to character-based estimate if one fails? 
+                # Or just raise. Let's raise for now to be consistent with previous behavior.
+                raise resp
             resp.raise_for_status()
-            count = resp.json()["count"]
-            results.append(count)
+            results.append(resp.json()["count"])
 
     return results
 

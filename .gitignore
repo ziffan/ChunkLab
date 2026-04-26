@@ -62,6 +62,9 @@ htmlcov/
 *.swo
 .DS_Store
 
+# Claude Code
+.claude/
+
 # Build/Frontend
 .vite/
 frontend/dist/

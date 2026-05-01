@@ -3,9 +3,27 @@ import MetadataBadge from './MetadataBadge';
 import TokenBadge from './TokenBadge';
 import QualityBadge from './QualityBadge';
 
+function MdBreadcrumb({ value }) {
+  const parts = value.split(' > ');
+  return (
+    <div className="flex items-center gap-1 flex-wrap mb-1.5 text-[10px] text-slate-400">
+      {parts.map((part, i) => (
+        <span key={i} className="flex items-center gap-1">
+          <span>{part}</span>
+          {i < parts.length - 1 && <span className="text-slate-600">›</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function ChunkCard({ chunk, tokenCount, isMock, isTokenizing, contextLimit, minTokens, maxTokens }) {
+  const mdPath = chunk.metadata?.find((m) => m.pattern_id === '_md_path');
+  const userMetadata = chunk.metadata?.filter((m) => m.pattern_id !== '_md_path') ?? [];
+
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-lg p-3 mb-2 font-mono text-[13px]">
+      {mdPath && <MdBreadcrumb value={mdPath.value} />}
       <div className="flex items-center justify-between mb-2">
         <span className="text-slate-200 font-semibold">
           Chunk #{chunk.index + 1}
@@ -37,7 +55,7 @@ export default function ChunkCard({ chunk, tokenCount, isMock, isTokenizing, con
             isComplete={chunk.is_complete}
           />
         )}
-        {chunk.metadata.map((m, i) => (
+        {userMetadata.map((m, i) => (
           <MetadataBadge
             key={`${m.pattern_id}-${i}`}
             label={m.label}

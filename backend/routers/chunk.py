@@ -23,6 +23,7 @@ from backend.services.quality_metrics import (
     information_density,
     is_complete,
 )
+from backend.services.md_metadata import md_path_metadata
 
 router = APIRouter()
 
@@ -83,7 +84,10 @@ async def chunk_endpoint(req: ChunkRequest):
     for raw in raw_chunks:
         metadata = extract_metadata_from_compiled(raw["text"], compiled_patterns)
 
-        metadata_items = [MetadataItem(**m) for m in metadata]
+        path_item = md_path_metadata(req.markdown, raw["text"])
+        all_metadata = ([MetadataItem(**path_item)] if path_item else []) + [
+            MetadataItem(**m) for m in metadata
+        ]
         chunk_data_list.append(
             ChunkData(
                 index=raw["index"],
@@ -91,7 +95,7 @@ async def chunk_endpoint(req: ChunkRequest):
                 char_count=raw["char_count"],
                 overlap_start_chars=raw["overlap_start_chars"],
                 overlap_end_chars=raw["overlap_end_chars"],
-                metadata=metadata_items,
+                metadata=all_metadata,
                 boundary_quality=boundary_quality(raw["text"]),
                 information_density=information_density(raw["text"]),
                 is_complete=is_complete(raw["text"]),

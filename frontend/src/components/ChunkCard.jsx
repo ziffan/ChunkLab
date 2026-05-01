@@ -1,6 +1,7 @@
 import OverlapText from './OverlapText';
 import MetadataBadge from './MetadataBadge';
 import TokenBadge from './TokenBadge';
+import QualityBadge from './QualityBadge';
 
 export default function ChunkCard({ chunk, tokenCount, isMock, isTokenizing, contextLimit, minTokens, maxTokens }) {
   return (
@@ -29,6 +30,13 @@ export default function ChunkCard({ chunk, tokenCount, isMock, isTokenizing, con
         <span className="text-slate-400 text-[12px]">
           {chunk.char_count} chars
         </span>
+        {chunk.boundary_quality != null && (
+          <QualityBadge
+            boundaryQuality={chunk.boundary_quality}
+            informationDensity={chunk.information_density}
+            isComplete={chunk.is_complete}
+          />
+        )}
         {chunk.metadata.map((m, i) => (
           <MetadataBadge
             key={`${m.pattern_id}-${i}`}

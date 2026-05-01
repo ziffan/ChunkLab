@@ -1,7 +1,7 @@
 # ChunkLab v2 Progress Tracker
 
-last_updated: 2026-05-01T14:20:00+07:00
-current_phase: 2
+last_updated: 2026-05-01T14:45:00+07:00
+current_phase: 3
 status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 
 ## Phase 0: Foundation
@@ -27,12 +27,12 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - [x] 2.4 Reject non-.txt/.md with friendly error
 
 ## Phase 3: Quality Metrics per Chunk
-- [ ] 3.1 Backend: boundary_quality scorer (sentence-end detection)
-- [ ] 3.2 Backend: information_density metric (non-whitespace ratio)
-- [ ] 3.3 Backend: completeness flag (starts/ends mid-sentence)
-- [ ] 3.4 Extend ChunkData schema + response
-- [ ] 3.5 Frontend ChunkCard quality badges
-- [ ] 3.6 Tests for each metric
+- [x] 3.1 Backend: boundary_quality scorer (sentence-end detection)
+- [x] 3.2 Backend: information_density metric (non-whitespace ratio)
+- [x] 3.3 Backend: completeness flag (starts/ends mid-sentence)
+- [x] 3.4 Extend ChunkData schema + response
+- [x] 3.5 Frontend ChunkCard quality badges
+- [x] 3.6 Tests for each metric
 
 ## Phase 4: Retrieval Simulation
 - [ ] 4.1 Add sentence-transformers as OPTIONAL dependency (extras="retrieval")
@@ -81,4 +81,5 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - 2026-05-01T13:20:00+07:00: Task 1.6 completed — ChunkRequest.strategy (default "fixed") + strategy_params: dict added. Router dispatches to chunk_by_strategy() for non-fixed strategies. validate_overlap scoped to fixed strategy. All 51 tests PASS.
 - 2026-05-01T13:45:00+07:00: Task 1.7 completed — StrategySelector.jsx created with strategy dropdown + per-strategy param controls (recursive: separators, token: size/overlap/encoding, sentence: language/sentences/overlap, markdown: header_level/max_chunk_size). ParameterPanel hides chunk_size/overlap for non-fixed/recursive strategies. useChunker passes strategy + strategy_params to API. 51/51 PASS, type-check clean.
 - 2026-05-01T14:00:00+07:00: Task 1.8 completed — api_strategies.json fixture + 5 new API tests (recursive, token, sentence, markdown, invalid-strategy→422). Also fixed router bug: chunk_size+chunk_overlap now forwarded to RecursiveCharacterChunker via strategy_params.setdefault(). 56/56 PASS.
-- 2026-05-01T14:20:00+07:00: Phase 2 completed (2.1–2.4) — FileUploader.jsx + useFileUpload.js. Drag-drop + click-to-browse; validates .txt/.md extension; rejects files >500KB; shows filename badge with × clear button; friendly error messages. No backend changes needed (all frontend FileReader). 56/56 PASS, type-check clean. — api_strategies.json fixture + 5 new API tests (recursive, token, sentence, markdown, invalid-strategy→422). Also fixed router bug: chunk_size+chunk_overlap now forwarded to RecursiveCharacterChunker via strategy_params.setdefault(). 56/56 PASS. — StrategySelector.jsx created with strategy dropdown + per-strategy param controls (recursive: separators, token: size/overlap/encoding, sentence: language/sentences/overlap, markdown: header_level/max_chunk_size). ParameterPanel hides chunk_size/overlap for non-fixed/recursive strategies. useChunker passes strategy + strategy_params to API. 51/51 PASS, type-check clean. — ChunkRequest.strategy (default "fixed") + strategy_params: dict added. Router dispatches to chunk_by_strategy() for non-fixed strategies. validate_overlap scoped to fixed strategy. All 51 tests PASS.
+- 2026-05-01T14:20:00+07:00: Phase 2 completed (2.1–2.4) — FileUploader.jsx + useFileUpload.js. Drag-drop + click-to-browse; validates .txt/.md extension; rejects files >500KB; shows filename badge with × clear button; friendly error messages. No backend changes needed (all frontend FileReader). 56/56 PASS, type-check clean.
+- 2026-05-01T14:45:00+07:00: Phase 3 completed (3.1–3.6) — quality_metrics.py: boundary_quality (regex sentence-end + start detection, 0–1), information_density (non-whitespace ratio), is_complete (mid-word cut detection). ChunkData extended with 3 new fields (default values for BC). QualityBadge.jsx shows colored dot + BQ%/ID% + trunc warning. 80/80 PASS, linting clean. (2.1–2.4) — FileUploader.jsx + useFileUpload.js. Drag-drop + click-to-browse; validates .txt/.md extension; rejects files >500KB; shows filename badge with × clear button; friendly error messages. No backend changes needed (all frontend FileReader). 56/56 PASS, type-check clean. — api_strategies.json fixture + 5 new API tests (recursive, token, sentence, markdown, invalid-strategy→422). Also fixed router bug: chunk_size+chunk_overlap now forwarded to RecursiveCharacterChunker via strategy_params.setdefault(). 56/56 PASS. — StrategySelector.jsx created with strategy dropdown + per-strategy param controls (recursive: separators, token: size/overlap/encoding, sentence: language/sentences/overlap, markdown: header_level/max_chunk_size). ParameterPanel hides chunk_size/overlap for non-fixed/recursive strategies. useChunker passes strategy + strategy_params to API. 51/51 PASS, type-check clean. — ChunkRequest.strategy (default "fixed") + strategy_params: dict added. Router dispatches to chunk_by_strategy() for non-fixed strategies. validate_overlap scoped to fixed strategy. All 51 tests PASS.

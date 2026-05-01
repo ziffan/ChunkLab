@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 5 new API integration tests in `test_api.py`: recursive, token, sentence, markdown structure, and invalid strategy (→ 422) (Phase 1.8)
 - `FileUploader` component: drag-and-drop zone + click-to-browse for `.txt` / `.md` files; validates extension; rejects files > 500 KB; shows filename badge with × clear button; friendly error for unsupported formats (Phase 2.1–2.4)
 - `useFileUpload` hook: encapsulates FileReader logic, extension + size validation, filename state (Phase 2.2)
+- `quality_metrics.py`: `boundary_quality` (0–1 score for sentence-end + boundary-start), `information_density` (non-whitespace ratio), `is_complete` (mid-word cut detection) (Phase 3.1–3.3)
+- `ChunkData` schema extended with `boundary_quality: float`, `information_density: float`, `is_complete: bool` (default values preserve backward compat) (Phase 3.4)
+- `QualityBadge` component: colored dot (🟢/🟡/🔴 per boundary_quality threshold) + BQ% / ID% display + truncation warning when `is_complete=false` (Phase 3.5)
+- `test_quality_metrics.py`: 24 tests covering all three metrics, happy path + edge cases (Phase 3.6)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

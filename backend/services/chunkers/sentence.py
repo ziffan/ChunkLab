@@ -17,14 +17,38 @@ import pysbd
 from .base import BaseChunker
 
 _SUPPORTED_LANGUAGES = {
-    "am", "ar", "bg", "da", "de", "el", "en", "es", "fa",
-    "fr", "hi", "hy", "it", "ja", "kk", "mr", "my", "nl",
-    "pl", "ru", "sk", "ur", "zh",
+    "am",
+    "ar",
+    "bg",
+    "da",
+    "de",
+    "el",
+    "en",
+    "es",
+    "fa",
+    "fr",
+    "hi",
+    "hy",
+    "it",
+    "ja",
+    "kk",
+    "mr",
+    "my",
+    "nl",
+    "pl",
+    "ru",
+    "sk",
+    "ur",
+    "zh",
 }
 
 
 class SentenceChunker(BaseChunker):
     """Group sentences into chunks using pysbd sentence boundary detection.
+
+    .. deprecated::
+        Use ``IndonesianSentenceSplitter`` (strategy ``"sentence_id"``) for Bahasa Indonesia.
+        This chunker supports only the 23 pysbd languages listed in ``_SUPPORTED_LANGUAGES``.
 
     Params:
         language (str): pysbd language code, default "en".

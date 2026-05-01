@@ -129,6 +129,63 @@ Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indones
 
 ---
 
+### Metadata Otomatis: Strategi `legal_id`
+
+Strategi `legal_id` menganalisis struktur dokumen UU/PP/Perpres/Perda secara otomatis dan menyematkan metadata berikut pada setiap chunk — **tanpa perlu menambahkan regex pattern apapun**:
+
+| Field | Tipe | Contoh Nilai |
+|---|---|---|
+| `_legal_path` | `string` | `"BAB I > Bagian Kedua > Pasal 5"` |
+| `_legal_number` | `string` | `"5"` (nomor Pasal atau BAB) |
+| `_legal_section` | `string` | `"BATANG_TUBUH"` |
+| `_legal_unit` | `string` | `"pasal"` atau `"bab"` |
+
+#### Section dokumen yang dikenali
+
+| Nilai `_legal_section` | Isi |
+|---|---|
+| `JUDUL` | Judul peraturan sebelum Menimbang |
+| `PEMBUKAAN` | Menimbang · Mengingat · Memutuskan · Menetapkan |
+| `BATANG_TUBUH` | Isi pasal-pasal utama |
+| `PENJELASAN` | Penjelasan umum + Pasal Demi Pasal |
+| `LAMPIRAN` | Lampiran I, II, dst. |
+
+#### Hierarki yang dikenali dalam BATANG_TUBUH
+
+```
+BAB I
+  └─ Bagian Kesatu
+       └─ Paragraf 1
+            └─ Pasal 1
+                 └─ (1) ayat  ← konten di dalam chunk, tidak di-split lebih lanjut
+```
+
+Semua level hierarki yang aktif digabung menjadi `_legal_path`. Untuk dokumen UU perubahan (mengandung "PERUBAHAN ... ATAS UNDANG-UNDANG"), nomor Pasal dalam angka Romawi juga dikenali secara otomatis.
+
+#### Regex yang tidak perlu ditambahkan manual
+
+Karena sudah tercakup dalam field di atas:
+
+| Pattern | Kenapa tidak perlu |
+|---|---|
+| `BAB\s+[IVXLCDM]+` | Ada di `_legal_path` |
+| `Pasal\s+\d+` | Ada di `_legal_number` dan `_legal_path` |
+| `Bagian\s+Kes\w+` | Ada di `_legal_path` |
+| `Paragraf\s+\d+` | Ada di `_legal_path` |
+
+#### Regex yang masih berguna (metadata tambahan)
+
+| Tujuan | Pattern |
+|---|---|
+| Nomor peraturan | `Nomor\s+\d+\s+Tahun\s+\d{4}` |
+| Referensi UU lain | `UU\s*(?:No\.?\s*)?\d+\s*(?:Tahun\s*)?\d{4}` |
+| Tanggal | `\d{1,2}\s+\w+\s+\d{4}` |
+| Huruf ayat | `huruf\s+[a-z]` |
+
+> Contoh pattern lengkap tersedia di panel **Buka Referensi Regex → Contoh: Regulasi Indonesia** di dalam aplikasi.
+
+---
+
 ### Arsitektur
 
 ```
@@ -155,7 +212,7 @@ GET  /openapi.json   ← OpenAPI spec (FastAPI built-in)
 
 **Backend:** FastAPI + Pydantic v2, Python 3.12  
 **Frontend:** React 18 + Tailwind CSS + Vite, hooks-based architecture  
-**Tes:** 98 tests (pytest), type-check bersih (tsc --noEmit)
+**Tes:** 133 tests (pytest), type-check bersih (tsc --noEmit)
 
 ---
 

@@ -15,7 +15,7 @@
 from typing import Any, Literal
 from pydantic import BaseModel, Field, model_validator
 
-_VALID_STRATEGIES = {"fixed", "recursive", "token", "sentence", "markdown", "legal_id"}
+_VALID_STRATEGIES = {"fixed", "recursive", "token", "sentence", "sentence_id", "markdown", "legal_id"}
 
 
 class RegexPattern(BaseModel):

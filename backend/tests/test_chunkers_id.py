@@ -397,6 +397,44 @@ class TestLegalStructureChunker:
             "a." in text and "b." in text and "c." in text
         ), "Tabulation items a/b/c must stay inside Pasal 5 chunk"
 
+    # --- Inline Pasal format (PDF-converted documents) ---
+
+    def test_inline_pasal_header_detected(self):
+        """Pasal N followed by content on same line (PDF conversion artifact) is detected."""
+        text = (
+            "BAB I KETENTUAN UMUM\n"
+            "Pasal 1 Dalam peraturan ini yang dimaksud dengan:\n"
+            "1. Penyelenggara adalah badan hukum yang menyelenggarakan layanan.\n"
+            "2. Pengguna adalah pihak yang menggunakan layanan.\n"
+            "Pasal 2 Bentuk badan hukum terdiri atas:\n"
+            "a. perseroan terbatas; dan\n"
+            "b. koperasi.\n"
+            "Pasal 3\n"
+            "(1) Ketentuan ini berlaku sejak diundangkan.\n"
+        )
+        result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
+        numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        assert "1" in numbers, f"Pasal 1 (inline) not detected; got {numbers}"
+        assert "2" in numbers, f"Pasal 2 (inline) not detected; got {numbers}"
+        assert "3" in numbers, f"Pasal 3 (standalone) not detected; got {numbers}"
+
+    def test_inline_pasal_no_false_positive_from_reference(self):
+        """Cross-references like 'Pasal N ayat' or 'Pasal N huruf' are not treated as headers."""
+        text = (
+            "BAB I UMUM\n"
+            "Pasal 1\n"
+            "(1) Ketentuan sebagaimana dimaksud dalam\n"
+            "Pasal 2 huruf a berlaku sejak ditetapkan.\n"
+            "Pasal 2\n"
+            "(1) Penyelenggara wajib mematuhi peraturan ini.\n"
+        )
+        result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
+        numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        # 'Pasal 2 huruf a' is a cross-reference — must NOT produce a third chunk
+        assert numbers.count("2") == 1, (
+            f"'Pasal 2 huruf a' falsely detected as header; chunks: {numbers}"
+        )
+
     # --- Checklist 9: max_chunk_chars fallback inherits legal_path ---
 
     def test_max_chunk_chars_fallback_inherits_metadata(self):

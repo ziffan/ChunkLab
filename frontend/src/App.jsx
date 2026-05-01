@@ -15,6 +15,7 @@ import { PROVIDERS } from './constants/models';
 import MockBanner from './components/MockBanner';
 import StrategySelector from './components/StrategySelector';
 import FileUploader from './components/FileUploader';
+import RetrievalPanel from './components/RetrievalPanel';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -171,6 +172,10 @@ export default function App() {
                 onModelNameChange={setModelName}
                 onEstimate={() => handleEstimateTokens(chunks)}
               />
+            </ResizablePanel>
+
+            <ResizablePanel title="Retrieval" defaultHeight={200} minH={80}>
+              <RetrievalPanel chunks={chunks} />
             </ResizablePanel>
           </div>
         </ResizablePanel>

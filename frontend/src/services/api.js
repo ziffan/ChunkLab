@@ -46,6 +46,19 @@ export async function fetchHealth() {
   }
 }
 
+export async function retrieveChunks(payload) {
+  try {
+    const { data } = await api.post('/api/retrieve', payload);
+    return data;
+  } catch (error) {
+    const err = new Error(
+      error.response?.data?.message || error.response?.data?.detail || error.message
+    );
+    err.status = error.response?.status;
+    throw err;
+  }
+}
+
 export async function fetchModels(provider, apiKey = null) {
   try {
     const params = { provider };

@@ -44,7 +44,7 @@ export default function AboutModal({ open, onClose }) {
           <div>
             <h3 className="text-[12px] uppercase text-slate-400 font-semibold mb-1">Fitur Utama</h3>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
-              <li><strong className="text-slate-200">5 strategi chunking</strong> — Fixed, Recursive, Token-aware (tiktoken), Sentence (pysbd), Markdown Structure</li>
+              <li><strong className="text-slate-200">7 strategi chunking</strong> — Fixed, Recursive, Token-aware (tiktoken), Sentence/legacy (pysbd), Sentence — Indonesian (sentence_id), Markdown Structure, Legal Structure — Indonesian (legal_id)</li>
               <li><strong className="text-slate-200">File upload</strong> — drag-and-drop atau klik untuk file <code className="bg-slate-700 px-1 rounded text-amber-300">.txt</code> / <code className="bg-slate-700 px-1 rounded text-amber-300">.md</code> hingga 500 KB</li>
               <li><strong className="text-slate-200">Quality metrics</strong> — Boundary Quality, Information Density, dan deteksi potongan tidak sempurna per chunk</li>
               <li><strong className="text-slate-200">Regex metadata</strong> — ekstraksi otomatis (Bab, Pasal, Ayat, dll.) dengan capture group</li>
@@ -140,7 +140,7 @@ export default function AboutModal({ open, onClose }) {
           </div>
 
           <div className="text-slate-500 text-[11px] pt-2 border-t border-slate-700">
-            Versi 2.0.0 — FastAPI + React 18 + Tailwind CSS
+            Versi 2.1.0 — FastAPI + React 18 + Tailwind CSS
           </div>
         </div>
       </div>

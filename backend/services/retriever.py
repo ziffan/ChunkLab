@@ -22,11 +22,15 @@ except ImportError:
     pass
 
 _model = None
-MODEL_NAME = "all-MiniLM-L6-v2"
+MODEL_NAME = "intfloat/multilingual-e5-large"
 _INSTALL_MSG = (
     "Retrieval feature requires extras. "
     "Install: pip install -r requirements-retrieval.txt"
 )
+
+# multilingual-e5 requires explicit role prefixes for asymmetric retrieval.
+_QUERY_PREFIX = "query: "
+_PASSAGE_PREFIX = "passage: "
 
 
 def is_available() -> bool:
@@ -47,8 +51,8 @@ def retrieve(query: str, chunks: list[dict], top_k: int = 5) -> list[dict]:
     model = _get_model()
     if not chunks:
         return []
-    texts = [c["text"] for c in chunks]
-    query_emb = model.encode(query, convert_to_tensor=True)
+    texts = [_PASSAGE_PREFIX + c["text"] for c in chunks]
+    query_emb = model.encode(_QUERY_PREFIX + query, convert_to_tensor=True)
     chunk_embs = model.encode(texts, convert_to_tensor=True)
     scores = st_util.cos_sim(query_emb, chunk_embs)[0].tolist()
     ranked = sorted(

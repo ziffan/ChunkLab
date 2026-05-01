@@ -1,0 +1,21 @@
+{
+  "description": "Recursive chunking respects paragraph boundaries when possible",
+  "happy_path": {
+    "text": "# Introduction\n\nThis is the first paragraph with enough content to be meaningful.\n\n## Section Two\n\nThis is the second paragraph which also contains useful information.\n\n## Section Three\n\nThird paragraph here with its own content.",
+    "chunk_size": 80,
+    "chunk_overlap": 10,
+    "separators": ["\n\n", "\n", ". ", " ", ""]
+  },
+  "edge_short": {
+    "text": "Short text.",
+    "chunk_size": 512,
+    "chunk_overlap": 50,
+    "separators": ["\n\n", "\n", ". ", " ", ""]
+  },
+  "edge_no_separator": {
+    "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "chunk_size": 30,
+    "chunk_overlap": 5,
+    "separators": ["\n\n", "\n", ". ", " ", ""]
+  }
+}

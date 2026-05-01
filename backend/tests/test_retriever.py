@@ -128,7 +128,7 @@ class TestRetrieveAvailable:
             return_value=_MOCK_RESULTS,
         ):
             resp = await client.post("/api/retrieve", json=_SAMPLE_REQUEST)
-        assert resp.json()["model_used"] == "all-MiniLM-L6-v2"
+        assert resp.json()["model_used"] == "intfloat/multilingual-e5-large"
 
     @pytest.mark.asyncio
     async def test_empty_chunks_returns_422(self, client):

@@ -1,0 +1,49 @@
+{
+  "description": "API-level integration tests for strategy routing via POST /api/chunk",
+  "recursive": {
+    "request": {
+      "markdown": "First paragraph.\n\nSecond paragraph.\n\nThird paragraph.",
+      "strategy": "recursive",
+      "chunk_size": 30,
+      "chunk_overlap": 5
+    }
+  },
+  "token": {
+    "request": {
+      "markdown": "Hello world. This is a test. Another sentence here. More content to chunk.",
+      "strategy": "token",
+      "strategy_params": {
+        "chunk_size_tokens": 8,
+        "chunk_overlap_tokens": 2,
+        "encoding_name": "cl100k_base"
+      }
+    }
+  },
+  "sentence": {
+    "request": {
+      "markdown": "First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.",
+      "strategy": "sentence",
+      "strategy_params": {
+        "language": "en",
+        "max_sentences_per_chunk": 2,
+        "chunk_overlap_sentences": 1
+      }
+    }
+  },
+  "markdown_struct": {
+    "request": {
+      "markdown": "# Introduction\n\nIntro content.\n\n## Section One\n\nSection content.\n\n## Section Two\n\nMore content.",
+      "strategy": "markdown",
+      "strategy_params": {
+        "header_level": 2,
+        "max_chunk_size": 2000
+      }
+    }
+  },
+  "invalid_strategy": {
+    "request": {
+      "markdown": "Some text.",
+      "strategy": "nonexistent_strategy"
+    }
+  }
+}

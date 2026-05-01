@@ -10,7 +10,7 @@ Pastikan software berikut sudah terinstall di komputer Anda:
 
 | Software | Versi Minimum | Cek Versi | Link Download |
 |---|---|---|---|
-| Python | 3.10+ | `python --version` | [python.org](https://www.python.org/downloads/) |
+| Python | 3.12+ | `python --version` | [python.org](https://www.python.org/downloads/) |
 | Node.js | 18+ | `node --version` | [nodejs.org](https://nodejs.org/) |
 | npm | (ikut Node.js) | `npm --version` | — |
 
@@ -128,7 +128,19 @@ Jika berhasil, akan muncul:
 
 ---
 
-## Langkah 5 — Buka di Browser
+## Langkah 5 — Retrieval Simulation (Opsional)
+
+Untuk mengaktifkan pencarian semantik (query teks → chunk paling relevan), install dependensi tambahan sebelum menjalankan backend:
+
+```bash
+pip install -r requirements-retrieval.txt
+```
+
+Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia.
+
+---
+
+## Langkah 6 — Buka di Browser
 
 Buka browser ke **http://localhost:5173**
 
@@ -136,15 +148,19 @@ Anda akan melihat tampilan dua kolom: editor di kiri, output chunk di kanan.
 
 ### Coba Segera
 
-1. Paste teks Markdown ke editor (kolom kiri)
-2. Atur **Chunk Size** dan **Overlap** dengan slider
-3. Tambahkan **Regex Pattern** untuk menangkap metadata (misal: `Pasal\s+(\d+)`)
-4. Klik **Estimate Tokens** untuk menghitung token per chunk
-5. Klik **Export JSON** untuk menyalin hasil ke clipboard
+1. Paste teks Markdown atau upload file `.txt` / `.md` ke editor (kolom kiri)
+2. Pilih **Strategy** — mulai dengan *Fixed Size* untuk eksplorasi awal
+3. Atur **Chunk Size** dan **Overlap** dengan slider (khusus strategi Fixed/Recursive)
+4. Tambahkan **Regex Pattern** untuk menangkap metadata (misal: `Pasal\s+(\d+)`)
+5. Klik **Estimate Tokens** untuk menghitung token per chunk
+6. Aktifkan **Compare Mode** di header untuk membandingkan dua konfigurasi secara berdampingan
+7. Klik **Export Results** dan pilih format JSON / JSONL / YAML untuk mengunduh hasil
+
+**Tip strategi Bahasa Indonesia:** Gunakan strategi `Sentence — Indonesian (sentence_id)` untuk teks narasi/berita, atau `Legal Structure — Indonesian (legal_id)` untuk dokumen UU/PP/Perpres.
 
 ---
 
-## Langkah 6 — Verifikasi
+## Langkah 7 — Verifikasi
 
 ### Cek Backend Health
 
@@ -156,7 +172,7 @@ Invoke-RestMethod http://localhost:8000/api/health
 curl http://localhost:8000/api/health
 ```
 
-Harus mengembalikan: `{"status":"ok","version":"1.0.0"}`
+Harus mengembalikan JSON dengan `"status": "ok"` dan field `"mock_mode"` (true/false sesuai konfigurasi `.env`).
 
 ### Jalankan Test Backend
 

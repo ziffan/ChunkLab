@@ -16,7 +16,7 @@ import re
 from fastapi import APIRouter
 from backend.models.requests import ChunkRequest
 from backend.models.responses import ChunkResponse, ChunkData, ChunkError, MetadataItem
-from backend.services.chunker import chunk_text
+from backend.services.chunker import chunk_by_strategy, chunk_text
 from backend.services.metadata_extractor import extract_metadata_from_compiled
 
 router = APIRouter()
@@ -24,7 +24,11 @@ router = APIRouter()
 
 @router.post("/chunk", response_model=ChunkResponse)
 async def chunk_endpoint(req: ChunkRequest):
-    if len(req.markdown) > 0 and req.chunk_overlap >= req.chunk_size:
+    if (
+        req.strategy == "fixed"
+        and len(req.markdown) > 0
+        and req.chunk_overlap >= req.chunk_size
+    ):
         return ChunkResponse(
             chunks=[],
             total_chunks=0,
@@ -52,7 +56,21 @@ async def chunk_endpoint(req: ChunkRequest):
                 ),
             )
 
-    raw_chunks = chunk_text(req.markdown, req.chunk_size, req.chunk_overlap)
+    if req.strategy == "fixed":
+        raw_chunks = chunk_text(req.markdown, req.chunk_size, req.chunk_overlap)
+    else:
+        try:
+            raw_chunks = chunk_by_strategy(
+                req.markdown, req.strategy, **req.strategy_params
+            )
+        except ValueError as e:
+            return ChunkResponse(
+                chunks=[],
+                total_chunks=0,
+                error=ChunkError(
+                    code="INVALID_PARAMETERS", message=str(e), pattern_id=None
+                ),
+            )
     chunk_data_list = []
 
     for raw in raw_chunks:

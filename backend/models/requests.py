@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Literal
+from typing import Any, Literal
 from pydantic import BaseModel, Field, model_validator
+
+_VALID_STRATEGIES = {"fixed", "recursive", "token", "sentence", "markdown"}
 
 
 class RegexPattern(BaseModel):
@@ -27,10 +29,20 @@ class ChunkRequest(BaseModel):
     chunk_size: int = Field(default=512, ge=1, le=8192)
     chunk_overlap: int = Field(default=50, ge=0)
     regex_patterns: list[RegexPattern] = Field(default=[], max_length=10)
+    strategy: str = Field(default="fixed")
+    strategy_params: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
-    def validate_overlap(self):
-        if len(self.markdown) > 0 and self.chunk_overlap >= self.chunk_size:
+    def validate_params(self):
+        if self.strategy not in _VALID_STRATEGIES:
+            raise ValueError(
+                f"Unknown strategy '{self.strategy}'. Valid: {sorted(_VALID_STRATEGIES)}"
+            )
+        if (
+            self.strategy == "fixed"
+            and len(self.markdown) > 0
+            and self.chunk_overlap >= self.chunk_size
+        ):
             raise ValueError(
                 f"chunk_overlap ({self.chunk_overlap}) must be strictly less than chunk_size ({self.chunk_size})"
             )

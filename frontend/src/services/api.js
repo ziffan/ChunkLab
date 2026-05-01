@@ -59,6 +59,11 @@ export async function retrieveChunks(payload) {
   }
 }
 
+export async function fetchOpenApiSpec() {
+  const { data } = await api.get('/openapi.json');
+  return data;
+}
+
 export async function fetchModels(provider, apiKey = null) {
   try {
     const params = { provider };

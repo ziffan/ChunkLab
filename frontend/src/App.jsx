@@ -17,6 +17,7 @@ import StrategySelector from './components/StrategySelector';
 import FileUploader from './components/FileUploader';
 import RetrievalPanel from './components/RetrievalPanel';
 import ComparisonView from './components/ComparisonView';
+import ApiReferenceButton from './components/ApiReferenceButton';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -110,6 +111,7 @@ export default function App() {
           >
             {compareMode ? 'Compare ON' : 'Compare'}
           </button>
+          <ApiReferenceButton />
         </div>
         <ExportButton
           chunks={chunks}

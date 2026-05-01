@@ -20,10 +20,9 @@ Pastikan software berikut sudah terinstall di komputer Anda:
 
 ## Langkah 1 — Clone / Download Project
 
-Jika belum ada folder project-nya, clone atau download dan buka terminal di folder `ChunkingSanbox`:
-
 ```bash
-cd D:\PROYEK\ChunkingSanbox
+git clone https://github.com/ziffan/ChunkLab.git
+cd ChunkLab
 ```
 
 ---
@@ -52,7 +51,17 @@ source backend/.venv/bin/activate
 pip install -r backend/requirements.txt
 ```
 
-### 2.3 Buat File Konfigurasi `.env`
+### 2.3 Install Dependency Retrieval (Opsional)
+
+Untuk mengaktifkan fitur **Retrieval Simulation** (pencarian semantik top-K), install dependensi tambahan:
+
+```bash
+pip install -r requirements-retrieval.txt
+```
+
+Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia. Lewati langkah ini jika tidak membutuhkan fitur retrieval.
+
+### 2.4 Buat File Konfigurasi `.env`
 
 ```bash
 # Windows (PowerShell)
@@ -71,13 +80,13 @@ File `.env` sudah berisi konfigurasi default yang langsung bisa dipakai. Untuk m
 |---|---|---|
 | `BACKEND_PORT` | `8000` | Port backend |
 | `FRONTEND_ORIGIN` | `http://localhost:5173` | Origin frontend (CORS) |
+| `ELECTRON_MODE` | `false` | Set `true` saat berjalan sebagai Electron desktop app |
 | `MOCK_MODE` | `true` | Gunakan mock tokenizer (tanpa API key) |
 | `OPENAI_API_KEY` | `your-key-here` | API key OpenAI (opsional) |
-| `GEMINI_API_KEY` | `your-key-here` | API key Gemini (opsional) |
-| `ANTHROPIC_API_KEY` | `your-key-here` | API key Anthropic (opsional) |
+| `GEMINI_API_KEY` | `your-key-here` | API key Google Gemini (opsional) |
 | `OPENROUTER_API_KEY` | `your-key-here` | API key OpenRouter (opsional) |
-| `OLLAMA_BASE_URL` | `http://localhost:11434` | URL Ollama (jika dipakai) |
-| `LM_STUDIO_BASE_URL` | `http://localhost:1234` | URL LM Studio (jika dipakai) |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | URL Ollama lokal (opsional) |
+| `LM_STUDIO_BASE_URL` | `http://localhost:1234` | URL LM Studio lokal (opsional) |
 
 </details>
 
@@ -128,19 +137,7 @@ Jika berhasil, akan muncul:
 
 ---
 
-## Langkah 5 — Retrieval Simulation (Opsional)
-
-Untuk mengaktifkan pencarian semantik (query teks → chunk paling relevan), install dependensi tambahan sebelum menjalankan backend:
-
-```bash
-pip install -r requirements-retrieval.txt
-```
-
-Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia.
-
----
-
-## Langkah 6 — Buka di Browser
+## Langkah 5 — Buka di Browser
 
 Buka browser ke **http://localhost:5173**
 
@@ -152,15 +149,15 @@ Anda akan melihat tampilan dua kolom: editor di kiri, output chunk di kanan.
 2. Pilih **Strategy** — mulai dengan *Fixed Size* untuk eksplorasi awal
 3. Atur **Chunk Size** dan **Overlap** dengan slider (khusus strategi Fixed/Recursive)
 4. Tambahkan **Regex Pattern** untuk menangkap metadata (misal: `Pasal\s+(\d+)`)
-5. Klik **Estimate Tokens** untuk menghitung token per chunk
+5. Klik **Estimate Tokens** untuk menghitung token per chunk — provider yang didukung: Mock, OpenAI, Google Gemini, OpenRouter, Ollama, LM Studio
 6. Aktifkan **Compare Mode** di header untuk membandingkan dua konfigurasi secara berdampingan
 7. Klik **Export Results** dan pilih format JSON / JSONL / YAML untuk mengunduh hasil
 
-**Tip strategi Bahasa Indonesia:** Gunakan strategi `Sentence — Indonesian (sentence_id)` untuk teks narasi/berita, atau `Legal Structure — Indonesian (legal_id)` untuk dokumen UU/PP/Perpres.
+**Tip strategi Bahasa Indonesia:** Gunakan `Sentence — Indonesian (sentence_id)` untuk teks narasi/berita, atau `Legal Structure — Indonesian (legal_id)` untuk dokumen UU/PP/Perpres.
 
 ---
 
-## Langkah 7 — Verifikasi
+## Langkah 6 — Verifikasi
 
 ### Cek Backend Health
 
@@ -180,7 +177,7 @@ Harus mengembalikan JSON dengan `"status": "ok"` dan field `"mock_mode"` (true/f
 python -m pytest backend/tests/ -q
 ```
 
-Semua test harus **PASSED**.
+Harus menampilkan **133 passed**.
 
 ### Build Frontend (Production)
 
@@ -198,11 +195,12 @@ Output ada di `frontend/dist/`.
 | Masalah | Solusi |
 |---|---|
 | `python` tidak dikenali | Install Python dan centang "Add to PATH", atau gunakan `python3` / `py` |
-| `ModuleNotFoundError: No module named 'backend'` | Pastikan menjalankan perintah dari **root folder** project (`ChunkingSanbox/`), bukan dari dalam folder `backend/` |
+| `ModuleNotFoundError: No module named 'backend'` | Pastikan menjalankan perintah dari **root folder** project (`ChunkLab/`), bukan dari dalam folder `backend/` |
 | `pip` tidak dikenali | Install Python dengan opsi pip, atau coba `python -m pip install ...` |
 | `npm install` gagal / lambat | Coba hapus `node_modules` dan `package-lock.json`, lalu jalankan lagi `npm install` |
 | CORS error di browser | Pastikan `FRONTEND_ORIGIN` di `backend/.env` sama dengan URL frontend (`http://localhost:5173`) |
 | Port 8000 sudah dipakai | Ubah `BACKEND_PORT` di `.env` ke port lain (misal `8001`) |
 | Port 5173 sudah dipakai | Jalankan `npm run dev -- --port 5174` dan sesuaikan `FRONTEND_ORIGIN` di `.env` |
 | Tokenizer error / API key invalid | Set `MOCK_MODE=true` di `.env` untuk gunakan estimator lokal tanpa API key |
+| Retrieval tidak muncul di UI | Install `requirements-retrieval.txt` lalu restart backend |
 | venv tidak bisa diaktifkan di PowerShell | Jalankan `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` lalu coba lagi |

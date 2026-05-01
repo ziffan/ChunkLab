@@ -17,6 +17,7 @@ import os
 
 import tiktoken
 
+from backend.services.chunkers.markdown_struct import MarkdownStructureChunker
 from backend.services.chunkers.recursive import RecursiveCharacterChunker
 from backend.services.chunkers.sentence import SentenceChunker
 from backend.services.chunkers.token_aware import TokenAwareChunker
@@ -332,3 +333,115 @@ class TestSentenceChunker:
                 max_sentences_per_chunk=3,
                 chunk_overlap_sentences=3,
             )
+
+
+# ---------------------------------------------------------------------------
+# MarkdownStructureChunker
+# ---------------------------------------------------------------------------
+
+
+class TestMarkdownStructureChunker:
+    def setup_method(self):
+        self.chunker = MarkdownStructureChunker()
+
+    def test_empty_text_returns_empty(self):
+        result = self.chunker.chunk("", header_level=2)
+        assert result == []
+
+    def test_splits_at_header_boundaries(self):
+        """Each h2 section becomes its own chunk."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["happy_path"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        # Introduction (h1) + 3 sections (h2) = 4 chunks
+        assert len(result) == 4
+
+    def test_chunk_boundaries_start_at_headers(self):
+        """Every chunk (except possible preamble) should start with a header."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["happy_path"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        for chunk in result:
+            assert chunk["text"].startswith(
+                "#"
+            ), f"Chunk {chunk['index']} does not start with a header: {chunk['text'][:40]!r}"
+
+    def test_no_headers_single_chunk(self):
+        """Text with no headers becomes one chunk."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["edge_no_headers"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        assert len(result) == 1
+
+    def test_h1_split(self):
+        """header_level=1 splits only at # headings."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["edge_h1_only"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        assert len(result) == 2
+        assert result[0]["text"].startswith("# First")
+        assert result[1]["text"].startswith("# Second")
+
+    def test_oversized_section_is_sub_split(self):
+        """Sections larger than max_chunk_size are sub-split into multiple chunks."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["edge_oversized"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        assert len(result) > 1
+        for chunk in result:
+            assert chunk["char_count"] <= cfg["max_chunk_size"]
+
+    def test_indices_sequential(self):
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["happy_path"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        for i, chunk in enumerate(result):
+            assert chunk["index"] == i
+
+    def test_char_count_consistent(self):
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["happy_path"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        for chunk in result:
+            assert chunk["char_count"] == len(chunk["text"])
+
+    def test_no_overlap_fields(self):
+        """Structure chunker does not create overlapping content."""
+        fixture = load_fixture("strategy_markdown.json")
+        cfg = fixture["happy_path"]
+        result = self.chunker.chunk(
+            cfg["text"],
+            header_level=cfg["header_level"],
+            max_chunk_size=cfg["max_chunk_size"],
+        )
+        for chunk in result:
+            assert chunk["overlap_start_chars"] == 0
+            assert chunk["overlap_end_chars"] == 0

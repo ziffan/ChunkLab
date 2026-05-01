@@ -1,0 +1,158 @@
+const STRATEGIES = [
+  { id: 'fixed', label: 'Fixed Size' },
+  { id: 'recursive', label: 'Recursive Character' },
+  { id: 'token', label: 'Token Aware' },
+  { id: 'sentence', label: 'Sentence' },
+  { id: 'markdown', label: 'Markdown Structure' },
+];
+
+const inputCls =
+  'w-full h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 text-[13px]';
+
+function Field({ label, hint, children }) {
+  return (
+    <div>
+      <label className="block text-[12px] uppercase text-slate-400 mb-1">{label}</label>
+      {children}
+      {hint && <p className="text-[10px] text-slate-500 mt-1">{hint}</p>}
+    </div>
+  );
+}
+
+export default function StrategySelector({ strategy, strategyParams, onStrategyChange, onStrategyParamsChange }) {
+  const set = (key, val) => onStrategyParamsChange({ ...strategyParams, [key]: val });
+
+  return (
+    <div className="space-y-3">
+      <Field label="Strategy">
+        <select
+          value={strategy}
+          onChange={(e) => onStrategyChange(e.target.value)}
+          className={inputCls}
+        >
+          {STRATEGIES.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      {strategy === 'recursive' && (
+        <Field
+          label="Separators (one per line, optional)"
+          hint="Leave empty to use defaults: \n\n → \n → '. ' → ' ' → char"
+        >
+          <textarea
+            rows={3}
+            placeholder={'\n\n\n\n. \n '}
+            value={(strategyParams.separators ?? []).join('\n')}
+            onChange={(e) => {
+              const raw = e.target.value;
+              set('separators', raw === '' ? undefined : raw.split('\n'));
+            }}
+            className="w-full bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 py-1.5 text-[12px] font-mono resize-none"
+          />
+        </Field>
+      )}
+
+      {strategy === 'token' && (
+        <>
+          <Field label="Chunk Size (tokens)">
+            <input
+              type="number"
+              min={1}
+              max={8192}
+              value={strategyParams.chunk_size_tokens ?? 256}
+              onChange={(e) => set('chunk_size_tokens', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Overlap (tokens)">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.chunk_overlap_tokens ?? 20}
+              onChange={(e) => set('chunk_overlap_tokens', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Encoding">
+            <select
+              value={strategyParams.encoding_name ?? 'cl100k_base'}
+              onChange={(e) => set('encoding_name', e.target.value)}
+              className={inputCls}
+            >
+              <option value="cl100k_base">cl100k_base (GPT-4 / 3.5)</option>
+              <option value="p50k_base">p50k_base (GPT-3)</option>
+              <option value="o200k_base">o200k_base (GPT-4o)</option>
+            </select>
+          </Field>
+        </>
+      )}
+
+      {strategy === 'sentence' && (
+        <>
+          <Field label="Language">
+            <select
+              value={strategyParams.language ?? 'en'}
+              onChange={(e) => set('language', e.target.value)}
+              className={inputCls}
+            >
+              <option value="en">English</option>
+              <option value="id">Indonesian</option>
+              <option value="de">German</option>
+              <option value="fr">French</option>
+              <option value="es">Spanish</option>
+            </select>
+          </Field>
+          <Field label="Sentences per Chunk">
+            <input
+              type="number"
+              min={1}
+              value={strategyParams.max_sentences_per_chunk ?? 5}
+              onChange={(e) => set('max_sentences_per_chunk', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Overlap (sentences)">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.chunk_overlap_sentences ?? 1}
+              onChange={(e) => set('chunk_overlap_sentences', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+        </>
+      )}
+
+      {strategy === 'markdown' && (
+        <>
+          <Field label="Split at Header Level">
+            <select
+              value={strategyParams.header_level ?? 2}
+              onChange={(e) => set('header_level', Number(e.target.value))}
+              className={inputCls}
+            >
+              {[1, 2, 3, 4, 5, 6].map((l) => (
+                <option key={l} value={l}>
+                  H{l} and above
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Max Chunk Size (chars)">
+            <input
+              type="number"
+              min={100}
+              value={strategyParams.max_chunk_size ?? 2000}
+              onChange={(e) => set('max_chunk_size', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+        </>
+      )}
+    </div>
+  );
+}

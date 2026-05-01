@@ -1,6 +1,6 @@
 # ChunkLab v2 Progress Tracker
 
-last_updated: 2026-05-01T13:20:00+07:00
+last_updated: 2026-05-01T13:45:00+07:00
 current_phase: 1
 status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 
@@ -17,7 +17,7 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - [x] 1.4 Implement SentenceChunker (pysbd)
 - [x] 1.5 Implement MarkdownStructureChunker
 - [x] 1.6 Update ChunkRequest schema with strategy param (default fixed for BC)
-- [ ] 1.7 Frontend strategy selector + per-strategy params UI
+- [x] 1.7 Frontend strategy selector + per-strategy params UI
 - [ ] 1.8 Update tests + new fixtures per strategy
 
 ## Phase 2: File Upload (TXT/MD only)
@@ -79,3 +79,4 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - 2026-05-01T12:15:00+07:00: Task 1.4 completed — SentenceChunker using pysbd (installed pysbd==0.3.4 → requirements.txt). Params: language, max_sentences_per_chunk, chunk_overlap_sentences. Every chunk ends at sentence boundary. 42/42 tests PASS. 8 new tests.
 - 2026-05-01T13:00:00+07:00: Task 1.5 completed — MarkdownStructureChunker using mistune 3.x AST parsing. Params: header_level, max_chunk_size. Splits at heading boundaries (level ≤ header_level); oversized sections sub-split by characters with header preserved and " (cont.)" suffix. overlap_start/end_chars always 0. 51/51 tests PASS. 9 new tests. Fixture: strategy_markdown.json.
 - 2026-05-01T13:20:00+07:00: Task 1.6 completed — ChunkRequest.strategy (default "fixed") + strategy_params: dict added. Router dispatches to chunk_by_strategy() for non-fixed strategies. validate_overlap scoped to fixed strategy. All 51 tests PASS.
+- 2026-05-01T13:45:00+07:00: Task 1.7 completed — StrategySelector.jsx created with strategy dropdown + per-strategy param controls (recursive: separators, token: size/overlap/encoding, sentence: language/sentences/overlap, markdown: header_level/max_chunk_size). ParameterPanel hides chunk_size/overlap for non-fixed/recursive strategies. useChunker passes strategy + strategy_params to API. 51/51 PASS, type-check clean. — ChunkRequest.strategy (default "fixed") + strategy_params: dict added. Router dispatches to chunk_by_strategy() for non-fixed strategies. validate_overlap scoped to fixed strategy. All 51 tests PASS.

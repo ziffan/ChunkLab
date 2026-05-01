@@ -1,4 +1,5 @@
 export default function ParameterPanel({
+  strategy = 'fixed',
   chunkSize,
   chunkOverlap,
   minTokens,
@@ -8,58 +9,64 @@ export default function ParameterPanel({
   onMinTokensChange,
   onMaxTokensChange,
 }) {
+  const showChunkParams = strategy === 'fixed' || strategy === 'recursive';
+
   return (
     <div className="space-y-4">
-      <div>
-        <label className="block text-[12px] uppercase text-slate-400 mb-1">Chunk Size</label>
-        <div className="flex items-center gap-3">
-          <input
-            type="range"
-            min={50}
-            max={8192}
-            value={chunkSize}
-            onChange={(e) => onChunkSizeChange(Number(e.target.value))}
-            className="flex-1"
-          />
-          <input
-            type="number"
-            min={50}
-            max={8192}
-            value={chunkSize}
-            onChange={(e) => onChunkSizeChange(Number(e.target.value))}
-            onBlur={(e) => {
-              const v = Number(e.target.value);
-              onChunkSizeChange(Math.min(8192, Math.max(50, v)));
-            }}
-            className="w-20 h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 text-[13px]"
-          />
-        </div>
-      </div>
-      <div>
-        <label className="block text-[12px] uppercase text-slate-400 mb-1">Overlap</label>
-        <div className="flex items-center gap-3">
-          <input
-            type="range"
-            min={0}
-            max={chunkSize - 1}
-            value={chunkOverlap}
-            onChange={(e) => onChunkOverlapChange(Number(e.target.value))}
-            className="flex-1"
-          />
-          <input
-            type="number"
-            min={0}
-            max={chunkSize - 1}
-            value={chunkOverlap}
-            onChange={(e) => onChunkOverlapChange(Number(e.target.value))}
-            onBlur={(e) => {
-              const v = Number(e.target.value);
-              onChunkOverlapChange(Math.min(chunkSize - 1, Math.max(0, v)));
-            }}
-            className="w-20 h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 text-[13px]"
-          />
-        </div>
-      </div>
+      {showChunkParams && (
+        <>
+          <div>
+            <label className="block text-[12px] uppercase text-slate-400 mb-1">Chunk Size</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={50}
+                max={8192}
+                value={chunkSize}
+                onChange={(e) => onChunkSizeChange(Number(e.target.value))}
+                className="flex-1"
+              />
+              <input
+                type="number"
+                min={50}
+                max={8192}
+                value={chunkSize}
+                onChange={(e) => onChunkSizeChange(Number(e.target.value))}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  onChunkSizeChange(Math.min(8192, Math.max(50, v)));
+                }}
+                className="w-20 h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 text-[13px]"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] uppercase text-slate-400 mb-1">Overlap</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={chunkSize - 1}
+                value={chunkOverlap}
+                onChange={(e) => onChunkOverlapChange(Number(e.target.value))}
+                className="flex-1"
+              />
+              <input
+                type="number"
+                min={0}
+                max={chunkSize - 1}
+                value={chunkOverlap}
+                onChange={(e) => onChunkOverlapChange(Number(e.target.value))}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  onChunkOverlapChange(Math.min(chunkSize - 1, Math.max(0, v)));
+                }}
+                className="w-20 h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-2 text-[13px]"
+              />
+            </div>
+          </div>
+        </>
+      )}
       <div>
         <label className="block text-[12px] uppercase text-slate-400 mb-1">Min Tokens</label>
         <div className="flex items-center gap-3">

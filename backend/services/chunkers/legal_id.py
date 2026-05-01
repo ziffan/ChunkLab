@@ -350,6 +350,9 @@ class LegalStructureChunker(BaseChunker):
                 if m_bagian:
                     bag_num = m_bagian.group(1)
                     bag_rest = s[m_bagian.end() :].strip()
+                    # Flush current Pasal before moving to a new Bagian (unit=pasal)
+                    if unit == "pasal" and in_pasal:
+                        flush()
                     _update_stack(stack, 2, "Bagian", bag_num, bag_rest)
                     if unit == "bab":
                         accum.append(line)
@@ -358,6 +361,9 @@ class LegalStructureChunker(BaseChunker):
                 if m_paragraf:
                     par_num = m_paragraf.group(1)
                     par_rest = s[m_paragraf.end() :].strip()
+                    # Flush current Pasal before moving to a new Paragraf (unit=pasal)
+                    if unit == "pasal" and in_pasal:
+                        flush()
                     _update_stack(stack, 3, "Paragraf", par_num, par_rest)
                     if unit == "bab":
                         accum.append(line)

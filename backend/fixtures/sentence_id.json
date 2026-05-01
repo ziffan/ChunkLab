@@ -1,0 +1,34 @@
+{
+  "happy_path": {
+    "text": "Mahkamah Konstitusi berwenang mengadili perkara konstitusi. Setiap warga negara berhak mengajukan permohonan pengujian undang-undang. Putusan MK bersifat final dan mengikat seluruh pihak. Permohonan diajukan secara tertulis kepada panitera. Pemeriksaan dilakukan dalam sidang terbuka untuk umum. Hakim konstitusi berjumlah sembilan orang.",
+    "max_sentences_per_chunk": 3,
+    "overlap_sentences": 1,
+    "min_chunk_chars": 50
+  },
+  "edge_single_sentence": {
+    "text": "Undang-undang ini mulai berlaku pada tanggal diundangkan.",
+    "max_sentences_per_chunk": 5,
+    "overlap_sentences": 1,
+    "min_chunk_chars": 10
+  },
+  "edge_abbreviation_dr": {
+    "text": "Menurut Dr. Anwar, hal tersebut adalah benar. Pakar lain juga sepakat dengan pendapat ini.",
+    "max_sentences_per_chunk": 5,
+    "overlap_sentences": 0,
+    "min_chunk_chars": 10,
+    "expected_count": 2
+  },
+  "edge_no_11_split": {
+    "text": "Pasal 5 UU No. 11 Tahun 2008 tentang ITE mengatur hal ini. Berikutnya diatur dalam Pasal 6.",
+    "max_sentences_per_chunk": 5,
+    "overlap_sentences": 0,
+    "min_chunk_chars": 10,
+    "expected_count": 2
+  },
+  "edge_no_overlap": {
+    "text": "Kalimat pertama dalam teks ini. Kalimat kedua mengikuti. Kalimat ketiga melanjutkan. Kalimat keempat hadir. Kalimat kelima mengakhiri.",
+    "max_sentences_per_chunk": 2,
+    "overlap_sentences": 0,
+    "min_chunk_chars": 10
+  }
+}

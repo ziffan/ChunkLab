@@ -87,10 +87,26 @@ async def chunk_endpoint(req: ChunkRequest):
         # legal_id supplies its own structural metadata; skip md_path for this strategy
         if req.strategy == "legal_id":
             legal_items = [
-                MetadataItem(pattern_id="_legal_section", label="section",      value=raw.get("_legal_section", "")),
-                MetadataItem(pattern_id="_legal_path",    label="legal_path",   value=raw.get("_legal_path",    "")),
-                MetadataItem(pattern_id="_legal_unit",    label="unit",         value=raw.get("_legal_unit",    "")),
-                MetadataItem(pattern_id="_legal_number",  label="pasal_number", value=raw.get("_legal_number",  "")),
+                MetadataItem(
+                    pattern_id="_legal_section",
+                    label="section",
+                    value=raw.get("_legal_section", ""),
+                ),
+                MetadataItem(
+                    pattern_id="_legal_path",
+                    label="legal_path",
+                    value=raw.get("_legal_path", ""),
+                ),
+                MetadataItem(
+                    pattern_id="_legal_unit",
+                    label="unit",
+                    value=raw.get("_legal_unit", ""),
+                ),
+                MetadataItem(
+                    pattern_id="_legal_number",
+                    label="pasal_number",
+                    value=raw.get("_legal_number", ""),
+                ),
             ]
             all_metadata = [m for m in legal_items if m.value] + [
                 MetadataItem(**m) for m in metadata

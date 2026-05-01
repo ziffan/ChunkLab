@@ -111,7 +111,15 @@ export default function App() {
             {compareMode ? 'Compare ON' : 'Compare'}
           </button>
         </div>
-        <ExportButton chunks={chunks} tokenCounts={tokenCounts} isMock={isMockToken} />
+        <ExportButton
+          chunks={chunks}
+          tokenCounts={tokenCounts}
+          isMock={isMockToken}
+          strategy={strategy}
+          params={params}
+          strategyParams={strategyParams}
+          regexPatterns={regexPatterns}
+        />
       </div>
 
       <div className="flex gap-4">

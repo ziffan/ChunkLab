@@ -44,6 +44,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `ComparisonView` component: dual-pane layout, each pane has independent `StrategySelector` + `ParameterPanel` + `ChunkGrid`; Config A in indigo, Config B in amber (Phase 5.1, 5.5)
 - `DiffStats` component: shows chunk count, avg char size, avg boundary quality side by side; highlights winner per metric in green (Phase 5.3)
 - Compare toggle in App header — switches single ↔ compare mode; persisted in `localStorage` (Phase 5.4)
+- `ExportButton` rewritten: "Export Config" downloads JSON with `strategy`, `chunk_size`, `chunk_overlap`, `strategy_params`, `regex_patterns`; "Export Results ▾" dropdown offers JSON / JSONL / YAML formats (Phase 6.4)
+- JSONL export: one chunk per line with `index`, `text`, `metadata`, `token_count` — ready for vector DB ingestion (Phase 6.1)
+- YAML export via `js-yaml` on frontend; no backend changes required (Phase 6.2)
+- All exports trigger file download via `Blob` + `URL.createObjectURL`; filename pattern `chunklab_export_{ISO-timestamp}.{ext}` (Phase 6.3)
+
+### Changed
+- `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

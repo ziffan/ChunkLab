@@ -21,7 +21,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models.responses import HealthResponse
-from backend.routers import chunk, tokenize, regex, models
+from backend.routers import chunk, tokenize, regex, models, retrieve
 
 # Handle paths for PyInstaller frozen state
 if getattr(sys, "frozen", False):
@@ -61,6 +61,7 @@ app.include_router(chunk.router, prefix="/api")
 app.include_router(tokenize.router, prefix="/api")
 app.include_router(regex.router, prefix="/api")
 app.include_router(models.router, prefix="/api")
+app.include_router(retrieve.router, prefix="/api")
 
 
 @app.get("/api/health", response_model=HealthResponse)

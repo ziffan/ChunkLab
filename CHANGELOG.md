@@ -34,6 +34,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `ChunkData` schema extended with `boundary_quality: float`, `information_density: float`, `is_complete: bool` (default values preserve backward compat) (Phase 3.4)
 - `QualityBadge` component: colored dot (🟢/🟡/🔴 per boundary_quality threshold) + BQ% / ID% display + truncation warning when `is_complete=false` (Phase 3.5)
 - `test_quality_metrics.py`: 24 tests covering all three metrics, happy path + edge cases (Phase 3.6)
+- `requirements-retrieval.txt`: optional extras file for `sentence-transformers>=2.7.0` + `numpy>=1.24` — not in main requirements (Phase 4.1)
+- `retriever.py`: singleton lazy-load `all-MiniLM-L6-v2`; `retrieve()` computes cosine similarity via `st_util.cos_sim`, returns top-K ranked results (Phase 4.2, 4.4)
+- `POST /api/retrieve`: accepts `query`, `chunks[]`, `top_k`; returns ranked results with scores; returns 503 with `RETRIEVAL_UNAVAILABLE` when extras not installed (Phase 4.3, 4.5)
+- `RetrievalPanel` component: query input + Retrieve button; score bar per result; install hint when 503 (Phase 4.6)
+- `useRetrieval` hook: manages query state, results, loading, and 503 detection (Phase 4.6)
+- `test_retriever.py`: 7 tests with mocked embedder covering 503 degrade + happy path + schema + sort order (Phase 4.7)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

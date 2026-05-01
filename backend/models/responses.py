@@ -83,3 +83,15 @@ class HealthResponse(BaseModel):
     status: str
     version: str
     mock_mode: bool
+
+
+class RetrieveResult(BaseModel):
+    index: int
+    score: float
+    text: str
+
+
+class RetrieveResponse(BaseModel):
+    results: list[RetrieveResult]
+    model_used: str
+    is_available: bool

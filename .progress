@@ -2,7 +2,7 @@
 
 last_updated: 2026-05-01T18:00:00+07:00
 current_phase: 9
-status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
+status: DONE  # IN_PROGRESS | BLOCKED | DONE
 
 ## Phase 0: Foundation
 - [x] 0.1 Bootstrap .progress and CHANGELOG.md
@@ -69,9 +69,9 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - [x] 9.4 Register both new chunkers in CHUNKER_REGISTRY
 - [x] 9.5 Frontend strategy selector — add 2 new options + ID-specific param panels
 - [x] 9.6 Swap retrieval embedding model to multilingual (intfloat/multilingual-e5-large)
-- [ ] 9.7 Update README with minimum hardware/software requirements section
-- [ ] 9.8 Update README with strategy selection guide (when to use what)
-- [ ] 9.9 Tests + fixtures for new chunkers (Indonesian sample corpus)
+- [x] 9.7 Update README with minimum hardware/software requirements section
+- [x] 9.8 Update README with strategy selection guide (when to use what)
+- [x] 9.9 Tests + fixtures for new chunkers (Indonesian sample corpus)
 
 ## Phase 8 (OPTIONAL): Polish
 - [ ] 8.1 Docker compose for one-command startup

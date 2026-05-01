@@ -16,6 +16,12 @@ import pysbd
 
 from .base import BaseChunker
 
+_SUPPORTED_LANGUAGES = {
+    "am", "ar", "bg", "da", "de", "el", "en", "es", "fa",
+    "fr", "hi", "hy", "it", "ja", "kk", "mr", "my", "nl",
+    "pl", "ru", "sk", "ur", "zh",
+}
+
 
 class SentenceChunker(BaseChunker):
     """Group sentences into chunks using pysbd sentence boundary detection.
@@ -32,6 +38,12 @@ class SentenceChunker(BaseChunker):
         language: str = params.get("language", "en")
         max_sents: int = params.get("max_sentences_per_chunk", 5)
         overlap_sents: int = params.get("chunk_overlap_sentences", 1)
+
+        if language not in _SUPPORTED_LANGUAGES:
+            raise ValueError(
+                f"Unsupported language '{language}'. "
+                f"Supported codes: {sorted(_SUPPORTED_LANGUAGES)}"
+            )
 
         if overlap_sents >= max_sents:
             raise ValueError(

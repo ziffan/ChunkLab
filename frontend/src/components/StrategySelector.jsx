@@ -93,17 +93,35 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
 
       {strategy === 'sentence' && (
         <>
-          <Field label="Language">
+          <Field label="Language" hint="pysbd supported languages only — Indonesian (id) not available">
             <select
               value={strategyParams.language ?? 'en'}
               onChange={(e) => set('language', e.target.value)}
               className={inputCls}
             >
-              <option value="en">English</option>
-              <option value="id">Indonesian</option>
-              <option value="de">German</option>
-              <option value="fr">French</option>
-              <option value="es">Spanish</option>
+              <option value="am">Amharic (am)</option>
+              <option value="ar">Arabic (ar)</option>
+              <option value="hy">Armenian (hy)</option>
+              <option value="bg">Bulgarian (bg)</option>
+              <option value="my">Burmese (my)</option>
+              <option value="zh">Chinese (zh)</option>
+              <option value="da">Danish (da)</option>
+              <option value="nl">Dutch (nl)</option>
+              <option value="en">English (en)</option>
+              <option value="fa">Farsi (fa)</option>
+              <option value="fr">French (fr)</option>
+              <option value="de">German (de)</option>
+              <option value="el">Greek (el)</option>
+              <option value="hi">Hindi (hi)</option>
+              <option value="it">Italian (it)</option>
+              <option value="ja">Japanese (ja)</option>
+              <option value="kk">Kazakh (kk)</option>
+              <option value="mr">Marathi (mr)</option>
+              <option value="pl">Polish (pl)</option>
+              <option value="ru">Russian (ru)</option>
+              <option value="sk">Slovak (sk)</option>
+              <option value="es">Spanish (es)</option>
+              <option value="ur">Urdu (ur)</option>
             </select>
           </Field>
           <Field label="Sentences per Chunk">

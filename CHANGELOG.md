@@ -57,6 +57,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)
 - CLAUDE.md updated with Windows PowerShell 5.1 terminal gotchas and Phase 8 roadmap
 
+### Added (Phase 9.1)
+- `LegalStructureChunker` (`backend/services/chunkers/legal_id.py`): splits Indonesian regulatory documents (UU/PP/Perpres/Perda) at Pasal/BAB/Ayat boundaries per UU 12/2011 Lampiran II
+- Regex patterns cover full UU hierarchy: JUDUL, PEMBUKAAN (Menimbang/Mengingat/MEMUTUSKAN), BATANG_TUBUH (BAB/Bagian/Paragraf/Pasal), PENJELASAN PASAL DEMI PASAL, LAMPIRAN
+- Parent context breadcrumb `[BAB II > Bagian Kesatu > Pasal 10]` when `include_parent_context=True`
+- Amendment UU detection: switches to Roman Pasal (Pasal I/II) as chunk boundaries
+- Pasal exceeding `max_chunk_chars` falls back to `RecursiveCharacterChunker`; sub-chunks inherit `legal_path`
+- Legal metadata per chunk: `_legal_section`, `_legal_path`, `_legal_unit`, `_legal_number`
+- Strategy `"legal_id"` registered in `CHUNKER_REGISTRY`; router injects metadata, skips `md_path` for this strategy
+
 ### Added (Phase 8.2)
 - `ApiReferenceButton` component: fetches `/openapi.json` from the live FastAPI backend and triggers a browser download as `chunklab_openapi.json` (no backend changes — FastAPI serves the spec automatically)
 - `fetchOpenApiSpec()` added to `api.js`

@@ -68,17 +68,19 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 - **Backend:** FastAPI (Python 3.12) - Handles regex processing, tokenization (Tiktoken), and chunking logic.
 - **Frontend:** React + TailwindCSS + Vite - Interactive UI for configuration and visualization.
-- **Processing Engine:** Custom chunking logic with support for various strategies (Recursive, Semantic, Fixed-size).
+- **Processing Engine:** Custom chunking logic with fixed-size character-based chunking; recursive, semantic, and token-aware strategies on the roadmap (see [CHANGELOG](CHANGELOG.md)).
 
 ---
 
 ### ✨ Feature List
 
 - [x] **Live Visualization:** Real-time preview of how text is split into chunks.
+- [x] **Chunking Strategy:** Fixed-size character-based chunking with configurable size and overlap.
 - [x] **Multiple Tokenizers:** Support for GPT-4, Llama, and custom token counters.
 - [x] **Regex Playground:** Test and debug custom split patterns.
 - [x] **Metadata Extraction:** Automatically extract titles, headers, and keywords from chunks.
 - [x] **Provider Mocks:** Integrated mocks for major LLM providers (OpenAI, Gemini, Anthropic).
+- [ ] **Additional Chunking Strategies:** Recursive, token-aware, sentence-based, and markdown-structure (v2 roadmap).
 - [ ] **Exportable Configs:** Export your validated pipeline to JSON/YAML for production use.
 
 ---

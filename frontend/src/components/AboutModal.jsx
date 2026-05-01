@@ -37,30 +37,36 @@ export default function AboutModal({ open, onClose }) {
           <div>
             <h3 className="text-[14px] font-bold text-slate-100 mb-1">ChunkLab</h3>
             <p>
-              <em>The Interactive Regex & Chunking Sandbox</em> — alat interaktif berbasis browser untuk menguji dan memvalidasi konfigurasi pipeline <em>text chunking</em> sebelum mengekspor ke Vector Database. Membantu Anda membagi dokumen Markdown menjadi potongan-potongan (chunk) dengan ukuran dan overlap yang dapat diatur, mengekstrak metadata menggunakan regex, serta mengestimasi jumlah token per chunk agar tidak melebihi batas konteks model embedding.
+              <em>The Interactive Regex & Chunking Sandbox</em> — alat interaktif berbasis browser untuk menguji dan memvalidasi konfigurasi pipeline <em>text chunking</em> sebelum mengekspor ke Vector Database. Mendukung berbagai strategi chunking, ekstraksi metadata via regex, estimasi token multi-provider, simulasi retrieval semantik, mode perbandingan dua konfigurasi, dan export ke berbagai format siap pakai.
             </p>
           </div>
 
           <div>
             <h3 className="text-[12px] uppercase text-slate-400 font-semibold mb-1">Fitur Utama</h3>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
-              <li>Sliding-window chunking dengan ukuran dan overlap yang dapat diatur</li>
-              <li>Regex pattern untuk ekstraksi metadata otomatis (Bab, Pasal, Ayat, dll.)</li>
-              <li>Estimasi token per chunk via berbagai provider (OpenAI, Gemini, Ollama, dll.)</li>
-              <li>Visualisasi overlap antar chunk (highlight amber/cyan)</li>
-              <li>Export hasil ke JSON untuk clipboard</li>
-              <li>Parameter min/max token untuk memastikan chunk sesuai batas model</li>
+              <li><strong className="text-slate-200">5 strategi chunking</strong> — Fixed, Recursive, Token-aware (tiktoken), Sentence (pysbd), Markdown Structure</li>
+              <li><strong className="text-slate-200">File upload</strong> — drag-and-drop atau klik untuk file <code className="bg-slate-700 px-1 rounded text-amber-300">.txt</code> / <code className="bg-slate-700 px-1 rounded text-amber-300">.md</code> hingga 500 KB</li>
+              <li><strong className="text-slate-200">Quality metrics</strong> — Boundary Quality, Information Density, dan deteksi potongan tidak sempurna per chunk</li>
+              <li><strong className="text-slate-200">Regex metadata</strong> — ekstraksi otomatis (Bab, Pasal, Ayat, dll.) dengan capture group</li>
+              <li><strong className="text-slate-200">Markdown breadcrumb</strong> — jalur header (H1 › H2 › H3) otomatis ditampilkan per chunk</li>
+              <li><strong className="text-slate-200">Retrieval simulation</strong> — query semantik top-K via sentence-transformers (opsional)</li>
+              <li><strong className="text-slate-200">Comparison mode</strong> — bandingkan dua konfigurasi side-by-side dengan diff stats</li>
+              <li><strong className="text-slate-200">Export multi-format</strong> — JSON, JSONL (siap Vector DB), YAML sebagai file download</li>
+              <li><strong className="text-slate-200">API Spec</strong> — download OpenAPI spec langsung dari backend</li>
+              <li><strong className="text-slate-200">Token estimation</strong> — multi-provider: OpenAI, Gemini, Anthropic, Ollama, LM Studio, OpenRouter</li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-[12px] uppercase text-slate-400 font-semibold mb-1">Cara Pakai</h3>
             <ol className="list-decimal list-inside space-y-1 text-slate-300">
-              <li>Paste teks Markdown di editor</li>
-              <li>Atur Chunk Size, Overlap, dan batas token</li>
+              <li>Paste teks Markdown di editor atau upload file .txt / .md</li>
+              <li>Pilih strategi chunking dan atur parameter-nya</li>
               <li>Tambahkan regex pattern untuk menangkap metadata</li>
+              <li>Lihat quality badge per chunk (BQ%, ID%, truncation warning)</li>
+              <li>Gunakan <em>Compare</em> untuk membandingkan dua konfigurasi sekaligus</li>
               <li>Klik <em>Estimate Tokens</em> untuk cek token per chunk</li>
-              <li>Klik <em>Export JSON</em> untuk menyalin hasil</li>
+              <li>Export hasil via <em>Export Results</em> (JSON / JSONL / YAML)</li>
             </ol>
           </div>
 
@@ -134,7 +140,7 @@ export default function AboutModal({ open, onClose }) {
           </div>
 
           <div className="text-slate-500 text-[11px] pt-2 border-t border-slate-700">
-            Versi 1.0.0 — FastAPI + React 18 + Tailwind CSS
+            Versi 2.0.0 — FastAPI + React 18 + Tailwind CSS
           </div>
         </div>
       </div>

@@ -54,10 +54,7 @@ export default function App() {
     });
   }, []);
 
-  const initialRegex = useMemo(() => [
-    { id: generateId(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
-    { id: generateId(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
-  ], []);
+  const initialRegex = useMemo(() => [], []);
 
   const {
     regexPatterns,
@@ -186,7 +183,7 @@ export default function App() {
               </div>
               {strategy === 'legal_id' && (
                 <div className="text-[11px] text-indigo-300 bg-indigo-900/30 border border-indigo-700/50 rounded px-2 py-1.5 mb-2">
-                  Strategi <strong>legal_id</strong> sudah mengekstrak metadata BAB, Pasal, dan jalur hierarki secara otomatis. Regex patterns di sini bersifat opsional untuk metadata tambahan.
+                  Strategi <strong>legal_id</strong> sudah mengekstrak: <strong>BAB</strong>, <strong>Bagian</strong>, <strong>Paragraf</strong>, <strong>Pasal</strong>, section dokumen (Pembukaan / Batang Tubuh / Penjelasan / Lampiran), dan jalur hierarki lengkap. Regex patterns di sini hanya perlu untuk metadata <em>tambahan</em> seperti Nomor Peraturan, tanggal, atau referensi UU.
                 </div>
               )}
               <RegexReference />

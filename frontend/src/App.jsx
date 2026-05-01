@@ -55,7 +55,6 @@ export default function App() {
   }, []);
 
   const initialRegex = useMemo(() => [
-    { id: generateId(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
     { id: generateId(), label: 'Pasal', pattern: 'Pasal\\s+\\d+', testResult: null, testError: null },
     { id: generateId(), label: 'Ayat', pattern: '\\(\\d+\\)', testResult: null, testError: null },
   ], []);
@@ -185,6 +184,11 @@ export default function App() {
                   <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500 inline-block shrink-0" /><strong className="text-slate-300">0%</strong> — chunk terpotong di tengah kalimat di kedua ujung.</p>
                 </div>
               </div>
+              {strategy === 'legal_id' && (
+                <div className="text-[11px] text-indigo-300 bg-indigo-900/30 border border-indigo-700/50 rounded px-2 py-1.5 mb-2">
+                  Strategi <strong>legal_id</strong> sudah mengekstrak metadata BAB, Pasal, dan jalur hierarki secara otomatis. Regex patterns di sini bersifat opsional untuk metadata tambahan.
+                </div>
+              )}
               <RegexReference />
               {regexPatterns.map((p) => (
                 <RegexPatternRow

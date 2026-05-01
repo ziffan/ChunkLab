@@ -79,3 +79,4 @@ class RegexTestResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     version: str
+    mock_mode: bool

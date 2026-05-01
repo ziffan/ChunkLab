@@ -37,6 +37,15 @@ export async function testRegexPattern(payload) {
   }
 }
 
+export async function fetchHealth() {
+  try {
+    const { data } = await api.get('/api/health');
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchModels(provider, apiKey = null) {
   try {
     const params = { provider };

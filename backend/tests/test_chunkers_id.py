@@ -474,6 +474,43 @@ class TestLegalStructureChunker:
         assert "2" in bt_numbers, f"Pasal 2 not detected; BATANG_TUBUH numbers: {bt_numbers}"
         assert len(bt_numbers) >= 2, f"Expected >=2 BATANG_TUBUH chunks, got {bt_numbers}"
 
+    # --- PDF mid-line section header normalization ---
+
+    def test_penjelasan_detected_when_embedded_midline(self):
+        """PDF-converted docs may embed PENJELASAN ATAS mid-line; must still create PENJELASAN section."""
+        text = (
+            "PERATURAN OTORITAS JASA KEUANGAN NOMOR 1 TAHUN 2024\n"
+            "Menimbang :\n"
+            "a. bahwa perlu menetapkan peraturan;\n"
+            "MEMUTUSKAN:\n"
+            "Menetapkan:\n"
+            "BAB I\n"
+            "Pasal 1\n"
+            "Ketentuan umum berlaku.\n"
+            "Pasal 2\n"
+            "Penyelenggara wajib mematuhi peraturan ini. ttd Direktur Jenderal PENJELASAN ATAS PERATURAN OTORITAS JASA KEUANGAN NOMOR 1 TAHUN 2024\n"
+            "I. UMUM\n"
+            "Peraturan ini ditetapkan untuk melindungi konsumen.\n"
+        )
+        result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
+        sections = [c["_legal_section"] for c in result]
+        assert "PENJELASAN" in sections, f"PENJELASAN not detected; sections: {sections}"
+        bt_numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        assert "1" in bt_numbers and "2" in bt_numbers, f"Pasals missing: {bt_numbers}"
+
+    def test_lampiran_detected_when_embedded_midline(self):
+        """PDF-converted docs may embed LAMPIRAN mid-line; must still create LAMPIRAN section."""
+        text = (
+            "PERATURAN NOMOR 2 TAHUN 2024\n"
+            "BAB I\n"
+            "Pasal 1\n"
+            "Ketentuan berlaku. Ditetapkan di Jakarta ttd Menteri Keuangan LAMPIRAN PERATURAN NOMOR 2 TAHUN 2024\n"
+            "Tabel A: Daftar lampiran\n"
+        )
+        result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
+        sections = [c["_legal_section"] for c in result]
+        assert "LAMPIRAN" in sections, f"LAMPIRAN not detected; sections: {sections}"
+
     # --- Checklist 9: max_chunk_chars fallback inherits legal_path ---
 
     def test_max_chunk_chars_fallback_inherits_metadata(self):

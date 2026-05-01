@@ -32,6 +32,19 @@ from .recursive import RecursiveCharacterChunker
 
 _M = re.MULTILINE  # anchors ^ to start of each line
 
+# ── PDF-conversion normalizer ────────────────────────────────────────────────
+# PDF converters frequently merge consecutive pages into one very long line,
+# embedding section headers mid-line (e.g. "...ttd Name PENJELASAN ATAS ...").
+# This pattern splits those headers onto their own line before scanning.
+_RE_PDF_SPLIT = re.compile(
+    r"(?<=[^\n])\s+(PENJELASAN(?:\s+ATAS\b)?|LAMPIRAN(?:\s+[IVX]+\b)?)"
+)
+
+
+def _normalize_pdf_lines(text: str) -> str:
+    return _RE_PDF_SPLIT.sub(r"\n\1", text)
+
+
 # ── Top-level section markers ─────────────────────────────────────────────────
 _RE_RAHMAT = re.compile(r"^DENGAN\s+RAHMAT\s+TUHAN\s+YANG\s+MAHA\s+ESA", _M)
 _RE_MENIMBANG = re.compile(r"^Menimbang\s*:", _M)
@@ -181,6 +194,7 @@ class LegalStructureChunker(BaseChunker):
         is_amendment: bool,
     ) -> list[dict]:
 
+        text = _normalize_pdf_lines(text)
         lines = text.splitlines(keepends=True)
         chunks: list[dict] = []
         stack: list[_Entry] = []

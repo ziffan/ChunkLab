@@ -28,6 +28,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `ParameterPanel` hides chunk_size/overlap sliders when strategy is not fixed or recursive (Phase 1.7)
 - `api_strategies.json` fixture with integration test cases for all 5 strategies (Phase 1.8)
 - 5 new API integration tests in `test_api.py`: recursive, token, sentence, markdown structure, and invalid strategy (→ 422) (Phase 1.8)
+- `FileUploader` component: drag-and-drop zone + click-to-browse for `.txt` / `.md` files; validates extension; rejects files > 500 KB; shows filename badge with × clear button; friendly error for unsupported formats (Phase 2.1–2.4)
+- `useFileUpload` hook: encapsulates FileReader logic, extension + size validation, filename state (Phase 2.2)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

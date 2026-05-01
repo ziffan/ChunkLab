@@ -48,7 +48,7 @@ export async function fetchHealth() {
 
 export async function retrieveChunks(payload) {
   try {
-    const { data } = await api.post('/api/retrieve', payload);
+    const { data } = await api.post('/api/retrieve', payload, { timeout: 120000 });
     return data;
   } catch (error) {
     const err = new Error(

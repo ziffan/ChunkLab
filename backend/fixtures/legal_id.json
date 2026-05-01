@@ -1,0 +1,50 @@
+{
+  "simple_5pasal": {
+    "text": "BAB I\nKETENTUAN UMUM\n\nPasal 1\nDalam undang-undang ini yang dimaksud dengan pengujian adalah kegiatan evaluasi terhadap norma hukum.\n\nPasal 2\nRuang lingkup pengujian berlaku untuk seluruh wilayah hukum Republik Indonesia.\n\nPasal 3\nSetiap orang berhak mengajukan permohonan pengujian sesuai ketentuan yang berlaku.\n\nPasal 4\nPelaksanaan lebih lanjut diatur dengan Peraturan Pemerintah.\n\nPasal 5\nUndang-undang ini mulai berlaku pada tanggal diundangkan.\n",
+    "unit": "pasal",
+    "include_parent_context": true,
+    "expected_pasal_count": 5
+  },
+  "multibab_with_bagian": {
+    "text": "BAB I\nKETENTUAN UMUM\n\nPasal 1\nDefinisi umum.\n\nBAB II\nKETENTUAN POKOK\n\nBagian Kesatu\nPersyaratan Umum\n\nParagraf 1\nSyarat Subjektif\n\nPasal 2\nSetiap pemohon harus memenuhi syarat subjektif berikut ini.\n\nBagian Kedua\nPersyaratan Khusus\n\nPasal 3\nPersyaratan khusus ditentukan oleh lembaga yang berwenang.\n",
+    "unit": "pasal",
+    "include_parent_context": true
+  },
+  "inserted_pasal": {
+    "text": "BAB I\n\nPasal 1\nKetentuan umum berlaku secara menyeluruh.\n\nPasal 28A\nSetiap orang berhak untuk hidup serta berhak mempertahankan hidup dan kehidupannya.\n\nPasal 28B\nSetiap orang berhak membentuk keluarga dan melanjutkan keturunan.\n\nPasal 29\nNegara berdasar atas Ketuhanan Yang Maha Esa.\n",
+    "unit": "pasal",
+    "include_parent_context": false
+  },
+  "dihapus_pasal": {
+    "text": "BAB I\n\nPasal 3\nAyat (1) berlaku ketentuan umum.\n\nPasal 4\nDihapus.\n\nPasal 5\nKetentuan lebih lanjut diatur dengan Peraturan Pemerintah.\n",
+    "unit": "pasal",
+    "include_parent_context": false
+  },
+  "amendment_roman": {
+    "text": "UNDANG-UNDANG PERUBAHAN KEDUA ATAS UNDANG-UNDANG NOMOR 5 TAHUN 2010 TENTANG PENGUJIAN\n\nPasal I\nKetentuan Pasal 7 diubah sehingga berbunyi sebagai berikut:\nPasal 7\nYang dimaksud dengan hal ini adalah kegiatan verifikasi.\n\nPasal II\nUndang-undang ini mulai berlaku pada tanggal diundangkan.\n",
+    "unit": "pasal",
+    "include_parent_context": false,
+    "expected_count": 2
+  },
+  "penjelasan_pdp": {
+    "text": "BAB I\n\nPasal 1\nKetentuan umum.\n\nPasal 2\nRuang lingkup.\n\nPENJELASAN\nATAS\nUNDANG-UNDANG TENTANG PENGUJIAN\n\nI. UMUM\nPenjelasan umum tentang latar belakang pembentukan undang-undang ini.\n\nII. PASAL DEMI PASAL\nPasal 1\nCukup jelas.\nPasal 2\nYang dimaksud dengan ruang lingkup adalah wilayah berlakunya undang-undang ini.\n",
+    "unit": "pasal",
+    "include_parent_context": false
+  },
+  "lampiran": {
+    "text": "BAB I\n\nPasal 1\nKetentuan umum.\n\nLAMPIRAN I\nTabel berikut merupakan lampiran resmi yang merupakan bagian tidak terpisahkan.\n\nLAMPIRAN II\nFormat formulir permohonan.\n",
+    "unit": "pasal",
+    "include_parent_context": false
+  },
+  "tabulation_in_pasal": {
+    "text": "BAB I\n\nPasal 5\n(1) Persyaratan meliputi:\na. dokumen identitas yang sah;\nb. surat keterangan domisili;\nc. bukti pembayaran retribusi.\n(2) Persyaratan tambahan dapat diatur lebih lanjut oleh Menteri.\n",
+    "unit": "pasal",
+    "include_parent_context": false
+  },
+  "max_chunk_chars_fallback": {
+    "text": "BAB I\n\nPasal 1\nKetentuan umum berlaku secara menyeluruh.\n\nPasal 10\nIni adalah teks yang cukup panjang untuk melebihi batas maksimum karakter per chunk yang ditetapkan sehingga harus dipecah oleh RecursiveCharacterChunker namun tetap mewarisi metadata legal yang sama persis.\n",
+    "unit": "pasal",
+    "include_parent_context": false,
+    "max_chunk_chars": 60
+  }
+}

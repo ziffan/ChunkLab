@@ -69,7 +69,7 @@ npm start                # Launch Electron dev
 - **`routers/`** — Thin HTTP layer: `chunk.py`, `tokenize.py`, `regex.py`, `models.py`
 - **`services/`** — All business logic:
   - `chunker.py` — Pure function, character-based fixed-size chunking with overlap
-  - `tokenizer.py` — Async, multi-provider: tiktoken (OpenAI/OpenRouter/LM Studio), Ollama (real async HTTP), Gemini/Anthropic (mocked), fallback mock
+  - `tokenizer.py` — Async, multi-provider: tiktoken (OpenAI/OpenRouter/LM Studio), Ollama (real async HTTP), Gemini (mocked), fallback mock
   - `metadata_extractor.py` — Applies pre-compiled regex to each chunk; uses `group(1)` if capture groups present, else `group(0)`
 - **`models/`** — Pydantic v2 request/response schemas (`requests.py`, `responses.py`)
 

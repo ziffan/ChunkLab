@@ -14,6 +14,7 @@ import { useTokenization } from './hooks/useTokenization';
 import { PROVIDERS } from './constants/models';
 import MockBanner from './components/MockBanner';
 import StrategySelector from './components/StrategySelector';
+import FileUploader from './components/FileUploader';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -94,7 +95,11 @@ export default function App() {
       <div className="flex gap-4">
         <ResizablePanel direction="horizontal" defaultWidth={380} minW={200} className="max-h-[calc(100vh-80px)]">
           <div className="flex flex-col gap-2 flex-1 overflow-y-auto">
-            <ResizablePanel title="Editor" defaultHeight={220} minH={100}>
+            <ResizablePanel title="Editor" defaultHeight={270} minH={100}>
+              <FileUploader
+                onLoad={(text) => setMarkdown(text)}
+                onClear={() => setMarkdown('')}
+              />
               <MarkdownEditor value={markdown} onChange={setMarkdown} />
             </ResizablePanel>
 

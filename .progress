@@ -68,7 +68,7 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 - [x] 9.3 Deprecate generic SentenceChunker (pysbd) — keep but mark as legacy
 - [x] 9.4 Register both new chunkers in CHUNKER_REGISTRY
 - [x] 9.5 Frontend strategy selector — add 2 new options + ID-specific param panels
-- [ ] 9.6 Swap retrieval embedding model to multilingual (intfloat/multilingual-e5-large)
+- [x] 9.6 Swap retrieval embedding model to multilingual (intfloat/multilingual-e5-large)
 - [ ] 9.7 Update README with minimum hardware/software requirements section
 - [ ] 9.8 Update README with strategy selection guide (when to use what)
 - [ ] 9.9 Tests + fixtures for new chunkers (Indonesian sample corpus)

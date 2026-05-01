@@ -18,9 +18,9 @@
 
 ### Pitch
 
-**EN:** ChunkLab is a browser-based sandbox for testing, visualizing, and validating text chunking strategies before deploying them into a RAG (Retrieval-Augmented Generation) pipeline. It supports five chunking strategies, per-chunk quality metrics, semantic retrieval simulation, side-by-side comparison mode, and multi-format export.
+**EN:** ChunkLab is a browser-based sandbox for testing, visualizing, and validating text chunking strategies before deploying them into a RAG (Retrieval-Augmented Generation) pipeline. It supports seven chunking strategies (including two purpose-built for Indonesian text), per-chunk quality metrics, semantic retrieval simulation, side-by-side comparison mode, and multi-format export.
 
-**ID:** ChunkLab adalah sandbox berbasis browser untuk menguji, memvisualisasikan, dan memvalidasi strategi chunking teks sebelum diterapkan ke pipeline RAG. Mendukung lima strategi chunking, quality metrics per chunk, simulasi retrieval semantik, mode perbandingan dua konfigurasi, dan export multi-format.
+**ID:** ChunkLab adalah sandbox berbasis browser untuk menguji, memvisualisasikan, dan memvalidasi strategi chunking teks sebelum diterapkan ke pipeline RAG. Mendukung tujuh strategi chunking (termasuk dua khusus teks Indonesia), quality metrics per chunk, simulasi retrieval semantik, mode perbandingan dua konfigurasi, dan export multi-format.
 
 ---
 
@@ -73,27 +73,59 @@ Untuk mengaktifkan fitur Retrieval Simulation, install dependensi tambahan:
 pip install -r requirements-retrieval.txt
 ```
 
+Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indonesia dan 100+ bahasa lain).
+
+---
+
+### Kebutuhan Sistem
+
+| Komponen | Minimum | Rekomendasi |
+|---|---|---|
+| **Python** | 3.12 | 3.12+ |
+| **Node.js** | 18 | 20 LTS |
+| **RAM (mode dasar)** | 512 MB | 1 GB |
+| **RAM (dengan Retrieval)** | 4 GB | 8 GB |
+| **Disk (model embedding)** | — | ~1 GB (multilingual-e5-large, diunduh otomatis) |
+| **GPU** | Tidak wajib | CUDA GPU mempercepat encoding retrieval |
+| **OS** | Windows 10 / Ubuntu 20.04 / macOS 12 | Windows 11 / Ubuntu 22.04 / macOS 14 |
+
+> **Catatan:** Fitur Retrieval Simulation membutuhkan RAM ekstra karena model embedding `intfloat/multilingual-e5-large` (~560 MB) di-load ke memori. Tanpa fitur ini, aplikasi berjalan ringan di mesin apa pun yang memenuhi syarat Python 3.12 dan Node.js 18.
+
 ---
 
 ### Fitur
 
 | Fitur | Status |
 |---|---|
-| **5 strategi chunking** — Fixed, Recursive, Token-aware (tiktoken), Sentence (pysbd), Markdown Structure | ✅ |
+| **7 strategi chunking** — Fixed, Recursive, Token-aware (tiktoken), Sentence/pysbd (legacy), Sentence Indonesia (`sentence_id`), Legal Indonesia (`legal_id`), Markdown Structure | ✅ |
 | **File upload** — drag-and-drop / klik untuk `.txt` / `.md` hingga 500 KB | ✅ |
 | **Quality metrics** per chunk — Boundary Quality, Information Density, completeness flag | ✅ |
 | **Markdown breadcrumb** — jalur header H1 › H2 › H3 otomatis per chunk | ✅ |
 | **Regex metadata** — ekstraksi otomatis dengan capture group | ✅ |
-| **Retrieval simulation** — query semantik top-K via `all-MiniLM-L6-v2` (opsional) | ✅ |
+| **Retrieval simulation** — query semantik top-K via `multilingual-e5-large` (opsional) | ✅ |
 | **Comparison mode** — dua konfigurasi side-by-side dengan diff stats | ✅ |
 | **Export multi-format** — JSON, JSONL (siap Vector DB), YAML sebagai file download | ✅ |
 | **Config export** — simpan konfigurasi strategy + params + regex ke JSON | ✅ |
 | **API Spec download** — unduh OpenAPI spec langsung dari UI | ✅ |
-| **Token estimation** — multi-provider: OpenAI, Gemini, Anthropic, Ollama, LM Studio, OpenRouter | ✅ |
+| **Token estimation** — multi-provider: OpenAI, Gemini, Ollama, LM Studio, OpenRouter | ✅ |
 | **Overlap visualization** — highlight amber/cyan untuk area overlap antar chunk | ✅ |
 | **MOCK\_MODE** — banner peringatan ketika berjalan tanpa tokenizer nyata | ✅ |
 | Docker Compose one-command startup | 🔜 |
 | Updated screenshots | 🔜 |
+
+---
+
+### Panduan Pemilihan Strategi
+
+| Strategi | Cocok untuk | Hindari jika |
+|---|---|---|
+| **Fixed Size** | Baseline cepat; teks homogen tanpa struktur khusus | Teks punya struktur paragraf/kalimat yang harus dipertahankan |
+| **Recursive Character** | Teks umum berbahasa apapun; menghormati batas paragraf dan kalimat secara bertahap | Dokumen hukum terstruktur atau teks markdown berhierarki tinggi |
+| **Token Aware** | Pipeline yang ketat terhadap batas token (misal GPT-4 8K, Claude 100K) | Teks sangat pendek; overhead tiktoken tidak sepadan |
+| **Sentence (pysbd)** | Teks berbahasa Eropa/Asia yang didukung pysbd (23 bahasa); kalimat perlu utuh | Bahasa Indonesia — gunakan `sentence_id` |
+| **Sentence Indonesia** | Teks narasi / berita / akademik Bahasa Indonesia | Dokumen hukum berstruktur — gunakan `legal_id` |
+| **Legal Indonesia** | Peraturan UU/PP/Perpres/Perda; chunk di batas Pasal atau BAB | Teks non-hukum; tidak ada penanda "Pasal N" |
+| **Markdown Structure** | Dokumentasi teknis, README, artikel berhierarki header | Teks plain tanpa heading; akan menghasilkan satu chunk besar |
 
 ---
 
@@ -102,15 +134,19 @@ pip install -r requirements-retrieval.txt
 ```
 POST /api/chunk
   └─ ChunkRequest (strategy, strategy_params, regex_patterns)
-       ├─ chunk_by_strategy() → FixedSizeChunker / RecursiveCharacterChunker /
-       │                         TokenAwareChunker / SentenceChunker / MarkdownStructureChunker
+       ├─ chunk_by_strategy()
+       │    ├─ FixedSizeChunker / RecursiveCharacterChunker / TokenAwareChunker
+       │    ├─ SentenceChunker (pysbd, legacy) / IndonesianSentenceSplitter (sentence_id)
+       │    ├─ LegalStructureChunker (legal_id) → BAB/Pasal boundaries
+       │    └─ MarkdownStructureChunker
        ├─ extract_metadata_from_compiled()   ← regex patterns
-       ├─ md_path_metadata()                 ← header breadcrumb
+       ├─ md_path_metadata()                 ← header breadcrumb (non-legal)
+       ├─ legal metadata injection           ← _legal_path, _legal_section (legal_id only)
        └─ boundary_quality / information_density / is_complete
 
 POST /api/retrieve
   └─ RetrieveRequest (query, chunks, top_k)
-       └─ retriever.retrieve() → cosine similarity via sentence-transformers (opsional)
+       └─ retriever.retrieve() → cosine similarity via multilingual-e5-large (opsional)
 
 POST /api/tokenize   ← tiktoken / Ollama / mock
 GET  /api/health     ← mock_mode flag

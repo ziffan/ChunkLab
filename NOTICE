@@ -12,14 +12,20 @@ Backend Dependencies (Python):
 - Pydantic (https://pydantic-docs.helpmanual.io/) - MIT License
 - python-dotenv (https://github.com/theskumar/python-dotenv) - BSD-3-Clause License
 - tiktoken (https://github.com/openai/tiktoken) - MIT License
+- pysbd (https://github.com/nipunsadvilkar/pySBD) - MIT License
 - mistune (https://github.com/lepture/mistune) - BSD-3-Clause License
 - httpx (https://www.python-httpx.org/) - BSD-3-Clause License
 - pytest (https://pytest.org/) - MIT License
+
+Optional Backend Dependencies (retrieval extras):
+- sentence-transformers (https://www.sbert.net/) - Apache-2.0 License
+- numpy (https://numpy.org/) - BSD-3-Clause License
 
 Frontend Dependencies (Node.js):
 - React (https://reactjs.org/) - MIT License
 - axios (https://github.com/axios/axios) - MIT License
 - Vite (https://vitejs.dev/) - MIT License
 - TailwindCSS (https://tailwindcss.com/) - MIT License
+- js-yaml (https://github.com/nodeca/js-yaml) - MIT License
 - Autoprefixer (https://github.com/postcss/autoprefixer) - MIT License
 - PostCSS (https://postcss.org/) - MIT License

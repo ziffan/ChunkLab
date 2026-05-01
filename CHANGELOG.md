@@ -57,14 +57,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)
 - CLAUDE.md updated with Windows PowerShell 5.1 terminal gotchas and Phase 8 roadmap
 
-### Added (Phase 9.1)
-- `LegalStructureChunker` (`backend/services/chunkers/legal_id.py`): splits Indonesian regulatory documents (UU/PP/Perpres/Perda) at Pasal/BAB/Ayat boundaries per UU 12/2011 Lampiran II
-- Regex patterns cover full UU hierarchy: JUDUL, PEMBUKAAN (Menimbang/Mengingat/MEMUTUSKAN), BATANG_TUBUH (BAB/Bagian/Paragraf/Pasal), PENJELASAN PASAL DEMI PASAL, LAMPIRAN
-- Parent context breadcrumb `[BAB II > Bagian Kesatu > Pasal 10]` when `include_parent_context=True`
-- Amendment UU detection: switches to Roman Pasal (Pasal I/II) as chunk boundaries
-- Pasal exceeding `max_chunk_chars` falls back to `RecursiveCharacterChunker`; sub-chunks inherit `legal_path`
-- Legal metadata per chunk: `_legal_section`, `_legal_path`, `_legal_unit`, `_legal_number`
-- Strategy `"legal_id"` registered in `CHUNKER_REGISTRY`; router injects metadata, skips `md_path` for this strategy
+### Added (Phase 9.1–9.6)
+- `LegalStructureChunker` (`backend/services/chunkers/legal_id.py`): splits Indonesian regulatory documents (UU/PP/Perpres/Perda) at Pasal/BAB/Ayat boundaries per UU 12/2011 Lampiran II (Phase 9.1)
+- Regex patterns cover full UU hierarchy: JUDUL, PEMBUKAAN (Menimbang/Mengingat/MEMUTUSKAN), BATANG_TUBUH (BAB/Bagian/Paragraf/Pasal), PENJELASAN PASAL DEMI PASAL, LAMPIRAN (Phase 9.1)
+- Parent context breadcrumb `[BAB II > Bagian Kesatu > Pasal 10]` when `include_parent_context=True` (Phase 9.1)
+- Amendment UU detection: switches to Roman Pasal (Pasal I/II) as chunk boundaries (Phase 9.1)
+- Pasal exceeding `max_chunk_chars` falls back to `RecursiveCharacterChunker`; sub-chunks inherit `legal_path` (Phase 9.1)
+- Legal metadata per chunk: `_legal_section`, `_legal_path`, `_legal_unit`, `_legal_number` (Phase 9.1)
+- Strategy `"legal_id"` registered in `CHUNKER_REGISTRY`; router injects metadata, skips `md_path` for this strategy (Phase 9.1)
+- `IndonesianSentenceSplitter` (`backend/services/chunkers/sentence_id.py`): pure-stdlib regex sentence chunker for Bahasa Indonesia; `ABBREV_ID` frozenset suppresses false splits at Dr., No., UU, Pasal, etc.; params `max_sentences_per_chunk`, `overlap_sentences`, `min_chunk_chars` (Phase 9.2)
+- Strategy `"sentence_id"` registered in `CHUNKER_REGISTRY` (Phase 9.2, 9.4)
+- `SentenceChunker` marked as legacy in docstring — use `sentence_id` for Indonesian (Phase 9.3)
+- `StrategySelector` updated: `sentence` relabeled as legacy, `sentence_id` and `legal_id` added with dedicated param panels (unit, max_chunk_chars, include_parent_context for legal; max_sentences_per_chunk, overlap_sentences, min_chunk_chars for sentence_id) (Phase 9.5)
+- Retrieval model swapped from `all-MiniLM-L6-v2` to `intfloat/multilingual-e5-large`; `query:` / `passage:` prefixes applied for asymmetric retrieval as required by the model (Phase 9.6)
 
 ### Added (Phase 8.2)
 - `ApiReferenceButton` component: fetches `/openapi.json` from the live FastAPI backend and triggers a browser download as `chunklab_openapi.json` (no backend changes — FastAPI serves the spec automatically)

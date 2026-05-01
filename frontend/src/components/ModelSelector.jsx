@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { PROVIDERS } from '../constants/models';
 import { fetchModels } from '../services/api';
 
-const NEEDS_API_KEY = ['openai', 'openrouter', 'gemini', 'anthropic'];
+const NEEDS_API_KEY = ['openai', 'openrouter', 'gemini'];
 
 export default function ModelSelector({ provider, modelName, onProviderChange, onModelNameChange, onEstimate }) {
   const [detectedModels, setDetectedModels] = useState([]);

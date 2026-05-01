@@ -49,13 +49,6 @@ GEMINI_EMBEDDING_MODELS = [
     "embedding-001",
 ]
 
-ANTHROPIC_MODELS = [
-    "claude-3-haiku-20240307",
-    "claude-3-sonnet-20240229",
-    "claude-3-opus-20240229",
-    "claude-3-5-sonnet-20241022",
-]
-
 
 async def detect_ollama_models() -> dict:
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -152,17 +145,6 @@ async def detect_gemini_models(api_key: str | None = None) -> dict:
     }
 
 
-async def detect_anthropic_models(api_key: str | None = None) -> dict:
-    key = api_key or os.getenv("ANTHROPIC_API_KEY", "")
-    if not key or key == "your-key-here":
-        return {"available": False, "models": [], "error": "No API key configured"}
-    return {
-        "available": True,
-        "models": [{"id": m, "name": m} for m in ANTHROPIC_MODELS],
-        "error": None,
-    }
-
-
 async def detect_models(provider: str, api_key: str | None = None) -> dict:
     detectors = {
         "ollama": detect_ollama_models,
@@ -170,7 +152,6 @@ async def detect_models(provider: str, api_key: str | None = None) -> dict:
         "openai": lambda: detect_openai_models(api_key),
         "openrouter": lambda: detect_openrouter_models(api_key),
         "gemini": lambda: detect_gemini_models(api_key),
-        "anthropic": lambda: detect_anthropic_models(api_key),
     }
     detector = detectors.get(provider)
     if not detector:

@@ -53,7 +53,7 @@ export default function AboutModal({ open, onClose }) {
               <li><strong className="text-slate-200">Comparison mode</strong> — bandingkan dua konfigurasi side-by-side dengan diff stats</li>
               <li><strong className="text-slate-200">Export multi-format</strong> — JSON, JSONL (siap Vector DB), YAML sebagai file download</li>
               <li><strong className="text-slate-200">API Spec</strong> — download OpenAPI spec langsung dari backend</li>
-              <li><strong className="text-slate-200">Token estimation</strong> — multi-provider: OpenAI, Gemini, Anthropic, Ollama, LM Studio, OpenRouter</li>
+              <li><strong className="text-slate-200">Token estimation</strong> — multi-provider: OpenAI, Gemini, OpenRouter, Ollama, LM Studio</li>
             </ul>
           </div>
 

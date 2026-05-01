@@ -51,7 +51,9 @@ _RE_BAGIAN = re.compile(
     _M,
 )
 _RE_PARAGRAF = re.compile(r"^Paragraf\s+(\d+)\b", _M)
-_RE_PASAL = re.compile(r"^Pasal\s+(\d+[A-Z]?)\s*$", _M)  # Arabic, anchored EOL
+_RE_PASAL = re.compile(
+    r"^Pasal\s+(\d+[A-Z]?)(?:\s*$|\s+(?=[A-Z][a-z]))", _M
+)  # standalone OR inline header (PDF-converted docs merge Pasal N + content on one line)
 _RE_PASAL_ROMAN = re.compile(r"^Pasal\s+([IVXLCDM]+)\s*$", _M)  # Amendment UU
 _RE_AMENDMENT = re.compile(
     r"PERUBAHAN\s+(?:KEDUA|KETIGA|KE-?\d+)?\s*ATAS\s+UNDANG-UNDANG", re.IGNORECASE

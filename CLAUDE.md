@@ -114,3 +114,57 @@ OPENROUTER_API_KEY=
 | `dco.yml` | PR to master | DCO sign-off check (`Signed-off-by` in commits) |
 
 `pip-audit` and `npm audit` **will fail the workflow** if vulnerabilities at high/critical severity are found — keep dependencies patched.
+
+## Windows Terminal Gotchas (PowerShell 5.1)
+
+These are real failures that happened during this project. Do not repeat them.
+
+### 1. Heredoc `>` causes silent redirection failure
+
+PowerShell 5.1 treats `>` as a redirection operator **inside heredoc commit messages**, even when the `>` appears inside a quoted string passed to a native executable like `git`.
+
+**Symptom:** `git commit` exits with `error: pathspec '>' did not match any file(s)` — no actual commit is created.
+
+**Example of broken commit message text:**
+```
+feat: add H1 > H2 header path metadata
+```
+
+**Fix:** Rephrase to avoid `>` entirely:
+```
+feat: add H1-to-H2 header path metadata
+```
+
+Never use `>` or `<` in git commit messages written via PowerShell heredoc (`@'...'@` or `@"..."@`).
+
+### 2. `&&` is not available in PowerShell 5.1
+
+`&&` is a pipeline chain operator that does **not exist** in Windows PowerShell 5.1 (only in PowerShell 7+).
+
+**Fix:** Chain commands with `; if ($?) { ... }` or split into separate Bash tool calls.
+
+### 3. Always use absolute paths for linting tools
+
+When running `ruff`, `black`, `mypy`, `pytest` from PowerShell, always pass the **absolute path** to the target directory or file. Relative paths like `backend/` may silently fail or target the wrong directory depending on working directory state.
+
+```powershell
+# Correct
+ruff check "D:\PROYEK\ChunkingSanbox\backend"
+black --check "D:\PROYEK\ChunkingSanbox\backend"
+pytest "D:\PROYEK\ChunkingSanbox\backend\tests" -v
+
+# Avoid
+ruff check backend/
+```
+
+### 4. Use the Bash tool (not PowerShell) for multi-step shell chains
+
+For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
+
+## Roadmap (Phase 8 — Optional Polish)
+
+These tasks are planned but not yet implemented:
+
+- **8.1 Docker compose** — single `docker compose up` to start both backend and frontend
+- **8.2 API reference export** — download OpenAPI JSON from `/openapi.json` via UI button *(done — see `frontend/src/components/ApiReferenceButton.jsx`)*
+- **8.3 Updated README screenshots** — replace placeholder screenshots with current UI

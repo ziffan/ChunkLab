@@ -55,6 +55,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)
+- CLAUDE.md updated with Windows PowerShell 5.1 terminal gotchas and Phase 8 roadmap
+
+### Added (Phase 8.2)
+- `ApiReferenceButton` component: fetches `/openapi.json` from the live FastAPI backend and triggers a browser download as `chunklab_openapi.json` (no backend changes — FastAPI serves the spec automatically)
+- `fetchOpenApiSpec()` added to `api.js`
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

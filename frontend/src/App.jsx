@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import MarkdownEditor from './components/MarkdownEditor';
 import ParameterPanel from './components/ParameterPanel';
 import RegexPatternRow from './components/RegexPatternRow';
@@ -12,6 +12,8 @@ import { useChunker } from './hooks/useChunker';
 import { useRegexPatterns } from './hooks/useRegexPatterns';
 import { useTokenization } from './hooks/useTokenization';
 import { PROVIDERS } from './constants/models';
+import MockBanner from './components/MockBanner';
+import { fetchHealth } from './services/api';
 
 const generateId = () => {
   try {
@@ -27,6 +29,13 @@ export default function App() {
   const [minTokens, setMinTokens] = useState(50);
   const [maxTokens, setMaxTokens] = useState(512);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [isMockMode, setIsMockMode] = useState(false);
+
+  useEffect(() => {
+    fetchHealth().then((data) => {
+      if (data?.mock_mode) setIsMockMode(true);
+    });
+  }, []);
 
   const initialRegex = useMemo(() => [
     { id: generateId(), label: 'Bab', pattern: 'BAB\\s+[IVXLCDM]+', testResult: null, testError: null },
@@ -63,7 +72,9 @@ export default function App() {
   const totalChars = chunks.reduce((sum, c) => sum + c.char_count, 0);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4">
+    <div className="min-h-screen bg-slate-900 text-slate-100">
+      {isMockMode && <MockBanner />}
+      <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <img src="/logo.png" alt="ChunkLab Logo" className="h-10 w-auto" />
@@ -175,6 +186,7 @@ export default function App() {
         </div>
       </div>
       <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      </div>
     </div>
   );
 }

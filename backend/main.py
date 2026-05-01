@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 import sys
 import multiprocessing
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -22,6 +24,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models.responses import HealthResponse
 from backend.routers import chunk, tokenize, regex, models, retrieve
+
+logger = logging.getLogger(__name__)
 
 # Handle paths for PyInstaller frozen state
 if getattr(sys, "frozen", False):
@@ -35,7 +39,19 @@ if not os.path.exists(env_path):
     env_path = os.path.join(bundle_dir, ".env")
 load_dotenv(env_path)
 
-app = FastAPI(title="ChunkLab API", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from backend.services import retriever
+    if retriever.is_available():
+        try:
+            retriever._get_model()
+            logger.info("Retrieval model loaded: %s", retriever.MODEL_NAME)
+        except Exception as e:
+            logger.warning("Retrieval model warmup failed: %s", e)
+    yield
+
+
+app = FastAPI(title="ChunkLab API", version="1.0.0", lifespan=lifespan)
 
 # ELECTRON_MODE bypasses CORS restrictions for the packaged desktop app.
 # Otherwise, read FRONTEND_ORIGIN (comma-separated) or fall back to dev defaults.

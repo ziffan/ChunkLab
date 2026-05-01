@@ -2,7 +2,7 @@ const STRATEGIES = [
   { id: 'fixed',       label: 'Fixed Size' },
   { id: 'recursive',   label: 'Recursive Character' },
   { id: 'token',       label: 'Token Aware' },
-  { id: 'sentence',    label: 'Sentence — legacy (pysbd)' },
+  { id: 'sentence',    label: 'Sentence (pysbd)' },
   { id: 'sentence_id', label: 'Sentence — Indonesian (sentence_id)' },
   { id: 'markdown',    label: 'Markdown Structure' },
   { id: 'legal_id',    label: 'Legal Structure — Indonesian (legal_id)' },
@@ -95,7 +95,7 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
 
       {strategy === 'sentence' && (
         <>
-          <Field label="Language" hint="Legacy pysbd strategy — use sentence_id for Indonesian">
+          <Field label="Language" hint="pysbd strategy — use sentence_id for Indonesian">
             <select
               value={strategyParams.language ?? 'en'}
               onChange={(e) => set('language', e.target.value)}

@@ -65,6 +65,12 @@ htmlcov/
 # Claude Code
 .claude/
 
+# Internal / agent working documents (never publish)
+internal_use/
+CHUNKLAB_V2_AGENT_PROMPT.md
+CHUNKLAB_V2_1_PATCH_PROMPT.md
+LEGAL_STRUCTURE_REFERENCE_ID.md
+
 # Build/Frontend
 .vite/
 frontend/dist/

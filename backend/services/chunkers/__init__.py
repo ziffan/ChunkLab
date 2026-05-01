@@ -17,6 +17,7 @@ from .legal_id import LegalStructureChunker
 from .markdown_struct import MarkdownStructureChunker
 from .recursive import RecursiveCharacterChunker
 from .sentence import SentenceChunker
+from .sentence_id import IndonesianSentenceSplitter
 from .token_aware import TokenAwareChunker
 
 CHUNKER_REGISTRY: dict[str, type] = {
@@ -24,6 +25,7 @@ CHUNKER_REGISTRY: dict[str, type] = {
     "recursive": RecursiveCharacterChunker,
     "token": TokenAwareChunker,
     "sentence": SentenceChunker,
+    "sentence_id": IndonesianSentenceSplitter,
     "markdown": MarkdownStructureChunker,
     "legal_id": LegalStructureChunker,
 }
@@ -31,6 +33,7 @@ CHUNKER_REGISTRY: dict[str, type] = {
 __all__ = [
     "CHUNKER_REGISTRY",
     "FixedSizeChunker",
+    "IndonesianSentenceSplitter",
     "LegalStructureChunker",
     "RecursiveCharacterChunker",
     "TokenAwareChunker",

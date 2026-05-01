@@ -94,7 +94,9 @@ async def estimate_tokens(
                 ),
             )
 
-    if provider in ("gemini", "anthropic"):
+    if provider == "gemini":
+        # Gemini tokenizer API requires auth; approximate with mock.
+        # text-embedding-004 uses a SentencePiece tokenizer not yet wrapped here.
         counts = mock_estimate(texts)
         return TokenizeResponse(
             token_counts=counts,

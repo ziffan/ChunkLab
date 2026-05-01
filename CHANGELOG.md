@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `pysbd==0.3.4` added to `requirements.txt` (Phase 1.4)
 - `MarkdownStructureChunker`: splits by mistune 3.x AST header boundaries; params `header_level` (default 2), `max_chunk_size` (default 2000); oversized sections sub-split by characters with header preserved; no overlap (structure-based) (Phase 1.5)
 - `strategy_markdown.json` test fixture with happy_path, edge_no_headers, edge_h1_only, edge_oversized cases (Phase 1.5)
+- `ChunkRequest` schema: `strategy` field (default `"fixed"`, backward-compatible) and `strategy_params: dict` for per-strategy parameters (Phase 1.6)
+- `/api/chunk` router dispatches to `chunk_by_strategy()` for non-fixed strategies; returns `INVALID_PARAMETERS` error for unknown strategy or bad params (Phase 1.6)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

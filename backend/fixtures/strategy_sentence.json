@@ -1,0 +1,21 @@
+{
+  "description": "Sentence chunking groups sentences and ends at sentence boundaries",
+  "happy_path": {
+    "text": "The cat sat on the mat. The dog barked loudly. Birds flew overhead. The sun was bright. Clouds drifted slowly. Wind rustled the leaves. Rain began to fall.",
+    "language": "en",
+    "max_sentences_per_chunk": 3,
+    "chunk_overlap_sentences": 1
+  },
+  "edge_single_sentence": {
+    "text": "Only one sentence here.",
+    "language": "en",
+    "max_sentences_per_chunk": 5,
+    "chunk_overlap_sentences": 1
+  },
+  "edge_no_overlap": {
+    "text": "First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.",
+    "language": "en",
+    "max_sentences_per_chunk": 2,
+    "chunk_overlap_sentences": 0
+  }
+}

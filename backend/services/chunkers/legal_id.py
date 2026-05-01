@@ -119,7 +119,10 @@ class LegalStructureChunker(BaseChunker):
         if not text.strip():
             return []
 
-        is_amendment = bool(_RE_AMENDMENT.search(text))
+        # Only check the title line to avoid false positives from references
+        # deep in the document body (e.g., PENJELASAN quoting amendment UUs)
+        title_line = text.split("\n", 1)[0]
+        is_amendment = bool(_RE_AMENDMENT.search(title_line))
 
         if unit == "auto":
             unit = self._auto_unit(text, is_amendment)

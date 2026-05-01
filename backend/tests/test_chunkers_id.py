@@ -435,6 +435,45 @@ class TestLegalStructureChunker:
             f"'Pasal 2 huruf a' falsely detected as header; chunks: {numbers}"
         )
 
+    # --- is_amendment false positive guard ---
+
+    def test_non_amendment_doc_with_amendment_reference_in_penjelasan(self):
+        """POJK/PP that references an amendment UU inside PENJELASAN must not be
+        misidentified as an amendment document — Arabic Pasal numbers must still work."""
+        text = (
+            "PERATURAN OTORITAS JASA KEUANGAN REPUBLIK INDONESIA\n"
+            "NOMOR 40 TAHUN 2024\n"
+            "TENTANG PERLINDUNGAN KONSUMEN\n"
+            "\n"
+            "DENGAN RAHMAT TUHAN YANG MAHA ESA\n"
+            "\n"
+            "Menimbang :\n"
+            "a. bahwa untuk melindungi konsumen perlu menetapkan peraturan;\n"
+            "\n"
+            "MEMUTUSKAN:\n"
+            "Menetapkan:\n"
+            "\n"
+            "BAB I\n"
+            "KETENTUAN UMUM\n"
+            "\n"
+            "Pasal 1\n"
+            "Dalam Peraturan Otoritas Jasa Keuangan ini yang dimaksud dengan:\n"
+            "1. Konsumen adalah pihak yang memanfaatkan layanan jasa keuangan.\n"
+            "\n"
+            "Pasal 2\n"
+            "(1) Penyelenggara wajib melindungi data pribadi Konsumen.\n"
+            "\n"
+            "PENJELASAN\n"
+            "Pasal 1\n"
+            "Ketentuan ini sesuai dengan Perubahan Kedua atas Undang-Undang\n"
+            "Nomor 11 Tahun 2008 tentang Informasi dan Transaksi Elektronik.\n"
+        )
+        result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
+        bt_numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        assert "1" in bt_numbers, f"Pasal 1 not detected; BATANG_TUBUH numbers: {bt_numbers}"
+        assert "2" in bt_numbers, f"Pasal 2 not detected; BATANG_TUBUH numbers: {bt_numbers}"
+        assert len(bt_numbers) >= 2, f"Expected >=2 BATANG_TUBUH chunks, got {bt_numbers}"
+
     # --- Checklist 9: max_chunk_chars fallback inherits legal_path ---
 
     def test_max_chunk_chars_fallback_inherits_metadata(self):

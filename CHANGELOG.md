@@ -48,6 +48,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - JSONL export: one chunk per line with `index`, `text`, `metadata`, `token_count` — ready for vector DB ingestion (Phase 6.1)
 - YAML export via `js-yaml` on frontend; no backend changes required (Phase 6.2)
 - All exports trigger file download via `Blob` + `URL.createObjectURL`; filename pattern `chunklab_export_{ISO-timestamp}.{ext}` (Phase 6.3)
+- `md_metadata.py`: `extract_header_path()` scans full markdown with regex, builds `"H1 > H2 > H3"` stack for any chunk's position; `md_path_metadata()` wraps it as a `_md_path` metadata dict (Phase 7.1–7.2)
+- `/api/chunk` now prepends `_md_path` metadata to each chunk's metadata list when the chunk has preceding headers (Phase 7.3)
+- `ChunkCard` renders `_md_path` as a breadcrumb trail (`Section › Subsection › Topic`) above chunk text; `_md_path` is hidden from the user metadata badges (Phase 7.4)
+- `test_md_metadata.py`: 11 tests for header path extraction and metadata dict generation (Phase 7)
 
 ### Changed
 - `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)

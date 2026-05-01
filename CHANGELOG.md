@@ -40,6 +40,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `RetrievalPanel` component: query input + Retrieve button; score bar per result; install hint when 503 (Phase 4.6)
 - `useRetrieval` hook: manages query state, results, loading, and 503 detection (Phase 4.6)
 - `test_retriever.py`: 7 tests with mocked embedder covering 503 degrade + happy path + schema + sort order (Phase 4.7)
+- `useComparison` hook: two parallel `useConfigChunker` instances, fires two simultaneous `/api/chunk` calls with independent configs (Phase 5.2)
+- `ComparisonView` component: dual-pane layout, each pane has independent `StrategySelector` + `ParameterPanel` + `ChunkGrid`; Config A in indigo, Config B in amber (Phase 5.1, 5.5)
+- `DiffStats` component: shows chunk count, avg char size, avg boundary quality side by side; highlights winner per metric in green (Phase 5.3)
+- Compare toggle in App header — switches single ↔ compare mode; persisted in `localStorage` (Phase 5.4)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

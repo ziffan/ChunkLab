@@ -16,6 +16,7 @@ import MockBanner from './components/MockBanner';
 import StrategySelector from './components/StrategySelector';
 import FileUploader from './components/FileUploader';
 import RetrievalPanel from './components/RetrievalPanel';
+import ComparisonView from './components/ComparisonView';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -35,6 +36,16 @@ export default function App() {
   const [maxTokens, setMaxTokens] = useState(512);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [isMockMode, setIsMockMode] = useState(false);
+  const [compareMode, setCompareMode] = useState(
+    () => localStorage.getItem('chunklab_compare') === 'true'
+  );
+
+  const toggleCompare = () =>
+    setCompareMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('chunklab_compare', String(next));
+      return next;
+    });
 
   useEffect(() => {
     fetchHealth().then((data) => {
@@ -88,6 +99,16 @@ export default function App() {
             className="h-7 px-3 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-[12px]"
           >
             Tentang Aplikasi
+          </button>
+          <button
+            onClick={toggleCompare}
+            className={`h-7 px-3 rounded text-[12px] transition-colors ${
+              compareMode
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+            }`}
+          >
+            {compareMode ? 'Compare ON' : 'Compare'}
           </button>
         </div>
         <ExportButton chunks={chunks} tokenCounts={tokenCounts} isMock={isMockToken} />
@@ -181,30 +202,36 @@ export default function App() {
         </ResizablePanel>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 mb-3">
-            <span className="text-[13px] text-slate-400">
-              Chunks: {chunks.length}
-            </span>
-            <span className="text-[13px] text-slate-400">
-              Chars: {totalChars}
-            </span>
-          </div>
-          {tokenizeError && (
-            <div className="bg-red-50 border border-red-300 text-red-600 rounded-lg p-2 text-[12px] mb-3">
-              {tokenizeError}
-            </div>
+          {compareMode ? (
+            <ComparisonView markdown={markdown} regexPatterns={cleanPatterns} />
+          ) : (
+            <>
+              <div className="flex items-center gap-4 mb-3">
+                <span className="text-[13px] text-slate-400">
+                  Chunks: {chunks.length}
+                </span>
+                <span className="text-[13px] text-slate-400">
+                  Chars: {totalChars}
+                </span>
+              </div>
+              {tokenizeError && (
+                <div className="bg-red-50 border border-red-300 text-red-600 rounded-lg p-2 text-[12px] mb-3">
+                  {tokenizeError}
+                </div>
+              )}
+              <ChunkGrid
+                chunks={chunks}
+                tokenCounts={tokenCounts}
+                isMock={isMockToken}
+                isTokenizing={isTokenizing}
+                contextLimit={contextLimit}
+                minTokens={minTokens}
+                maxTokens={maxTokens}
+                isLoading={isLoading}
+                error={error}
+              />
+            </>
           )}
-          <ChunkGrid
-            chunks={chunks}
-            tokenCounts={tokenCounts}
-            isMock={isMockToken}
-            isTokenizing={isTokenizing}
-            contextLimit={contextLimit}
-            minTokens={minTokens}
-            maxTokens={maxTokens}
-            isLoading={isLoading}
-            error={error}
-          />
         </div>
       </div>
       <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />

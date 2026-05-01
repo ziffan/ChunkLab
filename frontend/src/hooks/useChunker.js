@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from './useDebounce';
 import { chunkMarkdown } from '../services/api';
 
-export function useChunker(markdown, params, regexPatterns) {
+export function useChunker(markdown, params, regexPatterns, strategy = 'fixed', strategyParams = {}) {
   const [chunks, setChunks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const debouncedMarkdown = useDebounce(markdown, 500);
   const requestIdRef = useRef(0);
+  const strategyParamsKey = JSON.stringify(strategyParams);
 
   useEffect(() => {
     const reqId = ++requestIdRef.current;
@@ -24,12 +25,20 @@ export function useChunker(markdown, params, regexPatterns) {
 
     const filtered = regexPatterns.filter((p) => p.label && p.pattern);
 
-    chunkMarkdown({
-      markdown: debouncedMarkdown,
-      chunk_size: params.chunk_size,
-      chunk_overlap: params.chunk_overlap,
-      regex_patterns: filtered,
-    })
+    const body = { markdown: debouncedMarkdown, regex_patterns: filtered, strategy };
+
+    if (strategy === 'fixed') {
+      body.chunk_size = params.chunk_size;
+      body.chunk_overlap = params.chunk_overlap;
+    } else if (strategy === 'recursive') {
+      body.chunk_size = params.chunk_size;
+      body.chunk_overlap = params.chunk_overlap;
+      body.strategy_params = strategyParams.separators ? { separators: strategyParams.separators } : {};
+    } else {
+      body.strategy_params = strategyParams;
+    }
+
+    chunkMarkdown(body)
       .then((data) => {
         if (reqId !== requestIdRef.current) return;
         setChunks(data.chunks || []);
@@ -42,7 +51,8 @@ export function useChunker(markdown, params, regexPatterns) {
         setChunks([]);
         setIsLoading(false);
       });
-  }, [debouncedMarkdown, params.chunk_size, params.chunk_overlap, regexPatterns]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedMarkdown, params.chunk_size, params.chunk_overlap, regexPatterns, strategy, strategyParamsKey]);
 
   return { chunks, isLoading, error };
 }

@@ -13,6 +13,7 @@ import { useRegexPatterns } from './hooks/useRegexPatterns';
 import { useTokenization } from './hooks/useTokenization';
 import { PROVIDERS } from './constants/models';
 import MockBanner from './components/MockBanner';
+import StrategySelector from './components/StrategySelector';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -26,6 +27,8 @@ const generateId = () => {
 export default function App() {
   const [markdown, setMarkdown] = useState('');
   const [params, setParams] = useState({ chunk_size: 512, chunk_overlap: 50 });
+  const [strategy, setStrategy] = useState('fixed');
+  const [strategyParams, setStrategyParams] = useState({});
   const [minTokens, setMinTokens] = useState(50);
   const [maxTokens, setMaxTokens] = useState(512);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -67,7 +70,7 @@ export default function App() {
 
   const contextLimit = PROVIDERS.find((p) => p.id === provider)?.contextLimit ?? 9999;
 
-  const { chunks, isLoading, error } = useChunker(markdown, params, cleanPatterns);
+  const { chunks, isLoading, error } = useChunker(markdown, params, cleanPatterns, strategy, strategyParams);
 
   const totalChars = chunks.reduce((sum, c) => sum + c.char_count, 0);
 
@@ -95,24 +98,33 @@ export default function App() {
               <MarkdownEditor value={markdown} onChange={setMarkdown} />
             </ResizablePanel>
 
-            <ResizablePanel title="Parameters" defaultHeight={260} minH={80}>
-              <ParameterPanel
-                chunkSize={params.chunk_size}
-                chunkOverlap={params.chunk_overlap}
-                minTokens={minTokens}
-                maxTokens={maxTokens}
-                onChunkSizeChange={(v) => {
-                  setParams((prev) => ({
-                    chunk_size: v,
-                    chunk_overlap: Math.min(prev.chunk_overlap, v - 1),
-                  }));
-                }}
-                onChunkOverlapChange={(v) =>
-                  setParams((prev) => ({ ...prev, chunk_overlap: v }))
-                }
-                onMinTokensChange={setMinTokens}
-                onMaxTokensChange={setMaxTokens}
-              />
+            <ResizablePanel title="Parameters" defaultHeight={320} minH={80}>
+              <div className="space-y-4">
+                <StrategySelector
+                  strategy={strategy}
+                  strategyParams={strategyParams}
+                  onStrategyChange={setStrategy}
+                  onStrategyParamsChange={setStrategyParams}
+                />
+                <ParameterPanel
+                  strategy={strategy}
+                  chunkSize={params.chunk_size}
+                  chunkOverlap={params.chunk_overlap}
+                  minTokens={minTokens}
+                  maxTokens={maxTokens}
+                  onChunkSizeChange={(v) => {
+                    setParams((prev) => ({
+                      chunk_size: v,
+                      chunk_overlap: Math.min(prev.chunk_overlap, v - 1),
+                    }));
+                  }}
+                  onChunkOverlapChange={(v) =>
+                    setParams((prev) => ({ ...prev, chunk_overlap: v }))
+                  }
+                  onMinTokensChange={setMinTokens}
+                  onMaxTokensChange={setMaxTokens}
+                />
+              </div>
             </ResizablePanel>
 
             <ResizablePanel title="Regex Patterns" defaultHeight={300} minH={100}>

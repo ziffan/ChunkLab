@@ -60,9 +60,11 @@ async def chunk_endpoint(req: ChunkRequest):
         raw_chunks = chunk_text(req.markdown, req.chunk_size, req.chunk_overlap)
     else:
         try:
-            raw_chunks = chunk_by_strategy(
-                req.markdown, req.strategy, **req.strategy_params
-            )
+            sp = dict(req.strategy_params)
+            if req.strategy == "recursive":
+                sp.setdefault("chunk_size", req.chunk_size)
+                sp.setdefault("chunk_overlap", req.chunk_overlap)
+            raw_chunks = chunk_by_strategy(req.markdown, req.strategy, **sp)
         except ValueError as e:
             return ChunkResponse(
                 chunks=[],

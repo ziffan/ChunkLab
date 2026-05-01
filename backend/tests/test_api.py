@@ -103,3 +103,63 @@ async def test_regex_test_invalid(client):
     assert resp.status_code == 200
     data = resp.json()
     assert data["is_valid"] is False
+
+
+# ---------------------------------------------------------------------------
+# Strategy routing — API integration
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_chunk_recursive_strategy(client):
+    fixture = load_fixture("api_strategies.json")
+    resp = await client.post("/api/chunk", json=fixture["recursive"]["request"])
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["error"] is None
+    assert data["total_chunks"] >= 1
+    for chunk in data["chunks"]:
+        assert chunk["char_count"] <= fixture["recursive"]["request"]["chunk_size"]
+
+
+@pytest.mark.asyncio
+async def test_chunk_token_strategy(client):
+    fixture = load_fixture("api_strategies.json")
+    resp = await client.post("/api/chunk", json=fixture["token"]["request"])
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["error"] is None
+    assert data["total_chunks"] >= 1
+    for chunk in data["chunks"]:
+        assert chunk["char_count"] == len(chunk["text"])
+
+
+@pytest.mark.asyncio
+async def test_chunk_sentence_strategy(client):
+    fixture = load_fixture("api_strategies.json")
+    resp = await client.post("/api/chunk", json=fixture["sentence"]["request"])
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["error"] is None
+    assert data["total_chunks"] >= 1
+    for chunk in data["chunks"]:
+        assert chunk["char_count"] == len(chunk["text"])
+
+
+@pytest.mark.asyncio
+async def test_chunk_markdown_strategy(client):
+    fixture = load_fixture("api_strategies.json")
+    resp = await client.post("/api/chunk", json=fixture["markdown_struct"]["request"])
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["error"] is None
+    assert data["total_chunks"] == 3  # Introduction (h1) + 2 sections (h2)
+    for chunk in data["chunks"]:
+        assert chunk["text"].startswith("#")
+
+
+@pytest.mark.asyncio
+async def test_chunk_invalid_strategy_returns_422(client):
+    fixture = load_fixture("api_strategies.json")
+    resp = await client.post("/api/chunk", json=fixture["invalid_strategy"]["request"])
+    assert resp.status_code == 422

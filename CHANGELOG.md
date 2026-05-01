@@ -20,9 +20,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `strategy_markdown.json` test fixture with happy_path, edge_no_headers, edge_h1_only, edge_oversized cases (Phase 1.5)
 - `ChunkRequest` schema: `strategy` field (default `"fixed"`, backward-compatible) and `strategy_params: dict` for per-strategy parameters (Phase 1.6)
 - `/api/chunk` router dispatches to `chunk_by_strategy()` for non-fixed strategies; returns `INVALID_PARAMETERS` error for unknown strategy or bad params (Phase 1.6)
+
+### Fixed
+- `/api/chunk` now forwards `chunk_size` and `chunk_overlap` to `RecursiveCharacterChunker` via `strategy_params.setdefault()` so top-level params are respected (Phase 1.8)
 - `StrategySelector` component: strategy dropdown with per-strategy param controls — separators (recursive), chunk_size_tokens / chunk_overlap_tokens / encoding_name (token), language / max_sentences_per_chunk / chunk_overlap_sentences (sentence), header_level / max_chunk_size (markdown) (Phase 1.7)
 - `useChunker` hook extended to pass `strategy` and `strategy_params` to `/api/chunk`; chunk_size + chunk_overlap forwarded for fixed/recursive strategies (Phase 1.7)
 - `ParameterPanel` hides chunk_size/overlap sliders when strategy is not fixed or recursive (Phase 1.7)
+- `api_strategies.json` fixture with integration test cases for all 5 strategies (Phase 1.8)
+- 5 new API integration tests in `test_api.py`: recursive, token, sentence, markdown structure, and invalid strategy (→ 422) (Phase 1.8)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

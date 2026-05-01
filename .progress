@@ -64,7 +64,7 @@ status: IN_PROGRESS  # IN_PROGRESS | BLOCKED | DONE
 
 ## Phase 9: Indonesian Domain Patch (v2.1.0)
 - [x] 9.1 Implement LegalStructureChunker (services/chunkers/legal_id.py)
-- [ ] 9.2 Implement IndonesianSentenceSplitter (services/chunkers/sentence_id.py)
+- [x] 9.2 Implement IndonesianSentenceSplitter (services/chunkers/sentence_id.py)
 - [ ] 9.3 Deprecate generic SentenceChunker (pysbd) — keep but mark as legacy
 - [ ] 9.4 Register both new chunkers in CHUNKER_REGISTRY
 - [ ] 9.5 Frontend strategy selector — add 2 new options + ID-specific param panels

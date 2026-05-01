@@ -1,9 +1,11 @@
 const STRATEGIES = [
-  { id: 'fixed', label: 'Fixed Size' },
-  { id: 'recursive', label: 'Recursive Character' },
-  { id: 'token', label: 'Token Aware' },
-  { id: 'sentence', label: 'Sentence' },
-  { id: 'markdown', label: 'Markdown Structure' },
+  { id: 'fixed',       label: 'Fixed Size' },
+  { id: 'recursive',   label: 'Recursive Character' },
+  { id: 'token',       label: 'Token Aware' },
+  { id: 'sentence',    label: 'Sentence — legacy (pysbd)' },
+  { id: 'sentence_id', label: 'Sentence — Indonesian (sentence_id)' },
+  { id: 'markdown',    label: 'Markdown Structure' },
+  { id: 'legal_id',    label: 'Legal Structure — Indonesian (legal_id)' },
 ];
 
 const inputCls =
@@ -93,7 +95,7 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
 
       {strategy === 'sentence' && (
         <>
-          <Field label="Language" hint="pysbd supported languages only — Indonesian (id) not available">
+          <Field label="Language" hint="Legacy pysbd strategy — use sentence_id for Indonesian">
             <select
               value={strategyParams.language ?? 'en'}
               onChange={(e) => set('language', e.target.value)}
@@ -141,6 +143,73 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
               onChange={(e) => set('chunk_overlap_sentences', Number(e.target.value))}
               className={inputCls}
             />
+          </Field>
+        </>
+      )}
+
+      {strategy === 'sentence_id' && (
+        <>
+          <Field label="Sentences per Chunk">
+            <input
+              type="number"
+              min={1}
+              value={strategyParams.max_sentences_per_chunk ?? 5}
+              onChange={(e) => set('max_sentences_per_chunk', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Overlap (sentences)">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.overlap_sentences ?? 1}
+              onChange={(e) => set('overlap_sentences', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Min Chunk Chars" hint="Chunks shorter than this are merged with the next">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.min_chunk_chars ?? 100}
+              onChange={(e) => set('min_chunk_chars', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+        </>
+      )}
+
+      {strategy === 'legal_id' && (
+        <>
+          <Field label="Unit" hint="pasal: split at each Pasal. bab: split at each BAB. auto: chooses based on document size">
+            <select
+              value={strategyParams.unit ?? 'pasal'}
+              onChange={(e) => set('unit', e.target.value)}
+              className={inputCls}
+            >
+              <option value="pasal">Pasal</option>
+              <option value="bab">BAB</option>
+              <option value="auto">Auto</option>
+            </select>
+          </Field>
+          <Field label="Max Chunk Chars" hint="Oversized Pasal blocks are sub-split by RecursiveCharacterChunker">
+            <input
+              type="number"
+              min={500}
+              value={strategyParams.max_chunk_chars ?? 4000}
+              onChange={(e) => set('max_chunk_chars', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Include Parent Context" hint="Prepends [BAB I > Pasal N] breadcrumb to each chunk">
+            <select
+              value={strategyParams.include_parent_context ?? true}
+              onChange={(e) => set('include_parent_context', e.target.value === 'true')}
+              className={inputCls}
+            >
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
           </Field>
         </>
       )}

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from .fixed import FixedSizeChunker
+from .markdown_struct import MarkdownStructureChunker
 from .recursive import RecursiveCharacterChunker
 from .sentence import SentenceChunker
 from .token_aware import TokenAwareChunker
@@ -22,6 +23,7 @@ CHUNKER_REGISTRY: dict[str, type] = {
     "recursive": RecursiveCharacterChunker,
     "token": TokenAwareChunker,
     "sentence": SentenceChunker,
+    "markdown": MarkdownStructureChunker,
 }
 
 __all__ = [
@@ -30,4 +32,5 @@ __all__ = [
     "RecursiveCharacterChunker",
     "TokenAwareChunker",
     "SentenceChunker",
+    "MarkdownStructureChunker",
 ]

@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `TokenAwareChunker`: encode → slice by exact token count → decode using tiktoken; params `chunk_size_tokens`, `chunk_overlap_tokens`, `encoding_name` (default `cl100k_base`); guaranteed hard token limit (Phase 1.3)
 - `SentenceChunker`: groups sentences via pysbd; params `language`, `max_sentences_per_chunk`, `chunk_overlap_sentences`; every chunk ends at sentence boundary (Phase 1.4)
 - `pysbd==0.3.4` added to `requirements.txt` (Phase 1.4)
+- `MarkdownStructureChunker`: splits by mistune 3.x AST header boundaries; params `header_level` (default 2), `max_chunk_size` (default 2000); oversized sections sub-split by characters with header preserved; no overlap (structure-based) (Phase 1.5)
+- `strategy_markdown.json` test fixture with happy_path, edge_no_headers, edge_h1_only, edge_oversized cases (Phase 1.5)
 
 ### Changed
 - CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)

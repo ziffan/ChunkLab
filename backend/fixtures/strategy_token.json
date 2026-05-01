@@ -1,0 +1,21 @@
+{
+  "description": "Token-aware chunking produces chunks with exact token count ≤ chunk_size_tokens",
+  "happy_path": {
+    "text": "The quick brown fox jumps over the lazy dog. This sentence contains several common English words. Another sentence follows here for padding purposes.",
+    "chunk_size_tokens": 20,
+    "chunk_overlap_tokens": 4,
+    "encoding_name": "cl100k_base"
+  },
+  "edge_short": {
+    "text": "Hello world.",
+    "chunk_size_tokens": 100,
+    "chunk_overlap_tokens": 10,
+    "encoding_name": "cl100k_base"
+  },
+  "edge_no_overlap": {
+    "text": "First chunk content here. Second chunk content here. Third chunk content here.",
+    "chunk_size_tokens": 10,
+    "chunk_overlap_tokens": 0,
+    "encoding_name": "cl100k_base"
+  }
+}

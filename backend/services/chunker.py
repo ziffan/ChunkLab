@@ -12,34 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from backend.services.chunkers import CHUNKER_REGISTRY
+
 
 def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[dict]:
-    if len(text) == 0:
-        return []
+    """Backward-compatible entry point — dispatches to FixedSizeChunker."""
+    chunker = CHUNKER_REGISTRY["fixed"]()
+    return chunker.chunk(text, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
-    step = chunk_size - chunk_overlap
-    start = 0
-    chunks = []
 
-    while start < len(text):
-        end = min(start + chunk_size, len(text))
-        chunk = text[start:end]
-        char_count = len(chunk)
-        overlap_start = 0 if start == 0 else min(chunk_overlap, char_count)
-        next_start = start + step
-        overlap_end = 0
-        if next_start < len(text):
-            overlap_end = min(chunk_overlap, max(0, end - next_start))
-
-        chunks.append(
-            {
-                "index": len(chunks),
-                "text": chunk,
-                "char_count": char_count,
-                "overlap_start_chars": overlap_start,
-                "overlap_end_chars": overlap_end,
-            }
+def chunk_by_strategy(text: str, strategy: str, **params) -> list[dict]:
+    """Dispatch to any registered strategy by name."""
+    chunker_cls = CHUNKER_REGISTRY.get(strategy)
+    if chunker_cls is None:
+        raise ValueError(
+            f"Unknown chunking strategy: '{strategy}'. Available: {list(CHUNKER_REGISTRY)}"
         )
-        start = next_start
-
-    return chunks
+    return chunker_cls().chunk(text, **params)

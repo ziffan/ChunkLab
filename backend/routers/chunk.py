@@ -18,6 +18,11 @@ from backend.models.requests import ChunkRequest
 from backend.models.responses import ChunkResponse, ChunkData, ChunkError, MetadataItem
 from backend.services.chunker import chunk_by_strategy, chunk_text
 from backend.services.metadata_extractor import extract_metadata_from_compiled
+from backend.services.quality_metrics import (
+    boundary_quality,
+    information_density,
+    is_complete,
+)
 
 router = APIRouter()
 
@@ -87,6 +92,9 @@ async def chunk_endpoint(req: ChunkRequest):
                 overlap_start_chars=raw["overlap_start_chars"],
                 overlap_end_chars=raw["overlap_end_chars"],
                 metadata=metadata_items,
+                boundary_quality=boundary_quality(raw["text"]),
+                information_density=information_density(raw["text"]),
+                is_complete=is_complete(raw["text"]),
             )
         )
 

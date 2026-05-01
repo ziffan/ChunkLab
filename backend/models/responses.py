@@ -34,6 +34,9 @@ class ChunkData(BaseModel):
     overlap_start_chars: int
     overlap_end_chars: int
     metadata: list[MetadataItem]
+    boundary_quality: float = 0.0
+    information_density: float = 0.0
+    is_complete: bool = True
 
 
 class ChunkResponse(BaseModel):

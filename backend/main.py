@@ -37,9 +37,22 @@ load_dotenv(env_path)
 
 app = FastAPI(title="ChunkLab API", version="1.0.0")
 
+# ELECTRON_MODE bypasses CORS restrictions for the packaged desktop app.
+# Otherwise, read FRONTEND_ORIGIN (comma-separated) or fall back to dev defaults.
+_electron_mode = os.getenv("ELECTRON_MODE", "false").lower() == "true"
+if _electron_mode:
+    _cors_origins = ["*"]
+else:
+    _raw = os.getenv("FRONTEND_ORIGIN", "").strip()
+    _cors_origins = (
+        [o.strip() for o in _raw.split(",") if o.strip()]
+        if _raw
+        else ["http://localhost:5173", "http://127.0.0.1:5173"]
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for local native app
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -52,7 +65,8 @@ app.include_router(models.router, prefix="/api")
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health():
-    return HealthResponse(status="ok", version="1.0.0")
+    mock_mode = os.getenv("MOCK_MODE", "true").lower() == "true"
+    return HealthResponse(status="ok", version="1.0.0", mock_mode=mock_mode)
 
 
 if __name__ == "__main__":

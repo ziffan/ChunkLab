@@ -21,7 +21,8 @@ export function useTokenization() {
       });
       setTokenCounts(result.token_counts);
       setIsMockToken(result.is_mock);
-      if (result.error) {
+      // Only surface error when counts fell back to mock — proxy notices (is_mock=false) are silent
+      if (result.error && result.is_mock) {
         setTokenizeError(result.error.message);
       }
     } catch (err) {

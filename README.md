@@ -186,6 +186,39 @@ Karena sudah tercakup dalam field di atas:
 
 ---
 
+### Estimasi Token — Catatan per Provider
+
+| Provider | Metode | Catatan |
+|---|---|---|
+| **OpenAI / OpenRouter / LM Studio** | tiktoken `cl100k_base` | Akurat untuk GPT-4, GPT-3.5, model berbasis cl100k |
+| **Ollama** | `/api/tokenize` (native) → tiktoken proxy | Lihat catatan di bawah |
+| **Gemini** | Estimasi char/4 | API tokenizer Gemini memerlukan autentikasi — belum diintegrasikan |
+| **Mock** | Estimasi char/4 | Aktif saat `MOCK_MODE=true` atau provider tidak tersedia |
+
+#### Ollama — `/api/tokenize` dan fallback
+
+Endpoint `/api/tokenize` baru tersedia di **Ollama 0.3.x ke atas**. Pada versi lebih lama, ChunkLab otomatis jatuh ke tiktoken `cl100k_base` sebagai proxy:
+
+- Hasilnya tetap akurat secara praktis — kebanyakan model modern (Qwen, Llama, Mistral, Gemma) menggunakan BPE dengan kosakata yang mirip cl100k.
+- Banner **MOCK** **tidak** muncul karena ini bukan estimasi kasar (bukan char/4).
+- Jika Ollama benar-benar tidak bisa dijangkau (ConnectError), baru fallback ke mock dan banner muncul.
+
+**Model yang valid untuk estimasi token:** gunakan model LLM generatif (contoh: `qwen3.5:4b`, `llama3.2:3b`, `qwen2.5-coder:7b`).
+
+> **Model embedding tidak bisa dipakai untuk token counting** — model seperti `bge-m3`, `nomic-embed-text`, atau `qwen3-embedding` tidak memiliki endpoint tokenisasi yang kompatibel. Gunakan model LLM.
+
+#### Mengaktifkan tokenizer nyata
+
+Set `MOCK_MODE=false` di `backend/.env`:
+
+```env
+MOCK_MODE=false
+```
+
+Lalu restart backend. Tanpa ini, semua provider kembali ke estimasi char/4 terlepas dari provider yang dipilih.
+
+---
+
 ### Arsitektur
 
 ```

@@ -90,6 +90,8 @@ pip install -r requirements-retrieval.txt
 
 Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia. Lewati langkah ini jika tidak membutuhkan fitur retrieval.
 
+Model dapat dikustomisasi via env var `RETRIEVAL_MODEL` di file `.env` (nilai apapun yang kompatibel dengan `sentence-transformers` diterima; default `intfloat/multilingual-e5-large`).
+
 > **Catatan:** Model embedding diunduh otomatis (~560 MB) pada penggunaan pertama.
 
 ### 2.4 Buat File Konfigurasi `.env`

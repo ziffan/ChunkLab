@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 _AVAILABLE = False
 try:
     from sentence_transformers import SentenceTransformer
@@ -22,7 +24,7 @@ except ImportError:
     pass
 
 _model = None
-MODEL_NAME = "intfloat/multilingual-e5-large"
+MODEL_NAME = os.getenv("RETRIEVAL_MODEL", "intfloat/multilingual-e5-large")
 _INSTALL_MSG = (
     "Retrieval feature requires extras. "
     "Install: pip install -r requirements-retrieval.txt"

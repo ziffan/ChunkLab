@@ -94,6 +94,8 @@ pip install -r requirements-retrieval.txt
 
 Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indonesia dan 100+ bahasa lain).
 
+> **Catatan:** Fitur Retrieval Simulation belum diuji end-to-end. Kode dan unit test tersedia, namun belum diverifikasi dengan penggunaan nyata. Laporan pengujian sangat diterima.
+
 ---
 
 ### Kebutuhan Sistem
@@ -121,7 +123,7 @@ Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indones
 | **Quality metrics** per chunk — Boundary Quality, Information Density, completeness flag | ✅ |
 | **Markdown breadcrumb** — jalur header H1 › H2 › H3 otomatis per chunk | ✅ |
 | **Regex metadata** — ekstraksi otomatis dengan capture group | ✅ |
-| **Retrieval simulation** — query semantik top-K via `multilingual-e5-large` (opsional) | ✅ |
+| **Retrieval simulation** — query semantik top-K via `multilingual-e5-large` (opsional) | ⚠️ Belum diuji end-to-end |
 | **Comparison mode** — dua konfigurasi side-by-side dengan diff stats | ✅ |
 | **Export multi-format** — JSON, JSONL (siap Vector DB), YAML sebagai file download | ✅ |
 | **Config export** — simpan konfigurasi strategy + params + regex ke JSON | ✅ |

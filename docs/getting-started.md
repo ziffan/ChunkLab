@@ -90,6 +90,8 @@ pip install -r requirements-retrieval.txt
 
 Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia. Lewati langkah ini jika tidak membutuhkan fitur retrieval.
 
+> **Catatan:** Fitur Retrieval Simulation belum diuji end-to-end. Unit test tersedia, namun belum diverifikasi dengan penggunaan nyata.
+
 ### 2.4 Buat File Konfigurasi `.env`
 
 ```bash

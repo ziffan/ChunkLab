@@ -413,7 +413,9 @@ class TestLegalStructureChunker:
             "(1) Ketentuan ini berlaku sejak diundangkan.\n"
         )
         result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
-        numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        numbers = [
+            c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"
+        ]
         assert "1" in numbers, f"Pasal 1 (inline) not detected; got {numbers}"
         assert "2" in numbers, f"Pasal 2 (inline) not detected; got {numbers}"
         assert "3" in numbers, f"Pasal 3 (standalone) not detected; got {numbers}"
@@ -429,17 +431,20 @@ class TestLegalStructureChunker:
             "(1) Penyelenggara wajib mematuhi peraturan ini.\n"
         )
         result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
-        numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        numbers = [
+            c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"
+        ]
         # 'Pasal 2 huruf a' is a cross-reference — must NOT produce a third chunk
-        assert numbers.count("2") == 1, (
-            f"'Pasal 2 huruf a' falsely detected as header; chunks: {numbers}"
-        )
+        assert (
+            numbers.count("2") == 1
+        ), f"'Pasal 2 huruf a' falsely detected as header; chunks: {numbers}"
 
     # --- is_amendment false positive guard ---
 
     def test_non_amendment_doc_with_amendment_reference_in_penjelasan(self):
         """POJK/PP that references an amendment UU inside PENJELASAN must not be
-        misidentified as an amendment document — Arabic Pasal numbers must still work."""
+        misidentified as an amendment document — Arabic Pasal numbers must still work.
+        """
         text = (
             "PERATURAN OTORITAS JASA KEUANGAN REPUBLIK INDONESIA\n"
             "NOMOR 40 TAHUN 2024\n"
@@ -469,10 +474,18 @@ class TestLegalStructureChunker:
             "Nomor 11 Tahun 2008 tentang Informasi dan Transaksi Elektronik.\n"
         )
         result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
-        bt_numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
-        assert "1" in bt_numbers, f"Pasal 1 not detected; BATANG_TUBUH numbers: {bt_numbers}"
-        assert "2" in bt_numbers, f"Pasal 2 not detected; BATANG_TUBUH numbers: {bt_numbers}"
-        assert len(bt_numbers) >= 2, f"Expected >=2 BATANG_TUBUH chunks, got {bt_numbers}"
+        bt_numbers = [
+            c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"
+        ]
+        assert (
+            "1" in bt_numbers
+        ), f"Pasal 1 not detected; BATANG_TUBUH numbers: {bt_numbers}"
+        assert (
+            "2" in bt_numbers
+        ), f"Pasal 2 not detected; BATANG_TUBUH numbers: {bt_numbers}"
+        assert (
+            len(bt_numbers) >= 2
+        ), f"Expected >=2 BATANG_TUBUH chunks, got {bt_numbers}"
 
     # --- PDF mid-line section header normalization ---
 
@@ -494,8 +507,12 @@ class TestLegalStructureChunker:
         )
         result = self.chunker.chunk(text, unit="pasal", include_parent_context=False)
         sections = [c["_legal_section"] for c in result]
-        assert "PENJELASAN" in sections, f"PENJELASAN not detected; sections: {sections}"
-        bt_numbers = [c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"]
+        assert (
+            "PENJELASAN" in sections
+        ), f"PENJELASAN not detected; sections: {sections}"
+        bt_numbers = [
+            c["_legal_number"] for c in result if c["_legal_section"] == "BATANG_TUBUH"
+        ]
         assert "1" in bt_numbers and "2" in bt_numbers, f"Pasals missing: {bt_numbers}"
 
     def test_lampiran_detected_when_embedded_midline(self):

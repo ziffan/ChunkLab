@@ -196,7 +196,7 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
             <input
               type="number"
               min={500}
-              value={strategyParams.max_chunk_chars ?? 4000}
+              value={strategyParams.max_chunk_chars ?? 1100}
               onChange={(e) => set('max_chunk_chars', Number(e.target.value))}
               className={inputCls}
             />

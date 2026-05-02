@@ -127,7 +127,7 @@ class LegalStructureChunker(BaseChunker):
     def chunk(self, text: str, **params) -> list[dict]:
         unit: str = params.get("unit", "pasal")
         include_parent_context: bool = params.get("include_parent_context", True)
-        max_chunk_chars: int = params.get("max_chunk_chars", 4000)
+        max_chunk_chars: int = params.get("max_chunk_chars", 1100)
         min_chunk_chars: int = params.get("min_chunk_chars", 0)
         chunk_overlap: int = params.get("chunk_overlap", 0)
 

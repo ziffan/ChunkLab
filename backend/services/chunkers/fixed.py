@@ -25,7 +25,7 @@ class FixedSizeChunker(BaseChunker):
 
         step = chunk_size - chunk_overlap
         start = 0
-        chunks = []
+        chunks: list[dict] = []
 
         while start < len(text):
             end = min(start + chunk_size, len(text))

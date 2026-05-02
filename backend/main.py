@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Handle paths for PyInstaller frozen state
 if getattr(sys, "frozen", False):
-    bundle_dir = sys._MEIPASS
+    bundle_dir = sys._MEIPASS  # type: ignore[attr-defined]
 else:
     bundle_dir = os.path.dirname(os.path.abspath(__file__))
 

@@ -50,7 +50,7 @@ async def _tokenize_ollama(texts: list[str], model_name: str) -> tuple[list[int]
 
         # /api/tokenize was added in Ollama 0.3.x — fall back gracefully for older builds
         for resp in responses:
-            if not isinstance(resp, Exception) and resp.status_code == 404:
+            if not isinstance(resp, BaseException) and resp.status_code == 404:
                 logger.info(
                     "/api/tokenize not available; using tiktoken cl100k_base proxy"
                 )
@@ -59,7 +59,7 @@ async def _tokenize_ollama(texts: list[str], model_name: str) -> tuple[list[int]
 
         results = []
         for i, resp in enumerate(responses):
-            if isinstance(resp, Exception):
+            if isinstance(resp, BaseException):
                 raise resp
             resp.raise_for_status()
             results.append(resp.json()["count"])

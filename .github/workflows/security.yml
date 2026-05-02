@@ -20,7 +20,7 @@ jobs:
       - name: Run Bandit (Python Security)
         run: |
           pip install bandit
-          bandit -r backend/ -lll --skip B101 --exit-zero
+          bandit -r backend/ -lll --skip B101 --exclude backend/.venv
           
       - name: Run pip-audit (Python Dependencies)
         run: |

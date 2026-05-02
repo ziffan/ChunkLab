@@ -85,7 +85,7 @@ class SentenceChunker(BaseChunker):
             return []
 
         step = max_sents - overlap_sents
-        chunks = []
+        chunks: list[dict] = []
         start = 0
 
         while start < len(sentences):

@@ -21,11 +21,10 @@ By participating in this project, you are expected to uphold our [Code of Conduc
 
 ### Backend
 1. Clone the repository.
-2. `cd backend`
-3. `python -m venv .venv`
-4. Activate virtual environment.
-5. `pip install -r requirements.txt`
-6. `pip install ruff black pytest` (for development)
+2. `python -m venv backend/.venv`
+3. Activate: `backend\.venv\Scripts\activate` (Windows) or `source backend/.venv/bin/activate` (Linux/macOS)
+4. `pip install -r backend/requirements.txt`
+5. `pip install ruff black pytest` (for development)
 
 ### Frontend
 1. `cd frontend`

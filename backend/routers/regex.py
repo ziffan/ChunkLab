@@ -32,7 +32,7 @@ async def regex_test_endpoint(req: RegexTestRequest):
             match_count=0,
             matches=[],
             truncated=False,
-            error=RegexError(code="INVALID_REGEX", message=err_msg),
+            error=RegexError(code="INVALID_REGEX", message=err_msg or "Invalid regex"),
         )
 
     compiled = re.compile(req.pattern)

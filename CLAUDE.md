@@ -17,7 +17,7 @@ It runs as a **web app** (Vite dev server + FastAPI) or as a **standalone Electr
 pip install -r backend/requirements.txt
 
 # Run dev server (listens on 127.0.0.1:8000)
-python backend/main.py
+python -m backend.main
 
 # Run tests
 pytest backend/tests/ -v
@@ -65,7 +65,7 @@ npm start                # Launch Electron dev
 
 ### Backend (`backend/`)
 
-- **`main.py`** — FastAPI app, CORS (all origins), loads `.env`, includes 4 routers
+- **`main.py`** — FastAPI app, CORS (configurable via `FRONTEND_ORIGIN` env, default `localhost:5173`), loads `.env`, includes 4 routers
 - **`routers/`** — Thin HTTP layer: `chunk.py`, `tokenize.py`, `regex.py`, `models.py`
 - **`services/`** — All business logic:
   - `chunker.py` — Pure function, character-based fixed-size chunking with overlap

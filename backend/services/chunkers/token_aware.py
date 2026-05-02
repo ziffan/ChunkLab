@@ -45,7 +45,7 @@ class TokenAwareChunker(BaseChunker):
             return []
 
         step = chunk_size_tokens - chunk_overlap_tokens
-        chunks = []
+        chunks: list[dict] = []
         start = 0
 
         while start < len(tokens):

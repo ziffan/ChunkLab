@@ -1,0 +1,22 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy env file
+        run: cp backend/.env.example backend/.env
+
+      - name: Build backend image
+        run: docker build -f backend/Dockerfile .
+
+      - name: Build frontend image
+        run: docker build -f frontend/Dockerfile .

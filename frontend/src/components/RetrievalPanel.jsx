@@ -1,7 +1,7 @@
 import { useRetrieval } from '../hooks/useRetrieval';
 
 export default function RetrievalPanel({ chunks }) {
-  const { query, setQuery, results, isLoading, error, isUnavailable, retrieve, clearResults } =
+  const { query, setQuery, topK, setTopK, results, isLoading, error, isUnavailable, retrieve, clearResults } =
     useRetrieval();
 
   const handleKeyDown = (e) => {
@@ -19,6 +19,15 @@ export default function RetrievalPanel({ chunks }) {
           onKeyDown={handleKeyDown}
           className="flex-1 h-9 bg-slate-700 border border-slate-600 text-slate-100 rounded px-3 text-[13px] placeholder:text-slate-500"
         />
+        <select
+          value={topK}
+          onChange={(e) => setTopK(Number(e.target.value))}
+          className="h-9 bg-slate-700 border border-slate-600 text-slate-300 rounded px-2 text-[13px]"
+        >
+          {[5, 10, 25, 50].map((n) => (
+            <option key={n} value={n}>Top {n}</option>
+          ))}
+        </select>
         <button
           onClick={() => retrieve(chunks)}
           disabled={isLoading || !query.trim() || !chunks.length}

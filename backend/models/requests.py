@@ -19,7 +19,6 @@ _VALID_STRATEGIES = {
     "fixed",
     "recursive",
     "token",
-    "sentence",
     "sentence_id",
     "markdown",
     "legal_id",

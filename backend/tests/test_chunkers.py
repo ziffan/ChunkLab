@@ -19,7 +19,7 @@ import tiktoken
 
 from backend.services.chunkers.markdown_struct import MarkdownStructureChunker
 from backend.services.chunkers.recursive import RecursiveCharacterChunker
-from backend.services.chunkers.sentence import SentenceChunker
+from backend.services.chunkers.sentence_id import IndonesianSentenceSplitter
 from backend.services.chunkers.token_aware import TokenAwareChunker
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "..", "fixtures")
@@ -233,85 +233,31 @@ class TestTokenAwareChunker:
 
 
 # ---------------------------------------------------------------------------
-# SentenceChunker
+# IndonesianSentenceSplitter — multi-language via pysbd (if installed)
 # ---------------------------------------------------------------------------
 
 
-class TestSentenceChunker:
+class TestSentenceIdMultiLanguage:
     def setup_method(self):
-        self.chunker = SentenceChunker()
+        self.chunker = IndonesianSentenceSplitter()
 
     def test_empty_text_returns_empty(self):
-        result = self.chunker.chunk(
-            "", max_sentences_per_chunk=3, chunk_overlap_sentences=1
-        )
+        result = self.chunker.chunk("", max_sentences_per_chunk=3, overlap_sentences=1)
         assert result == []
 
-    def test_single_sentence_single_chunk(self):
-        fixture = load_fixture("strategy_sentence.json")
-        cfg = fixture["edge_single_sentence"]
+    def test_default_language_id(self):
+        text = "Ini kalimat pertama. Ini kalimat kedua. Ini kalimat ketiga."
         result = self.chunker.chunk(
-            cfg["text"],
-            language=cfg["language"],
-            max_sentences_per_chunk=cfg["max_sentences_per_chunk"],
-            chunk_overlap_sentences=cfg["chunk_overlap_sentences"],
+            text, max_sentences_per_chunk=2, overlap_sentences=1
         )
-        assert len(result) == 1
-        assert result[0]["overlap_start_chars"] == 0
-        assert result[0]["overlap_end_chars"] == 0
-
-    def test_chunks_end_at_sentence_boundary(self):
-        """Every chunk must end with sentence-terminal punctuation or end-of-text."""
-        import re
-
-        fixture = load_fixture("strategy_sentence.json")
-        cfg = fixture["happy_path"]
-        result = self.chunker.chunk(
-            cfg["text"],
-            language=cfg["language"],
-            max_sentences_per_chunk=cfg["max_sentences_per_chunk"],
-            chunk_overlap_sentences=cfg["chunk_overlap_sentences"],
-        )
-        assert len(result) >= 2
-        sentence_end = re.compile(r"[.!?]\s*$")
+        assert len(result) >= 1
         for chunk in result:
-            assert sentence_end.search(
-                chunk["text"].rstrip()
-            ), f"Chunk {chunk['index']} does not end at sentence boundary: {chunk['text']!r}"
-
-    def test_no_overlap_disjoint(self):
-        """With overlap=0, chunks share no sentences."""
-        fixture = load_fixture("strategy_sentence.json")
-        cfg = fixture["edge_no_overlap"]
-        result = self.chunker.chunk(
-            cfg["text"],
-            language=cfg["language"],
-            max_sentences_per_chunk=cfg["max_sentences_per_chunk"],
-            chunk_overlap_sentences=cfg["chunk_overlap_sentences"],
-        )
-        assert len(result) >= 2
-        for chunk in result:
-            assert chunk["overlap_start_chars"] == 0
-            assert chunk["overlap_end_chars"] == 0
-
-    def test_overlap_start_nonzero_after_first(self):
-        """All chunks after the first should have overlap_start_chars > 0."""
-        fixture = load_fixture("strategy_sentence.json")
-        cfg = fixture["happy_path"]
-        result = self.chunker.chunk(
-            cfg["text"],
-            language=cfg["language"],
-            max_sentences_per_chunk=cfg["max_sentences_per_chunk"],
-            chunk_overlap_sentences=cfg["chunk_overlap_sentences"],
-        )
-        assert result[0]["overlap_start_chars"] == 0
-        for chunk in result[1:]:
-            assert chunk["overlap_start_chars"] > 0
+            assert chunk["char_count"] == len(chunk["text"])
 
     def test_indices_sequential(self):
         text = "One. Two. Three. Four. Five. Six. Seven. Eight. Nine. Ten."
         result = self.chunker.chunk(
-            text, max_sentences_per_chunk=3, chunk_overlap_sentences=1
+            text, language="en", max_sentences_per_chunk=3, overlap_sentences=1
         )
         for i, chunk in enumerate(result):
             assert chunk["index"] == i
@@ -319,19 +265,35 @@ class TestSentenceChunker:
     def test_char_count_consistent(self):
         text = "Hello world. How are you? Fine thanks. Great to hear."
         result = self.chunker.chunk(
-            text, max_sentences_per_chunk=2, chunk_overlap_sentences=1
+            text, language="en", max_sentences_per_chunk=2, overlap_sentences=1
         )
         for chunk in result:
             assert chunk["char_count"] == len(chunk["text"])
 
+    def test_overlap_start_nonzero_after_first(self):
+        text = "S1. S2. S3. S4. S5. S6. S7. S8."
+        result = self.chunker.chunk(
+            text, language="en", max_sentences_per_chunk=3, overlap_sentences=1
+        )
+        assert result[0]["overlap_start_chars"] == 0
+        for chunk in result[1:]:
+            assert chunk["overlap_start_chars"] > 0
+
+    def test_unknown_language_falls_back_to_regex(self):
+        text = "Ini teks. Ini kalimat dua. Ini kalimat tiga. Ini kalimat empat."
+        result = self.chunker.chunk(
+            text, language="xx", max_sentences_per_chunk=2, overlap_sentences=1
+        )
+        assert len(result) >= 1
+
     def test_invalid_overlap_raises(self):
         import pytest
 
-        with pytest.raises(ValueError, match="chunk_overlap_sentences"):
+        with pytest.raises(ValueError, match="overlap_sentences"):
             self.chunker.chunk(
                 "Some text.",
                 max_sentences_per_chunk=3,
-                chunk_overlap_sentences=3,
+                overlap_sentences=3,
             )
 
 

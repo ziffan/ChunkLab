@@ -19,17 +19,6 @@
       }
     }
   },
-  "sentence": {
-    "request": {
-      "markdown": "First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.",
-      "strategy": "sentence",
-      "strategy_params": {
-        "language": "en",
-        "max_sentences_per_chunk": 2,
-        "chunk_overlap_sentences": 1
-      }
-    }
-  },
   "markdown_struct": {
     "request": {
       "markdown": "# Introduction\n\nIntro content.\n\n## Section One\n\nSection content.\n\n## Section Two\n\nMore content.",
@@ -44,6 +33,17 @@
     "request": {
       "markdown": "Some text.",
       "strategy": "nonexistent_strategy"
+    }
+  },
+  "sentence_id": {
+    "request": {
+      "markdown": "First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.",
+      "strategy": "sentence_id",
+      "strategy_params": {
+        "language": "en",
+        "max_sentences_per_chunk": 2,
+        "overlap_sentences": 1
+      }
     }
   }
 }

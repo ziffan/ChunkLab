@@ -2,8 +2,7 @@ const STRATEGIES = [
   { id: 'fixed',       label: 'Fixed Size' },
   { id: 'recursive',   label: 'Recursive Character' },
   { id: 'token',       label: 'Token Aware' },
-  { id: 'sentence',    label: 'Sentence (pysbd)' },
-  { id: 'sentence_id', label: 'Sentence — Indonesian (sentence_id)' },
+  { id: 'sentence_id', label: 'Sentence (sentence_id)' },
   { id: 'markdown',    label: 'Markdown Structure' },
   { id: 'legal_id',    label: 'Legal Structure — Indonesian (legal_id)' },
 ];
@@ -93,14 +92,15 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
         </>
       )}
 
-      {strategy === 'sentence' && (
+      {strategy === 'sentence_id' && (
         <>
-          <Field label="Language" hint="pysbd strategy — use sentence_id for Indonesian">
+          <Field label="Language" hint="Default: id (Indonesian). If pysbd is installed, en/fr/de/zh/ja and 20+ more are also supported.">
             <select
-              value={strategyParams.language ?? 'en'}
+              value={strategyParams.language ?? 'id'}
               onChange={(e) => set('language', e.target.value)}
               className={inputCls}
             >
+              <option value="id">Indonesian (id) — default</option>
               <option value="am">Amharic (am)</option>
               <option value="ar">Arabic (ar)</option>
               <option value="hy">Armenian (hy)</option>
@@ -126,29 +126,6 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
               <option value="ur">Urdu (ur)</option>
             </select>
           </Field>
-          <Field label="Sentences per Chunk">
-            <input
-              type="number"
-              min={1}
-              value={strategyParams.max_sentences_per_chunk ?? 5}
-              onChange={(e) => set('max_sentences_per_chunk', Number(e.target.value))}
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Overlap (sentences)">
-            <input
-              type="number"
-              min={0}
-              value={strategyParams.chunk_overlap_sentences ?? 1}
-              onChange={(e) => set('chunk_overlap_sentences', Number(e.target.value))}
-              className={inputCls}
-            />
-          </Field>
-        </>
-      )}
-
-      {strategy === 'sentence_id' && (
-        <>
           <Field label="Sentences per Chunk">
             <input
               type="number"

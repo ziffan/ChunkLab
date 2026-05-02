@@ -13,10 +13,11 @@
 # limitations under the License.
 
 """
-IndonesianSentenceSplitter — custom regex sentence chunker for Bahasa Indonesia.
+IndonesianSentenceSplitter — sentence chunker for Bahasa Indonesia and 23+ languages.
 
-Pure stdlib, no external NLP dependency. Uses an abbreviation list (ABBREV_ID)
-to suppress false splits at common Indonesian abbreviations.
+Default mode (language='id'): pure stdlib regex with Indonesian abbreviation list.
+When pysbd is installed and language is one of its 23 supported codes, pysbd is
+used automatically; for any other language the regex splitter is used as fallback.
 
 Limitations:
 - Quoted speech spanning multiple paragraphs is not handled.
@@ -25,6 +26,41 @@ Limitations:
 """
 
 import re
+from typing import Callable
+
+try:
+    import pysbd as _pysbd
+
+    _PYSBD_LANGUAGES: frozenset[str] = frozenset(
+        {
+            "am",
+            "ar",
+            "bg",
+            "da",
+            "de",
+            "el",
+            "en",
+            "es",
+            "fa",
+            "fr",
+            "hi",
+            "hy",
+            "it",
+            "ja",
+            "kk",
+            "mr",
+            "my",
+            "nl",
+            "pl",
+            "ru",
+            "sk",
+            "ur",
+            "zh",
+        }
+    )
+except ImportError:
+    _pysbd = None  # type: ignore[assignment]
+    _PYSBD_LANGUAGES = frozenset()
 
 from .base import BaseChunker
 
@@ -185,9 +221,12 @@ def _split_sentences(text: str) -> list[str]:
 
 class IndonesianSentenceSplitter(BaseChunker):
     """
-    Groups Indonesian sentences into chunks with configurable sentence count and overlap.
+    Groups sentences into chunks with configurable sentence count and overlap.
 
     Params:
+        language (str): language code (default 'id'). If pysbd is installed and
+            the code is one of its 23 supported languages, pysbd is used;
+            otherwise falls back to the regex splitter (works well for 'id').
         max_sentences_per_chunk (int): max sentences per chunk  (default 5)
         overlap_sentences (int): sentences repeated at the start of next chunk  (default 1)
         min_chunk_chars (int): chunks below this length are merged with the next  (default 100)
@@ -196,6 +235,7 @@ class IndonesianSentenceSplitter(BaseChunker):
     """
 
     def chunk(self, text: str, **params) -> list[dict]:
+        language: str = params.get("language", "id")
         max_sents: int = params.get("max_sentences_per_chunk", 5)
         overlap: int = params.get("overlap_sentences", 1)
         min_chars: int = params.get("min_chunk_chars", 100)
@@ -209,7 +249,17 @@ class IndonesianSentenceSplitter(BaseChunker):
         if not text:
             return []
 
-        sentences = _split_sentences(text)
+        splitter: Callable[[str], list[str]]
+        if _pysbd is not None and language in _PYSBD_LANGUAGES:
+            _seg = _pysbd.Segmenter(language=language, clean=False)
+
+            def splitter(t: str) -> list[str]:
+                return [s for s in _seg.segment(t) if s.strip()]
+
+        else:
+            splitter = _split_sentences
+
+        sentences = splitter(text)
         if not sentences:
             return []
 

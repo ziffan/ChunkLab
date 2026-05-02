@@ -135,9 +135,9 @@ async def test_chunk_token_strategy(client):
 
 
 @pytest.mark.asyncio
-async def test_chunk_sentence_strategy(client):
+async def test_chunk_sentence_id_strategy(client):
     fixture = load_fixture("api_strategies.json")
-    resp = await client.post("/api/chunk", json=fixture["sentence"]["request"])
+    resp = await client.post("/api/chunk", json=fixture["sentence_id"]["request"])
     assert resp.status_code == 200
     data = resp.json()
     assert data["error"] is None

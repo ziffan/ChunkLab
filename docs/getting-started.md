@@ -4,6 +4,35 @@ Panduan langkah demi langkah untuk menjalankan aplikasi ini dari nol.
 
 ---
 
+## Opsi A — Docker (cara tercepat)
+
+Jika Anda hanya ingin mencoba ChunkLab tanpa setup Python/Node.js, gunakan Docker:
+
+**Prasyarat:** [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+```bash
+git clone https://github.com/ziffan/ChunkLab.git
+cd ChunkLab
+
+# Buat file konfigurasi (opsional — default sudah bisa langsung jalan)
+cp backend/.env.example backend/.env
+
+# Jalankan semua service
+docker compose up --build
+```
+
+Buka browser ke **http://localhost:80**.
+
+> **Ollama / LM Studio di host:** Token estimation via Ollama atau LM Studio otomatis bekerja tanpa konfigurasi tambahan — `docker-compose.yml` sudah mengarahkan koneksi ke host machine via `host.docker.internal`.
+
+> **Retrieval Simulation:** Model embedding (`intfloat/multilingual-e5-large`, ~560 MB) tidak diunduh secara default di Docker. Untuk mengaktifkannya, tambahkan `pip install -r requirements-retrieval.txt` ke `backend/Dockerfile` sebelum build.
+
+---
+
+## Opsi B — Setup Manual (untuk development)
+
+---
+
 ## Prasyarat
 
 Pastikan software berikut sudah terinstall di komputer Anda:

@@ -34,6 +34,24 @@
 
 ### Quickstart
 
+#### Docker (cara tercepat)
+
+**Prerequisites:** Docker Desktop
+
+```bash
+git clone https://github.com/ziffan/ChunkLab.git
+cd ChunkLab
+cp backend/.env.example backend/.env   # sesuaikan API key jika perlu
+docker compose up --build
+# UI tersedia di http://localhost:80
+```
+
+> **Ollama / LM Studio:** Jika Anda menjalankan Ollama atau LM Studio di host, keduanya sudah dikonfigurasi otomatis via `host.docker.internal` — tidak perlu ubah apapun.
+
+---
+
+#### Manual (untuk development)
+
 **Prerequisites:** Python 3.12+, Node.js 18+
 
 #### 1. Backend
@@ -110,8 +128,7 @@ Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indones
 | **Token estimation** — multi-provider: OpenAI, Gemini, Ollama, LM Studio, OpenRouter | ✅ |
 | **Overlap visualization** — highlight amber/cyan untuk area overlap antar chunk | ✅ |
 | **MOCK\_MODE** — banner peringatan ketika berjalan tanpa tokenizer nyata | ✅ |
-| Docker Compose one-command startup | 🔜 |
-| Updated screenshots | 🔜 |
+| **Docker Compose** — `docker compose up --build` starts backend + frontend | ✅ |
 
 ---
 

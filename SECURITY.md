@@ -13,7 +13,7 @@ Only the latest release of ChunkLab receives security fixes.
 
 **Please do not report security vulnerabilities via public GitHub issues.**
 
-To report a vulnerability, email **https://github.com/ziffan/ChunkLab/security/advisories/new** with:
+To report a vulnerability, open a **[GitHub Security Advisory](https://github.com/ziffan/ChunkLab/security/advisories/new)** with:
 
 - A description of the vulnerability and its potential impact
 - Steps to reproduce (proof-of-concept if available)

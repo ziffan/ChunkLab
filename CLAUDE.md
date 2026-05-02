@@ -161,9 +161,9 @@ ruff check backend/
 
 For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
 
-## Current Status (v2.1 — as of 2026-05-01)
+## Current Status (v2.2 — as of 2026-05-02)
 
-All Phase 9 tasks are complete. 138 tests passing.
+All Phase 9 tasks are complete. 138 tests passing. Docker Compose support added.
 
 ### legal_id PDF Artifact Handling
 
@@ -180,7 +180,8 @@ PDF-converted Indonesian legal documents frequently have malformed line structur
 
 `retrieveChunks()` in `frontend/src/services/api.js` uses a 120s timeout override (global axios default is 30s). The retrieval model (`intfloat/multilingual-e5-large`) warms up at startup via FastAPI `lifespan` context in `backend/main.py`.
 
-## Roadmap (Optional Polish)
+## Docker
 
-- **Docker compose** — single `docker compose up` to start both backend and frontend
-- **Updated README screenshots** — replace placeholder screenshots with current UI
+`docker compose up --build` starts both services. Relevant files: `docker-compose.yml`, `backend/Dockerfile`, `frontend/Dockerfile`, `frontend/nginx.conf`.
+
+**Host networking:** `OLLAMA_BASE_URL` and `LM_STUDIO_BASE_URL` are overridden to `http://host.docker.internal:{port}` in `docker-compose.yml` so the backend container can reach Ollama/LM Studio running on the host. `extra_hosts: host-gateway` ensures this works on Linux too.

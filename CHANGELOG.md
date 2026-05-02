@@ -4,6 +4,21 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-05-02
+
+### Added
+- `docker-compose.yml`: single `docker compose up --build` starts both backend and frontend; named volume `hf_cache` persists the retrieval model across restarts
+- `backend/Dockerfile`: `python:3.12-slim`, `PYTHONPATH=/app`, uvicorn entry point
+- `frontend/Dockerfile`: multi-stage — `node:20-alpine` build + `nginx:alpine` serve
+- `frontend/nginx.conf`: SPA fallback + reverse-proxy `/api/` and `/openapi.json` to backend container
+- `backend/Dockerfile.dockerignore` / `frontend/Dockerfile.dockerignore`: BuildKit-convention ignore files (picked up automatically even with repo-root build context)
+- `AGENTS.md`: Gemini CLI project context pointer (`@CLAUDE.md`)
+
+### Fixed
+- Ollama and LM Studio unreachable from Docker container — `localhost` inside a container resolves to the container itself, not the host; `docker-compose.yml` now overrides `OLLAMA_BASE_URL` and `LM_STUDIO_BASE_URL` to `http://host.docker.internal:{port}` and adds `extra_hosts: host-gateway` for Linux compatibility
+
+---
+
 ## [2.1.0] - 2026-05-02
 
 ### Added

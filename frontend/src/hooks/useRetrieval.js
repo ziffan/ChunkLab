@@ -3,6 +3,7 @@ import { retrieveChunks } from '../services/api';
 
 export function useRetrieval() {
   const [query, setQuery] = useState('');
+  const [topK, setTopK] = useState(5);
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +18,7 @@ export function useRetrieval() {
       const data = await retrieveChunks({
         query: query.trim(),
         chunks: chunks.map((c) => ({ index: c.index, text: c.text })),
-        top_k: 5,
+        top_k: topK,
       });
       setResults(data.results || []);
     } catch (err) {
@@ -38,5 +39,5 @@ export function useRetrieval() {
     setIsUnavailable(false);
   };
 
-  return { query, setQuery, results, isLoading, error, isUnavailable, retrieve, clearResults };
+  return { query, setQuery, topK, setTopK, results, isLoading, error, isUnavailable, retrieve, clearResults };
 }

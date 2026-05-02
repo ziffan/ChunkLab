@@ -161,10 +161,26 @@ ruff check backend/
 
 For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
 
-## Roadmap (Phase 8 — Optional Polish)
+## Current Status (v2.1 — as of 2026-05-01)
 
-These tasks are planned but not yet implemented:
+All Phase 9 tasks are complete. 138 tests passing.
 
-- **8.1 Docker compose** — single `docker compose up` to start both backend and frontend
-- **8.2 API reference export** — download OpenAPI JSON from `/openapi.json` via UI button *(done — see `frontend/src/components/ApiReferenceButton.jsx`)*
-- **8.3 Updated README screenshots** — replace placeholder screenshots with current UI
+### legal_id PDF Artifact Handling
+
+PDF-converted Indonesian legal documents frequently have malformed line structure. Three known issues and their fixes:
+
+1. **Inline Pasal headers** — PDF converters merge `Pasal N` and content onto one line.
+   Fixed via `_RE_PASAL = re.compile(r"^Pasal\s+(\d+[A-Z]?)(?:\s*$|\s+(?=[A-Z][a-z]))", _M)`.
+
+2. **is_amendment false positive** — `_RE_AMENDMENT.search(text)` scans the full body, falsely triggering when PENJELASAN quotes an amendment UU. Fixed by scoping the search to the first line (document title) only.
+
+3. **Mid-line section headers** — PENJELASAN ATAS and LAMPIRAN markers appear mid-line when PDF page breaks are not preserved as newlines. Fixed by `_normalize_pdf_lines()` preprocessing step in `_segment()`.
+
+### Retrieval Timeout
+
+`retrieveChunks()` in `frontend/src/services/api.js` uses a 120s timeout override (global axios default is 30s). The retrieval model (`intfloat/multilingual-e5-large`) warms up at startup via FastAPI `lifespan` context in `backend/main.py`.
+
+## Roadmap (Optional Polish)
+
+- **Docker compose** — single `docker compose up` to start both backend and frontend
+- **Updated README screenshots** — replace placeholder screenshots with current UI

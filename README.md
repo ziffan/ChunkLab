@@ -200,7 +200,7 @@ Karena sudah tercakup dalam field di atas:
 Endpoint `/api/tokenize` baru tersedia di **Ollama 0.3.x ke atas**. Pada versi lebih lama, ChunkLab otomatis jatuh ke tiktoken `cl100k_base` sebagai proxy:
 
 - Hasilnya tetap akurat secara praktis — kebanyakan model modern (Qwen, Llama, Mistral, Gemma) menggunakan BPE dengan kosakata yang mirip cl100k.
-- Untuk teks hukum Indonesia, rasio aktual sekitar **3.4 karakter per token** (bukan 4 seperti teks Inggris). Gunakan panduan: target 512 token → ~1700 chars, target 1024 token → ~3500 chars.
+- Untuk teks hukum Indonesia, rasio aktual sekitar **2.5 karakter per token** (bukan 4 seperti teks Inggris). Gunakan panduan: target 512 token → ~1100 chars, target 1024 token → ~2500 chars.
 - Banner **MOCK** **tidak** muncul karena ini bukan estimasi kasar (bukan char/4).
 - Jika Ollama benar-benar tidak bisa dijangkau (ConnectError), baru fallback ke mock dan banner muncul.
 

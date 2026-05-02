@@ -201,6 +201,24 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
               className={inputCls}
             />
           </Field>
+          <Field label="Min Chunk Chars" hint="Chunks shorter than this are dropped (0 = keep all). Useful to discard single-line JUDUL/header-only chunks">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.min_chunk_chars ?? 0}
+              onChange={(e) => set('min_chunk_chars', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Chunk Overlap (chars)" hint="Characters from the end of the previous chunk prepended to the next. 0 = no overlap">
+            <input
+              type="number"
+              min={0}
+              value={strategyParams.chunk_overlap ?? 0}
+              onChange={(e) => set('chunk_overlap', Number(e.target.value))}
+              className={inputCls}
+            />
+          </Field>
           <Field label="Include Parent Context" hint="Prepends [BAB I > Pasal N] breadcrumb to each chunk">
             <select
               value={strategyParams.include_parent_context ?? true}

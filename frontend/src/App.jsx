@@ -84,6 +84,14 @@ export default function App() {
 
   const totalChars = chunks.reduce((sum, c) => sum + c.char_count, 0);
 
+  const tokenStats = useMemo(() => {
+    if (!chunks.length) return null;
+    const ests = tokenCounts.length > 0
+      ? tokenCounts
+      : chunks.map(c => Math.round(c.char_count / 4));
+    return { min: Math.min(...ests), max: Math.max(...ests), isMock: tokenCounts.length === 0 };
+  }, [chunks, tokenCounts]);
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {isMockMode && <MockBanner />}
@@ -108,6 +116,19 @@ export default function App() {
             {compareMode ? 'Compare ON' : 'Compare'}
           </button>
           <ApiReferenceButton />
+          {tokenStats && (
+            <div className="flex items-center gap-1.5 text-[12px] text-slate-400 bg-slate-800 rounded px-2.5 py-1">
+              <span>Tok:</span>
+              <span className="text-slate-200 font-medium">{tokenStats.isMock ? '~' : ''}{tokenStats.min}–{tokenStats.isMock ? '~' : ''}{tokenStats.max}</span>
+              {params.chunk_overlap > 0 && (
+                <>
+                  <span className="text-slate-600 mx-0.5">|</span>
+                  <span>Overlap:</span>
+                  <span className="text-slate-200 font-medium">{params.chunk_overlap}</span>
+                </>
+              )}
+            </div>
+          )}
         </div>
         <ExportButton
           chunks={chunks}

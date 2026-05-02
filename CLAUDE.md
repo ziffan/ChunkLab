@@ -161,9 +161,9 @@ ruff check backend/
 
 For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
 
-## Current Status (v2.2 — as of 2026-05-02)
+## Current Status (v2.3 — as of 2026-05-02)
 
-All Phase 9 tasks are complete. 138 tests passing. Docker Compose support added.
+All Phase 9 tasks are complete. 138 tests passing. Docker Compose support added. Retrieval tested end-to-end in Docker.
 
 ### legal_id PDF Artifact Handling
 

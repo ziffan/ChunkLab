@@ -39,9 +39,11 @@ if not os.path.exists(env_path):
     env_path = os.path.join(bundle_dir, ".env")
 load_dotenv(env_path)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from backend.services import retriever
+
     if retriever.is_available():
         try:
             retriever._get_model()

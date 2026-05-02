@@ -4,6 +4,21 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-05-02
+
+### Added
+- `ChunkLegend` component above the chunk grid — explains all per-chunk indicators: BQ dot colors (🟢/🟡/🔴), Information Density, ⚠ trun, overlap highlight colors (amber = inherited from previous chunk, cyan = passed to next), and token badge color coding (green/yellow/orange/red/blue + MOCK/MIN/MAX labels)
+- Retrieval panel: Top-K selector with options 5 / 10 / 25 / 50 (previously hardcoded to 5); backend already supported up to 50
+
+### Fixed
+- `frontend/nginx.conf`: proxy timeout raised from 60 s (nginx default) to 300 s — prevents 504 Gateway Timeout during retrieval model warm-up or large batch encoding on CPU
+- `backend/Dockerfile`: `requirements-retrieval.txt` now installed by default so Retrieval Simulation works out of the box with `docker compose up --build`
+
+### Changed
+- BQ legend removed from Regex Patterns panel where it did not belong; replaced by `ChunkLegend` in the chunk results area
+
+---
+
 ## [2.2.0] - 2026-05-02
 
 ### Added

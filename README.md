@@ -125,7 +125,7 @@ Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indones
 | **Quality metrics** per chunk — Boundary Quality, Information Density, completeness flag | ✅ |
 | **Markdown breadcrumb** — jalur header H1 › H2 › H3 otomatis per chunk | ✅ |
 | **Regex metadata** — ekstraksi otomatis dengan capture group | ✅ |
-| **Retrieval simulation** — query semantik top-K via `multilingual-e5-large` (opsional) | ✅ |
+| **Retrieval simulation** — query semantik top-K (5/10/25/50) via `multilingual-e5-large` (opsional) | ✅ Diuji (Docker) |
 | **Comparison mode** — dua konfigurasi side-by-side dengan diff stats | ✅ |
 | **Export multi-format** — JSON, JSONL (siap Vector DB), YAML sebagai file download | ✅ |
 | **Config export** — simpan konfigurasi strategy + params + regex ke JSON | ✅ |
@@ -272,7 +272,8 @@ GET  /openapi.json   ← OpenAPI spec (FastAPI built-in)
 
 **Backend:** FastAPI + Pydantic v2, Python 3.12  
 **Frontend:** React 18 + Tailwind CSS + Vite, hooks-based architecture  
-**Tes:** 138 tests (pytest), type-check bersih (tsc --noEmit)
+**Tes:** 138 tests (pytest), type-check bersih (tsc --noEmit)  
+**Versi:** v2.3.0
 
 ---
 

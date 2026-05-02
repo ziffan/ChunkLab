@@ -192,7 +192,7 @@ export default function StrategySelector({ strategy, strategyParams, onStrategyC
               <option value="auto">Auto</option>
             </select>
           </Field>
-          <Field label="Max Chunk Chars" hint="Oversized Pasal blocks are sub-split by RecursiveCharacterChunker">
+          <Field label="Max Chunk Chars" hint="Blok Pasal terlalu besar akan dipotong oleh RecursiveCharacterChunker. Panduan: ~4 karakter ≈ 1 token (cl100k) — target 512 tok → ~2000 chr, target 1024 tok → ~4000 chr">
             <input
               type="number"
               min={500}

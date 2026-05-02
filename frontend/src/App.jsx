@@ -89,7 +89,8 @@ export default function App() {
     const ests = tokenCounts.length > 0
       ? tokenCounts
       : chunks.map(c => Math.round(c.char_count / 4));
-    return { min: Math.min(...ests), max: Math.max(...ests), isMock: tokenCounts.length === 0 };
+    const total = ests.reduce((s, v) => s + v, 0);
+    return { min: Math.min(...ests), max: Math.max(...ests), total, isMock: tokenCounts.length === 0 };
   }, [chunks, tokenCounts]);
 
   return (
@@ -127,6 +128,10 @@ export default function App() {
                   <span className="text-slate-200 font-medium">{params.chunk_overlap}</span>
                 </>
               )}
+              <span className="text-slate-600 mx-0.5">|</span>
+              <span>Total:</span>
+              <span className="text-slate-200 font-medium">{tokenStats.isMock ? '~' : ''}{tokenStats.total.toLocaleString()}</span>
+              <span className="text-slate-500">tok</span>
             </div>
           )}
         </div>

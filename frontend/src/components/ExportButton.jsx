@@ -59,13 +59,28 @@ export default function ExportButton({
 
   const ts = timestamp();
 
+  const STRATEGY_DEFAULTS = {
+    legal_id: {
+      unit: 'pasal',
+      max_chunk_chars: 1100,
+      min_chunk_chars: 0,
+      chunk_overlap: 0,
+      include_parent_context: true,
+    },
+    sentence: { language: 'en', max_sentences_per_chunk: 5, chunk_overlap_sentences: 1 },
+    sentence_id: { max_sentences_per_chunk: 5, chunk_overlap_sentences: 1 },
+    markdown: { header_level: 2, include_parent_headers: true, max_chunk_chars: 4000 },
+    token: { chunk_size: 512, chunk_overlap: 50 },
+  };
+
   const exportConfig = () => {
+    const defaults = STRATEGY_DEFAULTS[strategy] || {};
     const config = {
       exported_at: new Date().toISOString(),
       strategy,
       chunk_size: params.chunk_size,
       chunk_overlap: params.chunk_overlap,
-      strategy_params: strategyParams,
+      strategy_params: { ...defaults, ...strategyParams },
       regex_patterns: regexPatterns
         .filter((p) => p.label && p.pattern)
         .map((p) => ({ label: p.label, pattern: p.pattern })),

@@ -211,7 +211,7 @@ Karena sudah tercakup dalam field di atas:
 | **Ollama** | `/api/tokenize` (native) → tiktoken proxy | ✅ Diuji (lokal) | Lihat catatan di bawah |
 | **OpenAI** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Akurat untuk GPT-4, GPT-3.5, model berbasis cl100k |
 | **OpenRouter** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Routing ke berbagai model; akurasi bergantung model tujuan |
-| **LM Studio** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Endpoint kompatibel OpenAI |
+| **LM Studio** | tiktoken `cl100k_base` | ✅ Diuji (lokal) | Endpoint kompatibel OpenAI |
 | **Gemini** | Estimasi char/4 | ⚠️ Belum diuji | API tokenizer Gemini memerlukan autentikasi — belum diintegrasikan |
 | **Mock** | Estimasi char/4 | ✅ | Aktif saat `MOCK_MODE=true` atau provider tidak tersedia |
 

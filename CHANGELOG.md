@@ -4,7 +4,29 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — v2.0.0
+## [2.1.0] - 2026-05-02
+
+### Added
+- `legal_id`: `min_chunk_chars` param filters out chunks smaller than the threshold after splitting; `chunk_overlap` param prepends the tail of the previous chunk to each new chunk (character-level overlap for legal text)
+- `legal_id`: `_normalize_pdf_lines()` preprocessing step splits embedded `PENJELASAN ATAS` and `LAMPIRAN` markers that PDF converters sometimes merge mid-line instead of placing on their own lines
+- Ollama tokenizer: automatic fallback to tiktoken `cl100k_base` when `/api/tokenize` returns 404 (Ollama older than 0.3.x); treated as an accurate estimate, not mock — no mock banner shown
+- Token stats display in App header: `Tok: min–max | Overlap: N | Total: N tok` — live summary across all chunks; uses actual token counts after estimation, char/4 approximation before
+
+### Changed
+- `legal_id` default `max_chunk_chars` changed 4000 → 1100 — calibrated for Indonesian legal text (~2.5 chars/token) to stay under 512 tokens per chunk
+- `legal_id` strategy params in `StrategySelector`: added **Min Chunk Chars** and **Chunk Overlap (chars)** fields; hint updated to reflect 2.5 chars/token ratio for Indonesian legal text
+- `ExportButton`: `strategy_params` in exported config now merges strategy-specific defaults so all relevant params are always present even when the user has not changed them from UI defaults
+- `TokenizeRequest.texts` max length raised 500 → 2000 — allows token estimation on large documents (500+ chunks) without a 422 validation error
+- `MOCK_MODE` default in `.env` changed `true` → `false` to enable real tokenizers by default
+
+### Fixed
+- `legal_id`: `is_amendment` detection now scoped to the document title line only — previously `_RE_AMENDMENT.search(text)` scanned the full body and falsely triggered when PENJELASAN quoted an amending UU, causing the entire document to switch to Roman-numeral Pasal mode
+- Pydantic 422 validation error displayed as `[object Object]` in the UI — `detail` field is an array; added `extractErrorMessage()` in `api.js` to flatten it into a readable string
+- `useTokenization` hook no longer surfaces an error banner when Ollama falls back to tiktoken proxy; error is only shown when the result is an actual mock (char/4 estimate)
+
+---
+
+## [2.0.0] - 2026-04-30
 
 ### Added
 - `.progress` tracker file as single source of truth for v2 implementation progress (Phase 0.1)

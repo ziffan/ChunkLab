@@ -177,7 +177,7 @@ Harus mengembalikan JSON dengan `"status": "ok"` dan field `"mock_mode"` (true/f
 python -m pytest backend/tests/ -q
 ```
 
-Harus menampilkan **133 passed**.
+Harus menampilkan **138 passed**.
 
 ### Build Frontend (Production)
 
@@ -202,5 +202,6 @@ Output ada di `frontend/dist/`.
 | Port 8000 sudah dipakai | Ubah `BACKEND_PORT` di `.env` ke port lain (misal `8001`) |
 | Port 5173 sudah dipakai | Jalankan `npm run dev -- --port 5174` dan sesuaikan `FRONTEND_ORIGIN` di `.env` |
 | Tokenizer error / API key invalid | Set `MOCK_MODE=true` di `.env` untuk gunakan estimator lokal tanpa API key |
+| Estimasi token Ollama tidak akurat | Pastikan Anda menggunakan model LLM generatif (contoh `qwen3.5:4b`), bukan model embedding (`bge-m3`, `nomic-embed-text`) — model embedding tidak punya endpoint tokenisasi yang kompatibel |
 | Retrieval tidak muncul di UI | Install `requirements-retrieval.txt` lalu restart backend |
 | venv tidak bisa diaktifkan di PowerShell | Jalankan `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` lalu coba lagi |

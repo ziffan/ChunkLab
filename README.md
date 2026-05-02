@@ -188,12 +188,16 @@ Karena sudah tercakup dalam field di atas:
 
 ### Estimasi Token — Catatan per Provider
 
-| Provider | Metode | Catatan |
-|---|---|---|
-| **OpenAI / OpenRouter / LM Studio** | tiktoken `cl100k_base` | Akurat untuk GPT-4, GPT-3.5, model berbasis cl100k |
-| **Ollama** | `/api/tokenize` (native) → tiktoken proxy | Lihat catatan di bawah |
-| **Gemini** | Estimasi char/4 | API tokenizer Gemini memerlukan autentikasi — belum diintegrasikan |
-| **Mock** | Estimasi char/4 | Aktif saat `MOCK_MODE=true` atau provider tidak tersedia |
+| Provider | Metode | Status Pengujian | Catatan |
+|---|---|---|---|
+| **Ollama** | `/api/tokenize` (native) → tiktoken proxy | ✅ Diuji (lokal) | Lihat catatan di bawah |
+| **OpenAI** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Akurat untuk GPT-4, GPT-3.5, model berbasis cl100k |
+| **OpenRouter** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Routing ke berbagai model; akurasi bergantung model tujuan |
+| **LM Studio** | tiktoken `cl100k_base` | ⚠️ Belum diuji | Endpoint kompatibel OpenAI |
+| **Gemini** | Estimasi char/4 | ⚠️ Belum diuji | API tokenizer Gemini memerlukan autentikasi — belum diintegrasikan |
+| **Mock** | Estimasi char/4 | ✅ | Aktif saat `MOCK_MODE=true` atau provider tidak tersedia |
+
+> **Catatan status pengujian:** Fitur estimasi token hanya diuji secara langsung dengan **Ollama lokal**. Provider lain (OpenAI, Gemini, OpenRouter, LM Studio) menggunakan jalur kode yang sama tetapi belum diverifikasi dengan API key nyata. Kontribusi laporan pengujian sangat diterima.
 
 #### Ollama — `/api/tokenize` dan fallback
 
@@ -246,7 +250,7 @@ GET  /openapi.json   ← OpenAPI spec (FastAPI built-in)
 
 **Backend:** FastAPI + Pydantic v2, Python 3.12  
 **Frontend:** React 18 + Tailwind CSS + Vite, hooks-based architecture  
-**Tes:** 133 tests (pytest), type-check bersih (tsc --noEmit)
+**Tes:** 138 tests (pytest), type-check bersih (tsc --noEmit)
 
 ---
 

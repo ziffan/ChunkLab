@@ -2,22 +2,29 @@
 
 ## Supported Versions
 
-Currently, we only provide security updates for the latest version of ChunkLab.
+Only the latest release of ChunkLab receives security fixes.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 2.x.x   | :white_check_mark: |
-| 1.x.x   | :x:                |
-| < 1.0   | :x:                |
+| Version | Supported |
+|---------|-----------|
+| 0.2.x (latest) | ✅ |
+| < 0.2.0 | ❌ |
 
 ## Reporting a Vulnerability
 
-We take the security of ChunkLab seriously. If you believe you have found a security vulnerability, please report it to us by following these steps:
+**Please do not report security vulnerabilities via public GitHub issues.**
 
-1. **Email us**: Send an email to **https://github.com/ziffan/ChunkLab/issues**.
-2. **Details**: Include a detailed description of the vulnerability, steps to reproduce, and any potential impact.
-3. **Response**: We will acknowledge your report within 48 hours and provide a timeline for a fix if necessary.
+To report a vulnerability, email **https://github.com/ziffan/ChunkLab/security/advisories/new** with:
 
-Please do **not** open a public issue for security vulnerabilities.
+- A description of the vulnerability and its potential impact
+- Steps to reproduce (proof-of-concept if available)
+- Affected version(s)
 
-Thank you for helping keep ChunkLab secure!
+You can expect an acknowledgement within **72 hours** and a resolution timeline within **14 days** for confirmed issues.
+
+## Scope
+
+This policy covers the ChunkLab application code in this repository. Third-party dependencies (pip packages, npm packages) are out of scope for direct reporting — please report those to the upstream projects. ChunkLab uses `pip-audit` and `npm audit` in CI to track dependency vulnerabilities.
+
+## Disclosure
+
+We follow coordinated disclosure. Once a fix is available, we will publish a GitHub Security Advisory and credit the reporter (unless anonymity is requested).

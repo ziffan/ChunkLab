@@ -9,13 +9,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - `ChunkLegend` component above the chunk grid — explains all per-chunk indicators: BQ dot colors (🟢/🟡/🔴), Information Density, ⚠ trun, overlap highlight colors (amber = inherited from previous chunk, cyan = passed to next), and token badge color coding (green/yellow/orange/red/blue + MOCK/MIN/MAX labels)
 - Retrieval panel: Top-K selector with options 5 / 10 / 25 / 50 (previously hardcoded to 5); backend already supported up to 50
+- `sentence_id` strategy now supports 23 pysbd languages in addition to Indonesian (pysbd optional; falls back to regex splitter when not installed or language is unsupported)
+- `RETRIEVAL_MODEL` env var: override the embedding model used for Retrieval Simulation (default `intfloat/multilingual-e5-large`)
 
 ### Fixed
 - `frontend/nginx.conf`: proxy timeout raised from 60 s (nginx default) to 300 s — prevents 504 Gateway Timeout during retrieval model warm-up or large batch encoding on CPU
 - `backend/Dockerfile`: `requirements-retrieval.txt` now installed by default so Retrieval Simulation works out of the box with `docker compose up --build`
+- mypy CI: resolved 8 type errors (`list[dict]` annotations, `BaseException` narrowing, `str|None` guard); mypy now enforced (removed `|| true`)
+- bandit CI: exclude `backend/.venv` from scan; removed `--exit-zero` to enforce zero high-severity findings in application code
 
 ### Changed
 - BQ legend removed from Regex Patterns panel where it did not belong; replaced by `ChunkLegend` in the chunk results area
+- Electron desktop app support removed — app is now web-only; Docker Compose is the recommended deployment path
+- `sentence` strategy removed; all functionality merged into `sentence_id` (use `language` param to select pysbd-supported languages)
 
 ---
 
@@ -59,81 +65,81 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.0.0] - 2026-04-30
 
 ### Added
-- `.progress` tracker file as single source of truth for v2 implementation progress (Phase 0.1)
-- `MockBanner` component: permanent warning banner shown when `MOCK_MODE=true` (Phase 0.4)
-- `GET /api/health` now returns `mock_mode: bool` field (Phase 0.4)
-- `backend/services/chunkers/` package: `BaseChunker` abstract class, `FixedSizeChunker`, `CHUNKER_REGISTRY` — foundation for multiple chunking strategies (Phase 1.1)
-- `chunk_by_strategy(text, strategy, **params)` dispatcher in `chunker.py` for strategy-based routing (Phase 1.1)
-- `RecursiveCharacterChunker`: splits by `\n\n` → `\n` → `. ` → ` ` → char, respects paragraph boundaries, two-phase trim guarantees hard `chunk_size` limit (Phase 1.2)
-- `TokenAwareChunker`: encode → slice by exact token count → decode using tiktoken; params `chunk_size_tokens`, `chunk_overlap_tokens`, `encoding_name` (default `cl100k_base`); guaranteed hard token limit (Phase 1.3)
-- `SentenceChunker`: groups sentences via pysbd; params `language`, `max_sentences_per_chunk`, `chunk_overlap_sentences`; every chunk ends at sentence boundary (Phase 1.4)
-- `pysbd==0.3.4` added to `requirements.txt` (Phase 1.4)
-- `MarkdownStructureChunker`: splits by mistune 3.x AST header boundaries; params `header_level` (default 2), `max_chunk_size` (default 2000); oversized sections sub-split by characters with header preserved; no overlap (structure-based) (Phase 1.5)
-- `strategy_markdown.json` test fixture with happy_path, edge_no_headers, edge_h1_only, edge_oversized cases (Phase 1.5)
-- `ChunkRequest` schema: `strategy` field (default `"fixed"`, backward-compatible) and `strategy_params: dict` for per-strategy parameters (Phase 1.6)
-- `/api/chunk` router dispatches to `chunk_by_strategy()` for non-fixed strategies; returns `INVALID_PARAMETERS` error for unknown strategy or bad params (Phase 1.6)
+- `.progress` tracker file as single source of truth for v2 implementation progress
+- `MockBanner` component: permanent warning banner shown when `MOCK_MODE=true`
+- `GET /api/health` now returns `mock_mode: bool` field
+- `backend/services/chunkers/` package: `BaseChunker` abstract class, `FixedSizeChunker`, `CHUNKER_REGISTRY` — foundation for multiple chunking strategies
+- `chunk_by_strategy(text, strategy, **params)` dispatcher in `chunker.py` for strategy-based routing
+- `RecursiveCharacterChunker`: splits by `\n\n` → `\n` → `. ` → ` ` → char, respects paragraph boundaries, two-phase trim guarantees hard `chunk_size` limit
+- `TokenAwareChunker`: encode → slice by exact token count → decode using tiktoken; params `chunk_size_tokens`, `chunk_overlap_tokens`, `encoding_name` (default `cl100k_base`); guaranteed hard token limit
+- `SentenceChunker`: groups sentences via pysbd; params `language`, `max_sentences_per_chunk`, `chunk_overlap_sentences`; every chunk ends at sentence boundary
+- `pysbd==0.3.4` added to `requirements.txt`
+- `MarkdownStructureChunker`: splits by mistune 3.x AST header boundaries; params `header_level` (default 2), `max_chunk_size` (default 2000); oversized sections sub-split by characters with header preserved; no overlap (structure-based)
+- `strategy_markdown.json` test fixture with happy_path, edge_no_headers, edge_h1_only, edge_oversized cases
+- `ChunkRequest` schema: `strategy` field (default `"fixed"`, backward-compatible) and `strategy_params: dict` for per-strategy parameters
+- `/api/chunk` router dispatches to `chunk_by_strategy()` for non-fixed strategies; returns `INVALID_PARAMETERS` error for unknown strategy or bad params
 
 ### Fixed
-- `/api/chunk` now forwards `chunk_size` and `chunk_overlap` to `RecursiveCharacterChunker` via `strategy_params.setdefault()` so top-level params are respected (Phase 1.8)
-- `StrategySelector` component: strategy dropdown with per-strategy param controls — separators (recursive), chunk_size_tokens / chunk_overlap_tokens / encoding_name (token), language / max_sentences_per_chunk / chunk_overlap_sentences (sentence), header_level / max_chunk_size (markdown) (Phase 1.7)
-- `useChunker` hook extended to pass `strategy` and `strategy_params` to `/api/chunk`; chunk_size + chunk_overlap forwarded for fixed/recursive strategies (Phase 1.7)
-- `ParameterPanel` hides chunk_size/overlap sliders when strategy is not fixed or recursive (Phase 1.7)
-- `api_strategies.json` fixture with integration test cases for all 5 strategies (Phase 1.8)
-- 5 new API integration tests in `test_api.py`: recursive, token, sentence, markdown structure, and invalid strategy (→ 422) (Phase 1.8)
+- `/api/chunk` now forwards `chunk_size` and `chunk_overlap` to `RecursiveCharacterChunker` via `strategy_params.setdefault()` so top-level params are respected
+- `StrategySelector` component: strategy dropdown with per-strategy param controls — separators (recursive), chunk_size_tokens / chunk_overlap_tokens / encoding_name (token), language / max_sentences_per_chunk / chunk_overlap_sentences (sentence), header_level / max_chunk_size (markdown)
+- `useChunker` hook extended to pass `strategy` and `strategy_params` to `/api/chunk`; chunk_size + chunk_overlap forwarded for fixed/recursive strategies
+- `ParameterPanel` hides chunk_size/overlap sliders when strategy is not fixed or recursive
+- `api_strategies.json` fixture with integration test cases for all 5 strategies
+- 5 new API integration tests in `test_api.py`: recursive, token, sentence, markdown structure, and invalid strategy (→ 422)
 - `FileUploader` component: drag-and-drop zone + click-to-browse for `.txt` / `.md` files; validates extension; rejects files > 500 KB; shows filename badge with × clear button; friendly error for unsupported formats (Phase 2.1–2.4)
-- `useFileUpload` hook: encapsulates FileReader logic, extension + size validation, filename state (Phase 2.2)
+- `useFileUpload` hook: encapsulates FileReader logic, extension + size validation, filename state
 - `quality_metrics.py`: `boundary_quality` (0–1 score for sentence-end + boundary-start), `information_density` (non-whitespace ratio), `is_complete` (mid-word cut detection) (Phase 3.1–3.3)
-- `ChunkData` schema extended with `boundary_quality: float`, `information_density: float`, `is_complete: bool` (default values preserve backward compat) (Phase 3.4)
-- `QualityBadge` component: colored dot (🟢/🟡/🔴 per boundary_quality threshold) + BQ% / ID% display + truncation warning when `is_complete=false` (Phase 3.5)
-- `test_quality_metrics.py`: 24 tests covering all three metrics, happy path + edge cases (Phase 3.6)
-- `requirements-retrieval.txt`: optional extras file for `sentence-transformers>=2.7.0` + `numpy>=1.24` — not in main requirements (Phase 4.1)
+- `ChunkData` schema extended with `boundary_quality: float`, `information_density: float`, `is_complete: bool` (default values preserve backward compat)
+- `QualityBadge` component: colored dot (🟢/🟡/🔴 per boundary_quality threshold) + BQ% / ID% display + truncation warning when `is_complete=false`
+- `test_quality_metrics.py`: 24 tests covering all three metrics, happy path + edge cases
+- `requirements-retrieval.txt`: optional extras file for `sentence-transformers>=2.7.0` + `numpy>=1.24` — not in main requirements
 - `retriever.py`: singleton lazy-load `all-MiniLM-L6-v2`; `retrieve()` computes cosine similarity via `st_util.cos_sim`, returns top-K ranked results (Phase 4.2, 4.4)
 - `POST /api/retrieve`: accepts `query`, `chunks[]`, `top_k`; returns ranked results with scores; returns 503 with `RETRIEVAL_UNAVAILABLE` when extras not installed (Phase 4.3, 4.5)
-- `RetrievalPanel` component: query input + Retrieve button; score bar per result; install hint when 503 (Phase 4.6)
-- `useRetrieval` hook: manages query state, results, loading, and 503 detection (Phase 4.6)
-- `test_retriever.py`: 7 tests with mocked embedder covering 503 degrade + happy path + schema + sort order (Phase 4.7)
-- `useComparison` hook: two parallel `useConfigChunker` instances, fires two simultaneous `/api/chunk` calls with independent configs (Phase 5.2)
+- `RetrievalPanel` component: query input + Retrieve button; score bar per result; install hint when 503
+- `useRetrieval` hook: manages query state, results, loading, and 503 detection
+- `test_retriever.py`: 7 tests with mocked embedder covering 503 degrade + happy path + schema + sort order
+- `useComparison` hook: two parallel `useConfigChunker` instances, fires two simultaneous `/api/chunk` calls with independent configs
 - `ComparisonView` component: dual-pane layout, each pane has independent `StrategySelector` + `ParameterPanel` + `ChunkGrid`; Config A in indigo, Config B in amber (Phase 5.1, 5.5)
-- `DiffStats` component: shows chunk count, avg char size, avg boundary quality side by side; highlights winner per metric in green (Phase 5.3)
-- Compare toggle in App header — switches single ↔ compare mode; persisted in `localStorage` (Phase 5.4)
-- `ExportButton` rewritten: "Export Config" downloads JSON with `strategy`, `chunk_size`, `chunk_overlap`, `strategy_params`, `regex_patterns`; "Export Results ▾" dropdown offers JSON / JSONL / YAML formats (Phase 6.4)
-- JSONL export: one chunk per line with `index`, `text`, `metadata`, `token_count` — ready for vector DB ingestion (Phase 6.1)
-- YAML export via `js-yaml` on frontend; no backend changes required (Phase 6.2)
-- All exports trigger file download via `Blob` + `URL.createObjectURL`; filename pattern `chunklab_export_{ISO-timestamp}.{ext}` (Phase 6.3)
+- `DiffStats` component: shows chunk count, avg char size, avg boundary quality side by side; highlights winner per metric in green
+- Compare toggle in App header — switches single ↔ compare mode; persisted in `localStorage`
+- `ExportButton` rewritten: "Export Config" downloads JSON with `strategy`, `chunk_size`, `chunk_overlap`, `strategy_params`, `regex_patterns`; "Export Results ▾" dropdown offers JSON / JSONL / YAML formats
+- JSONL export: one chunk per line with `index`, `text`, `metadata`, `token_count` — ready for vector DB ingestion
+- YAML export via `js-yaml` on frontend; no backend changes required
+- All exports trigger file download via `Blob` + `URL.createObjectURL`; filename pattern `chunklab_export_{ISO-timestamp}.{ext}`
 - `md_metadata.py`: `extract_header_path()` scans full markdown with regex, builds `"H1 > H2 > H3"` stack for any chunk's position; `md_path_metadata()` wraps it as a `_md_path` metadata dict (Phase 7.1–7.2)
-- `/api/chunk` now prepends `_md_path` metadata to each chunk's metadata list when the chunk has preceding headers (Phase 7.3)
-- `ChunkCard` renders `_md_path` as a breadcrumb trail (`Section › Subsection › Topic`) above chunk text; `_md_path` is hidden from the user metadata badges (Phase 7.4)
+- `/api/chunk` now prepends `_md_path` metadata to each chunk's metadata list when the chunk has preceding headers
+- `ChunkCard` renders `_md_path` as a breadcrumb trail (`Section › Subsection › Topic`) above chunk text; `_md_path` is hidden from the user metadata badges
 - `test_md_metadata.py`: 11 tests for header path extraction and metadata dict generation (Phase 7)
 
 ### Changed
-- `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export (Phase 6.3)
+- `ExportButton` replaced clipboard-only "Export JSON" with file-download-based multi-format export
 - CLAUDE.md updated with Windows PowerShell 5.1 terminal gotchas and Phase 8 roadmap
 
 ### Added (Phase 9.1–9.6)
-- `LegalStructureChunker` (`backend/services/chunkers/legal_id.py`): splits Indonesian regulatory documents (UU/PP/Perpres/Perda) at Pasal/BAB/Ayat boundaries per UU 12/2011 Lampiran II (Phase 9.1)
-- Regex patterns cover full UU hierarchy: JUDUL, PEMBUKAAN (Menimbang/Mengingat/MEMUTUSKAN), BATANG_TUBUH (BAB/Bagian/Paragraf/Pasal), PENJELASAN PASAL DEMI PASAL, LAMPIRAN (Phase 9.1)
-- Parent context breadcrumb `[BAB II > Bagian Kesatu > Pasal 10]` when `include_parent_context=True` (Phase 9.1)
-- Amendment UU detection: switches to Roman Pasal (Pasal I/II) as chunk boundaries (Phase 9.1)
-- Pasal exceeding `max_chunk_chars` falls back to `RecursiveCharacterChunker`; sub-chunks inherit `legal_path` (Phase 9.1)
-- Legal metadata per chunk: `_legal_section`, `_legal_path`, `_legal_unit`, `_legal_number` (Phase 9.1)
-- Strategy `"legal_id"` registered in `CHUNKER_REGISTRY`; router injects metadata, skips `md_path` for this strategy (Phase 9.1)
-- `IndonesianSentenceSplitter` (`backend/services/chunkers/sentence_id.py`): pure-stdlib regex sentence chunker for Bahasa Indonesia; `ABBREV_ID` frozenset suppresses false splits at Dr., No., UU, Pasal, etc.; params `max_sentences_per_chunk`, `overlap_sentences`, `min_chunk_chars` (Phase 9.2)
+- `LegalStructureChunker` (`backend/services/chunkers/legal_id.py`): splits Indonesian regulatory documents (UU/PP/Perpres/Perda) at Pasal/BAB/Ayat boundaries per UU 12/2011 Lampiran II
+- Regex patterns cover full UU hierarchy: JUDUL, PEMBUKAAN (Menimbang/Mengingat/MEMUTUSKAN), BATANG_TUBUH (BAB/Bagian/Paragraf/Pasal), PENJELASAN PASAL DEMI PASAL, LAMPIRAN
+- Parent context breadcrumb `[BAB II > Bagian Kesatu > Pasal 10]` when `include_parent_context=True`
+- Amendment UU detection: switches to Roman Pasal (Pasal I/II) as chunk boundaries
+- Pasal exceeding `max_chunk_chars` falls back to `RecursiveCharacterChunker`; sub-chunks inherit `legal_path`
+- Legal metadata per chunk: `_legal_section`, `_legal_path`, `_legal_unit`, `_legal_number`
+- Strategy `"legal_id"` registered in `CHUNKER_REGISTRY`; router injects metadata, skips `md_path` for this strategy
+- `IndonesianSentenceSplitter` (`backend/services/chunkers/sentence_id.py`): pure-stdlib regex sentence chunker for Bahasa Indonesia; `ABBREV_ID` frozenset suppresses false splits at Dr., No., UU, Pasal, etc.; params `max_sentences_per_chunk`, `overlap_sentences`, `min_chunk_chars`
 - Strategy `"sentence_id"` registered in `CHUNKER_REGISTRY` (Phase 9.2, 9.4)
-- `SentenceChunker` marked as legacy in docstring — use `sentence_id` for Indonesian (Phase 9.3)
-- `StrategySelector` updated: `sentence` relabeled as legacy, `sentence_id` and `legal_id` added with dedicated param panels (unit, max_chunk_chars, include_parent_context for legal; max_sentences_per_chunk, overlap_sentences, min_chunk_chars for sentence_id) (Phase 9.5)
-- Retrieval model swapped from `all-MiniLM-L6-v2` to `intfloat/multilingual-e5-large`; `query:` / `passage:` prefixes applied for asymmetric retrieval as required by the model (Phase 9.6)
+- `SentenceChunker` marked as legacy in docstring — use `sentence_id` for Indonesian
+- `StrategySelector` updated: `sentence` relabeled as legacy, `sentence_id` and `legal_id` added with dedicated param panels (unit, max_chunk_chars, include_parent_context for legal; max_sentences_per_chunk, overlap_sentences, min_chunk_chars for sentence_id)
+- Retrieval model swapped from `all-MiniLM-L6-v2` to `intfloat/multilingual-e5-large`; `query:` / `passage:` prefixes applied for asymmetric retrieval as required by the model
 
-### Added (Phase 8.2)
+### Added
 - `ApiReferenceButton` component: fetches `/openapi.json` from the live FastAPI backend and triggers a browser download as `chunklab_openapi.json` (no backend changes — FastAPI serves the spec automatically)
 - `fetchOpenApiSpec()` added to `api.js`
 
 ### Changed
-- CHANGELOG reformatted to English per Keep a Changelog spec (Phase 0.1)
-- README Architecture section updated: fixed-size is the only implemented strategy; recursive/semantic/token-aware listed as roadmap (Phase 0.2)
-- README Feature List: added accurate "Chunking Strategy" entry, moved unimplemented strategies to roadmap item (Phase 0.2)
+- CHANGELOG reformatted to English per Keep a Changelog spec
+- README Architecture section updated: fixed-size is the only implemented strategy; recursive/semantic/token-aware listed as roadmap
+- README Feature List: added accurate "Chunking Strategy" entry, moved unimplemented strategies to roadmap item
 
 ### Security
-- CORS origins now read from `FRONTEND_ORIGIN` env var; defaults to `localhost:5173` and `127.0.0.1:5173`; `ELECTRON_MODE=true` retains wildcard for packaged desktop app (Phase 0.3)
+- CORS origins now read from `FRONTEND_ORIGIN` env var; defaults to `localhost:5173` and `127.0.0.1:5173`; `ELECTRON_MODE=true` retains wildcard for packaged desktop app
 
 ---
 

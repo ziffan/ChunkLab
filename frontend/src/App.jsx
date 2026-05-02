@@ -18,6 +18,7 @@ import FileUploader from './components/FileUploader';
 import RetrievalPanel from './components/RetrievalPanel';
 import ComparisonView from './components/ComparisonView';
 import ApiReferenceButton from './components/ApiReferenceButton';
+import ChunkLegend from './components/ChunkLegend';
 import { fetchHealth } from './services/api';
 
 const generateId = () => {
@@ -200,12 +201,6 @@ export default function App() {
                 <p>Gunakan regex Python standar. <strong>Label</strong> adalah nama tag metadata, <strong>Pattern</strong> adalah ekspresi regex.</p>
                 <p>Gunakan <code className="bg-slate-700 px-1 rounded text-amber-300">(grup)</code> untuk menangkap bagian tertentu. Contoh: <code className="bg-slate-700 px-1 rounded text-amber-300">Pasal\s+(\d+)</code> hanya menangkap angkanya.</p>
                 <p>Tekan <span className="bg-indigo-500 px-1.5 py-0.5 rounded text-white text-[10px]">T</span> untuk menguji pola terhadap dokumen.</p>
-                <div className="mt-2 pt-2 border-t border-slate-700 space-y-0.5">
-                  <p className="text-slate-500 uppercase text-[10px] font-semibold tracking-wide mb-1">Boundary Quality (BQ)</p>
-                  <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" /><strong className="text-slate-300">100%</strong> — kedua ujung chunk berakhir dan dimulai di batas kalimat.</p>
-                  <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block shrink-0" /><strong className="text-slate-300">50%</strong> — hanya salah satu ujung yang berada di batas kalimat.</p>
-                  <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500 inline-block shrink-0" /><strong className="text-slate-300">0%</strong> — chunk terpotong di tengah kalimat di kedua ujung.</p>
-                </div>
               </div>
               {strategy === 'legal_id' && (
                 <div className="text-[11px] text-indigo-300 bg-indigo-900/30 border border-indigo-700/50 rounded px-2 py-1.5 mb-2">
@@ -262,6 +257,7 @@ export default function App() {
                   {tokenizeError}
                 </div>
               )}
+              <ChunkLegend />
               <ChunkGrid
                 chunks={chunks}
                 tokenCounts={tokenCounts}

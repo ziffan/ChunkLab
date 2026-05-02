@@ -61,6 +61,8 @@ htmlcov/
 *.swp
 *.swo
 .DS_Store
+Thumbs.db
+desktop.ini
 
 # Claude Code
 .claude/
@@ -77,7 +79,11 @@ frontend/dist/
 
 # Electron & Desktop Build
 dist_electron/
+out/
 build/
 dist/
 *.spec
 test_req.json
+
+# General log files
+*.log

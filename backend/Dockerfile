@@ -16,6 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
+# Install retrieval extras (sentence-transformers for semantic search)
+COPY requirements-retrieval.txt /app/requirements-retrieval.txt
+RUN pip install --no-cache-dir -r /app/requirements-retrieval.txt
+
 # Copy the rest of the backend code
 COPY backend/ /app/backend/
 

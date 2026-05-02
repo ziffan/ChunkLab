@@ -273,7 +273,7 @@ GET  /openapi.json   ← OpenAPI spec (FastAPI built-in)
 **Backend:** FastAPI + Pydantic v2, Python 3.12  
 **Frontend:** React 18 + Tailwind CSS + Vite, hooks-based architecture  
 **Tes:** 138 tests (pytest), type-check bersih (tsc --noEmit)  
-**Versi:** v2.3.0
+**Versi:** v0.2.0
 
 ---
 

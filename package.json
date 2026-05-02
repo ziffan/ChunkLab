@@ -1,6 +1,6 @@
 {
   "name": "chunklab",
-  "version": "2.1.0",
+  "version": "0.2.0",
   "description": "Native Sandbox for Text Chunking and Regex Validation",
   "main": "electron/main.js",
   "scripts": {

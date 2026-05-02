@@ -128,6 +128,8 @@ class LegalStructureChunker(BaseChunker):
         unit: str = params.get("unit", "pasal")
         include_parent_context: bool = params.get("include_parent_context", True)
         max_chunk_chars: int = params.get("max_chunk_chars", 4000)
+        min_chunk_chars: int = params.get("min_chunk_chars", 0)
+        chunk_overlap: int = params.get("chunk_overlap", 0)
 
         if not text.strip():
             return []
@@ -164,6 +166,19 @@ class LegalStructureChunker(BaseChunker):
                     )
             else:
                 result.append(chunk)
+
+        # Drop chunks below minimum size
+        if min_chunk_chars > 0:
+            result = [c for c in result if c["char_count"] >= min_chunk_chars]
+
+        # Add inter-chunk overlap (append tail of previous chunk to start of next)
+        if chunk_overlap > 0:
+            for i in range(1, len(result)):
+                tail = result[i - 1]["text"][-chunk_overlap:]
+                result[i]["text"] = tail + result[i]["text"]
+                result[i]["char_count"] = len(result[i]["text"])
+                result[i]["overlap_start_chars"] = len(tail)
+                result[i - 1]["overlap_end_chars"] = len(tail)
 
         for i, c in enumerate(result):
             c["index"] = i

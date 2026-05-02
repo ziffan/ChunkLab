@@ -25,7 +25,7 @@ Buka browser ke **http://localhost:80**.
 
 > **Ollama / LM Studio di host:** Token estimation via Ollama atau LM Studio otomatis bekerja tanpa konfigurasi tambahan — `docker-compose.yml` sudah mengarahkan koneksi ke host machine via `host.docker.internal`.
 
-> **Retrieval Simulation:** Model embedding (`intfloat/multilingual-e5-large`, ~560 MB) tidak diunduh secara default di Docker. Untuk mengaktifkannya, tambahkan `pip install -r requirements-retrieval.txt` ke `backend/Dockerfile` sebelum build.
+> **Retrieval Simulation:** Sudah termasuk di Docker image secara default. Model embedding (`intfloat/multilingual-e5-large`, ~560 MB) diunduh otomatis saat pertama kali dipakai dan di-cache di volume `hf_cache`.
 
 ---
 
@@ -90,7 +90,7 @@ pip install -r requirements-retrieval.txt
 
 Model yang digunakan: `intfloat/multilingual-e5-large` (~560 MB, diunduh otomatis saat pertama kali dipakai). Butuh minimal **4 GB RAM** tersedia. Lewati langkah ini jika tidak membutuhkan fitur retrieval.
 
-> **Catatan:** Fitur Retrieval Simulation belum diuji end-to-end. Unit test tersedia, namun belum diverifikasi dengan penggunaan nyata.
+> **Catatan:** Model embedding diunduh otomatis (~560 MB) pada penggunaan pertama.
 
 ### 2.4 Buat File Konfigurasi `.env`
 

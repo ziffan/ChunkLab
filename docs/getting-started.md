@@ -111,7 +111,6 @@ File `.env` sudah berisi konfigurasi default yang langsung bisa dipakai. Untuk m
 |---|---|---|
 | `BACKEND_PORT` | `8000` | Port backend |
 | `FRONTEND_ORIGIN` | `http://localhost:5173` | Origin frontend (CORS) |
-| `ELECTRON_MODE` | `false` | Set `true` saat berjalan sebagai Electron desktop app |
 | `MOCK_MODE` | `true` | Gunakan mock tokenizer (tanpa API key) |
 | `OPENAI_API_KEY` | `your-key-here` | API key OpenAI (opsional) |
 | `GEMINI_API_KEY` | `your-key-here` | API key Google Gemini (opsional) |

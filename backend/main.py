@@ -14,7 +14,6 @@
 
 import logging
 import os
-import sys
 import multiprocessing
 from contextlib import asynccontextmanager
 
@@ -27,17 +26,7 @@ from backend.routers import chunk, tokenize, regex, models, retrieve
 
 logger = logging.getLogger(__name__)
 
-# Handle paths for PyInstaller frozen state
-if getattr(sys, "frozen", False):
-    bundle_dir = sys._MEIPASS  # type: ignore[attr-defined]
-else:
-    bundle_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Load .env relative to the executable or script
-env_path = os.path.join(os.getcwd(), ".env")
-if not os.path.exists(env_path):
-    env_path = os.path.join(bundle_dir, ".env")
-load_dotenv(env_path)
+load_dotenv(os.path.join(os.getcwd(), ".env"))
 
 
 @asynccontextmanager
@@ -55,18 +44,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="ChunkLab API", version="1.0.0", lifespan=lifespan)
 
-# ELECTRON_MODE bypasses CORS restrictions for the packaged desktop app.
-# Otherwise, read FRONTEND_ORIGIN (comma-separated) or fall back to dev defaults.
-_electron_mode = os.getenv("ELECTRON_MODE", "false").lower() == "true"
-if _electron_mode:
-    _cors_origins = ["*"]
-else:
-    _raw = os.getenv("FRONTEND_ORIGIN", "").strip()
-    _cors_origins = (
-        [o.strip() for o in _raw.split(",") if o.strip()]
-        if _raw
-        else ["http://localhost:5173", "http://127.0.0.1:5173"]
-    )
+_raw = os.getenv("FRONTEND_ORIGIN", "").strip()
+_cors_origins = (
+    [o.strip() for o in _raw.split(",") if o.strip()]
+    if _raw
+    else ["http://localhost:5173", "http://127.0.0.1:5173"]
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -91,8 +74,6 @@ async def health():
 if __name__ == "__main__":
     import uvicorn
 
-    # Required for pyinstaller --onefile multiprocessing issues
     multiprocessing.freeze_support()
-
     port = int(os.getenv("BACKEND_PORT", "8000"))
     uvicorn.run(app, host="127.0.0.1", port=port)

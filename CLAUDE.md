@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **ChunkLab** is a sandbox for testing text chunking and regex-based metadata extraction strategies, primarily for RAG (Retrieval-Augmented Generation) pipelines. Users paste markdown text, configure chunk size/overlap and regex patterns, and see real-time chunking results with optional token counts from various LLM providers.
 
-It runs as a **web app** (Vite dev server + FastAPI) or as a **standalone Electron desktop app** (PyInstaller backend + electron-builder).
+It runs as a **web app** (Vite dev server + FastAPI) or via **Docker Compose** (`docker compose up --build`).
 
 ## Commands
 
@@ -45,16 +45,6 @@ npm run build       # Production build to frontend/dist
 npm run type-check  # TypeScript check (tsc --noEmit)
 ```
 
-### Electron (Desktop App)
-
-```bash
-# From repo root
-npm run build:frontend   # Build React app to frontend/dist
-npm run build:backend    # Package backend to exe via PyInstaller
-npm run dist             # Full Electron build (Windows NSIS installer)
-npm start                # Launch Electron dev
-```
-
 ## Architecture
 
 ### Request Flow
@@ -80,7 +70,7 @@ npm start                # Launch Electron dev
   - `useChunker` — Debounced fetch, race-condition safe via `requestIdRef`
   - `useRegexPatterns` — Manages patterns array, on-demand test per pattern
   - `useTokenization` — On-demand token estimation, tracks provider/model
-- **`services/api.js`** — Axios client; detects Electron (`window.electronAPI`) to set base URL to `http://127.0.0.1:8000`, otherwise uses `VITE_API_BASE_URL` or empty string (dev proxy)
+- **`services/api.js`** — Axios client; uses `VITE_API_BASE_URL` or empty string (dev proxy via Vite)
 - **`constants/models.js`** — `PROVIDERS` array defining all LLM providers and their defaults
 
 ### Key Constraints
@@ -110,7 +100,7 @@ OPENROUTER_API_KEY=
 |---|---|---|
 | `test.yml` | push/PR to master | `pytest` + Codecov upload |
 | `lint.yml` | push/PR to master | ruff, black, mypy (Python); tsc (frontend) |
-| `security.yml` | push to master + weekly | bandit (`--exit-zero`), pip-audit, npm audit (`--audit-level=high`) |
+| `security.yml` | push to master + weekly | bandit (`-lll`, excl. .venv), pip-audit, npm audit (`--audit-level=high`) |
 | `dco.yml` | PR to master | DCO sign-off check (`Signed-off-by` in commits) |
 
 `pip-audit` and `npm audit` **will fail the workflow** if vulnerabilities at high/critical severity are found — keep dependencies patched.

@@ -1,13 +1,10 @@
 import axios from 'axios';
 
-const isElectron = window.navigator.userAgent.toLowerCase().includes(' electron/');
-const baseURL = isElectron
-  ? 'http://127.0.0.1:8000'
-  : (import.meta.env.VITE_API_BASE_URL || '');
+const baseURL = import.meta.env.VITE_API_BASE_URL || '';
 
 const api = axios.create({
-  baseURL: baseURL,
-  timeout: 30000, // Tingkatkan timeout untuk native
+  baseURL,
+  timeout: 30000,
 });
 
 function extractErrorMessage(error) {

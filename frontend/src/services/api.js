@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const isElectron = window.navigator.userAgent.toLowerCase().includes(' electron/');
-const baseURL = isElectron 
-  ? 'http://127.0.0.1:8000' 
+const baseURL = isElectron
+  ? 'http://127.0.0.1:8000'
   : (import.meta.env.VITE_API_BASE_URL || '');
 
 const api = axios.create({
@@ -10,12 +10,20 @@ const api = axios.create({
   timeout: 30000, // Tingkatkan timeout untuk native
 });
 
+function extractErrorMessage(error) {
+  const detail = error.response?.data?.detail;
+  if (Array.isArray(detail)) {
+    return detail.map(d => d.msg || JSON.stringify(d)).join('; ');
+  }
+  return (typeof detail === 'string' ? detail : null) || error.message;
+}
+
 export async function chunkMarkdown(payload) {
   try {
     const { data } = await api.post('/api/chunk', payload);
     return data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || error.message);
+    throw new Error(extractErrorMessage(error));
   }
 }
 
@@ -24,7 +32,7 @@ export async function estimateTokens(payload) {
     const { data } = await api.post('/api/tokenize', payload);
     return data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || error.message);
+    throw new Error(extractErrorMessage(error));
   }
 }
 
@@ -33,7 +41,7 @@ export async function testRegexPattern(payload) {
     const { data } = await api.post('/api/regex/test', payload);
     return data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || error.message);
+    throw new Error(extractErrorMessage(error));
   }
 }
 

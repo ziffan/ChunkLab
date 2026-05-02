@@ -59,7 +59,7 @@ class ChunkRequest(BaseModel):
 
 class TokenizeRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
-    texts: list[str] = Field(..., min_length=1, max_length=500)
+    texts: list[str] = Field(..., min_length=1, max_length=2000)
     provider: Literal["mock", "openai", "gemini", "openrouter", "ollama", "lmstudio"]
     model_name: str | None = Field(default=None, max_length=128)
 

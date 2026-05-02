@@ -111,6 +111,8 @@ Model yang digunakan: `intfloat/multilingual-e5-large` (mendukung Bahasa Indones
 | **OS** | Windows 10 / Ubuntu 20.04 / macOS 12 | Windows 11 / Ubuntu 22.04 / macOS 14 |
 
 > **Catatan:** Fitur Retrieval Simulation membutuhkan RAM ekstra karena model embedding `intfloat/multilingual-e5-large` (~560 MB) di-load ke memori. Tanpa fitur ini, aplikasi berjalan ringan di mesin apa pun yang memenuhi syarat Python 3.12 dan Node.js 18.
+>
+> **CUDA di Docker:** Secara default encoding berjalan di CPU dan sudah cukup untuk penggunaan normal. Untuk mengaktifkan CUDA di Docker, dibutuhkan NVIDIA Container Toolkit di host, base image berbasis `nvidia/cuda`, dan konfigurasi `deploy.resources.reservations.devices` di `docker-compose.yml` — tidak disertakan di konfigurasi default.
 
 ---
 

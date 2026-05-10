@@ -169,13 +169,17 @@ NODE_OPTIONS=--use-system-ca npm install ...
 
 ## Current Status (v0.2.0 — as of 2026-05-10)
 
-Phase 1–3 cleanup complete (CI hardening, Electron removal, SentenceChunker merged into sentence_id, docs restructured). 137 tests passing. Docker Compose support added. Retrieval tested end-to-end in Docker.
+Phase 1–3 cleanup complete (CI hardening, Electron removal, SentenceChunker merged into sentence_id, docs restructured). 137 tests passing (127 locally — 10 `TestTokenAwareChunker` skipped due to SSL/tiktoken download issue on corporate network; all pass in CI). Docker Compose support added. Retrieval tested end-to-end in Docker.
 
 ### Dependency Security Patches (2026-05-10)
 
 - `mistune` bumped `3.0.2 → 3.2.1` (fixes CVE-2026-33079, CVE-2026-44897)
 - `axios` bumped `1.15.0 → 1.16.0` (fixes 13 high-severity CVEs)
 - Two CVEs on mistune without fix versions (CVE-2026-44708, CVE-2026-44896) — not exploitable here as usage is `renderer="ast"` only, not HTML rendering
+
+### mypy Fix (2026-05-10)
+
+`markdown_struct.py:45` — mistune 3.2.1 now exposes explicit return type `str | list[...]` for `md(text)`. Fixed by replacing `if not ast_nodes` with `if not isinstance(ast_nodes, list) or not ast_nodes`, which narrows the type and satisfies mypy.
 
 ### legal_id PDF Artifact Handling
 

@@ -39,7 +39,7 @@ class MarkdownStructureChunker(BaseChunker):
 
         md = mistune.create_markdown(renderer="ast")
         ast_nodes = md(text)
-        if not ast_nodes:
+        if not isinstance(ast_nodes, list) or not ast_nodes:
             return []
 
         sections = self._group_sections(ast_nodes, header_level)

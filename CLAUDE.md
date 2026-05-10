@@ -31,7 +31,7 @@ pytest backend/tests/test_chunker.py -v
 # Linting
 ruff check backend/
 black --check backend/
-mypy backend/ --ignore-missing-imports
+mypy backend/ --ignore-missing-imports --explicit-package-bases
 ```
 
 ### Frontend
@@ -50,15 +50,16 @@ npm run type-check  # TypeScript check (tsc --noEmit)
 ### Request Flow
 
 1. User types markdown → `useChunker` hook debounces 500ms → `POST /api/chunk`
-2. Backend validates params → `chunker.chunk_text()` splits by fixed char size with overlap → `metadata_extractor` applies compiled regex per chunk
+2. Backend validates params → `chunker.chunk_text()` dispatches to the selected strategy (6 total) → `metadata_extractor` applies compiled regex per chunk
 3. Response renders chunks in `ChunkGrid`; token counts are **on-demand** via `POST /api/tokenize`
 
 ### Backend (`backend/`)
 
 - **`main.py`** — FastAPI app, CORS (configurable via `FRONTEND_ORIGIN` env, default `localhost:5173`), loads `.env`, includes 4 routers
-- **`routers/`** — Thin HTTP layer: `chunk.py`, `tokenize.py`, `regex.py`, `models.py`
+- **`routers/`** — Thin HTTP layer: `chunk.py`, `tokenize.py`, `regex.py`, `models.py`, `retrieve.py`
 - **`services/`** — All business logic:
-  - `chunker.py` — Pure function, character-based fixed-size chunking with overlap
+  - `chunker.py` — Dispatcher: `chunk_text()` and `chunk_by_strategy()`; delegates to one of 6 strategy classes in `services/chunkers/`
+  - `retriever.py` — Singleton lazy-load of sentence-transformer model; cosine similarity top-K ranking
   - `tokenizer.py` — Async, multi-provider: tiktoken (OpenAI/OpenRouter/LM Studio), Ollama (real async HTTP), Gemini (mocked), fallback mock
   - `metadata_extractor.py` — Applies pre-compiled regex to each chunk; uses `group(1)` if capture groups present, else `group(0)`
 - **`models/`** — Pydantic v2 request/response schemas (`requests.py`, `responses.py`)
@@ -92,6 +93,7 @@ OPENAI_API_KEY=
 GEMINI_API_KEY=
 ANTHROPIC_API_KEY=
 OPENROUTER_API_KEY=
+RETRIEVAL_MODEL=intfloat/multilingual-e5-large  # Override embedding model for Retrieval Simulation
 ```
 
 ## CI/CD Workflows
@@ -151,9 +153,29 @@ ruff check backend/
 
 For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
 
-## Current Status (v0.2.0 — as of 2026-05-02)
+### 5. Node.js v24+ requires `--use-system-ca` on Windows with corporate proxy
 
-All Phase 9 tasks are complete. 138 tests passing. Docker Compose support added. Retrieval tested end-to-end in Docker.
+Node.js v24 no longer uses the Windows system certificate store by default. On machines with SSL inspection / corporate CA, all `npm install` / `npm audit` calls will fail with `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
+
+**Fix (already applied):** `NODE_OPTIONS=--use-system-ca` is set as a permanent Windows user environment variable. For PowerShell tool calls, set it in the session:
+```powershell
+$env:NODE_OPTIONS = "--use-system-ca"; npm install ...
+```
+For Bash tool calls, prefix the command:
+```bash
+NODE_OPTIONS=--use-system-ca npm install ...
+```
+`npm audit fix` also hits the SSL endpoint — same fix applies.
+
+## Current Status (v0.2.0 — as of 2026-05-10)
+
+Phase 1–3 cleanup complete (CI hardening, Electron removal, SentenceChunker merged into sentence_id, docs restructured). 137 tests passing. Docker Compose support added. Retrieval tested end-to-end in Docker.
+
+### Dependency Security Patches (2026-05-10)
+
+- `mistune` bumped `3.0.2 → 3.2.1` (fixes CVE-2026-33079, CVE-2026-44897)
+- `axios` bumped `1.15.0 → 1.16.0` (fixes 13 high-severity CVEs)
+- Two CVEs on mistune without fix versions (CVE-2026-44708, CVE-2026-44896) — not exploitable here as usage is `renderer="ast"` only, not HTML rendering
 
 ### legal_id PDF Artifact Handling
 

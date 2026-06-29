@@ -162,7 +162,7 @@ npm run dev
 
 Jika berhasil, akan muncul:
 ```
-  VITE v5.x.x  ready in xxx ms
+  VITE v8.x.x  ready in xxx ms
 
   ➜  Local:   http://localhost:5173/
 ```

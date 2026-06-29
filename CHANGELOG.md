@@ -4,6 +4,15 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-06-29
+
+### Security
+- `form-data` patched: CRLF injection via unescaped multipart field/filenames ([GHSA-hmw2-7cc7-3qxx](https://github.com/advisories/GHSA-hmw2-7cc7-3qxx))
+- `js-yaml` patched: quadratic-complexity DoS via repeated merge-key aliases ([GHSA-h67p-54hq-rp68](https://github.com/advisories/GHSA-h67p-54hq-rp68))
+- `esbuild` patched: dev server accepts cross-origin requests ([GHSA-67mh-4wv8-2f99](https://github.com/advisories/GHSA-67mh-4wv8-2f99)) — resolved by upgrading `vite` 5 → 8 and `@vitejs/plugin-react` 4 → 6
+
+---
+
 ## [0.2.0] - 2026-05-02
 
 ### Added

@@ -7,7 +7,9 @@ dulu untuk tahu "kita di mana".
 
 **Status:** v0.2.3. Semua 4 GitHub Actions workflow (Lint, Test, Security Scan, Docker
 Build) hijau di `master`. 0 open Dependabot alert (dari 68). Repo lokal 1.4GB → 99MB
-setelah bersih-bersih artifact mati.
+setelah bersih-bersih artifact mati. Full dependency audit (semua severity, semua
+manifest — bukan cuma yang di-gate CI) sudah dijalankan: 0 temuan di frontend maupun
+backend, termasuk `requirements-retrieval.txt` yang CI tidak pernah cek sama sekali.
 
 **Yang dikerjakan:**
 - Lint CI (merah 21 hari) — fixed, root cause unpinned ruff/black/mypy. Detail:
@@ -25,16 +27,15 @@ setelah bersih-bersih artifact mati.
   pointer + panduan kerja permanen (Commands/Architecture/Env/Docker/Key Constraints).
   `CHANGELOG.md` tetap terpisah sebagai release notes standar OSS (Keep a Changelog).
 
-**Belum selesai:** Audit moderate/low severity vulnerability di frontend & backend
-(CI cuma gate high+) — lihat docs/ISSUES.md I-1. Ini yang sedang dikerjakan ketika
-sesi dialihkan ke restrukturisasi docs.
+**Belum selesai:** Tidak ada item aktif tersisa dari sesi ini.
 
 **Next step (urutan disarankan):**
-1. Lanjutkan audit docs/ISSUES.md I-1 — full `npm audit` (frontend, tanpa filter) dan
-   full `pip-audit` (backend, tanpa filter severity), lalu putuskan patch vs
-   risk-accept per temuan.
-2. Putuskan docs/DECISIONS.md (Pending): perlu `pyproject.toml`/`ruff.toml` untuk pin
+1. Putuskan docs/DECISIONS.md (Pending): perlu `pyproject.toml`/`ruff.toml` untuk pin
    rule-set ruff + fix gotcha cwd-dependent import-sort (docs/GOTCHAS.md #6)?
+2. Putuskan docs/DECISIONS.md (Pending): kebijakan severity gate CI (`npm audit`/
+   `pip-audit` cuma gate high+) — audit manual 2026-08-17 tidak menemukan apa-apa di
+   bawah threshold saat ini, tapi kebijakan ke depan (apakah perlu di-gate lebih ketat,
+   atau audit `requirements-retrieval.txt` masuk CI juga) belum diputuskan.
 
 ---
 

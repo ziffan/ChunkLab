@@ -70,7 +70,7 @@ merah — sudah terbukti gagal (21 hari tidak ketahuan).
 | Keputusan | Owner | Deadline | Catatan |
 |---|---|---|---|
 | Tambah `pyproject.toml`/`ruff.toml` untuk pin rule-set ruff eksplisit (bukan cuma versi tool) | belum ditentukan | belum ada | Juga akan memperbaiki docs/GOTCHAS.md #6 — tanpa config file, deteksi known-first-party ruff bergantung pada cwd saat invoke, bukan cuma target path. |
-| Kebijakan severity Dependabot/CI: `npm audit`/`pip-audit` di CI cuma gate di high+. Apakah moderate/low perlu di-gate juga, atau sengaja risk-accepted untuk sandbox/dev-tool project? | belum ditentukan | belum ada | Sedang diaudit per 2026-08-17 (lihat docs/ISSUES.md — item terbuka), terinterupsi oleh restrukturisasi docs ini. |
+| Kebijakan severity Dependabot/CI: `npm audit`/`pip-audit` di CI cuma gate di high+, dan `security.yml` tidak pernah audit root `requirements-retrieval.txt` sama sekali. Apakah moderate/low perlu di-gate juga, dan apakah `requirements-retrieval.txt` perlu masuk `pip-audit` di CI? | belum ditentukan | belum ada | Audit manual penuh dijalankan 2026-08-17 (docs/ISSUES.md I-1, closed) — 0 temuan di semua severity/manifest saat ini, jadi tidak mendesak, tapi gap kebijakannya (apa yang di-gate CI) masih belum diputuskan untuk ke depan. |
 
 ## Change Log (obsolete / superseded)
 

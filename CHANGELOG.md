@@ -4,6 +4,18 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-08-17
+
+### Security
+- `axios` bumped `1.16.0 → 1.19.0` — fixes high-severity CVEs beyond the 0.2.2 patch (DoS via recursion, prototype pollution, proxy bypass)
+- `js-yaml` bumped `4.3.0 → 4.3.1` — fixes CVE-2026-59870 (quadratic CPU DoS via `!!omap` resolution)
+- Regenerated orphaned root `package-lock.json` — it had been locking the full electron-builder toolchain (electron, node-tar, brace-expansion, extract-zip, etc.) at unpatched versions since before Electron was removed in 0.2.0, despite root `package.json` declaring zero dependencies; cleared 45 Dependabot alerts
+
+### Fixed
+- CI Lint workflow (`lint.yml`) had been failing on master since the 0.2.2 mistune bump: `ruff`/`black`/`mypy` were installed unpinned and CI had silently picked up a newer ruff release with a broader default rule set. Fixed the 37 findings (import sorting, `typing.X` → builtin generics, 6 justified `noqa: BLE001` on external-service-probe boundaries) and pinned tool versions in CI
+
+---
+
 ## [0.2.2] - 2026-07-26
 
 ### Security

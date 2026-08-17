@@ -167,9 +167,24 @@ NODE_OPTIONS=--use-system-ca npm install ...
 ```
 `npm audit fix` also hits the SSL endpoint — same fix applies.
 
-## Current Status (v0.2.2 — as of 2026-07-26)
+### 6. Bash tool `cd` persists across calls — breaks `ruff` import-sort detection
+
+The Bash tool's working directory persists between calls. A `cd frontend && ...` command leaves subsequent calls running from `frontend/`, even ones that pass absolute paths.
+
+**Symptom:** `ruff check "D:\...\backend"` (absolute path) gives *different* `I001` (import-block-unsorted) results depending on whether the shell's cwd is repo root or `frontend/` — this repo has no `pyproject.toml`/`ruff.toml`, so ruff's known-first-party detection for `backend.*` imports falls back to cwd-relative heuristics, not just the target path.
+
+**Fix:** Always `cd` back to repo root (or open a fresh Bash call) before running `ruff check` after any command that changed directory. Don't trust an absolute target path alone to make the result cwd-independent.
+
+## Current Status (v0.2.3 — as of 2026-08-17)
 
 Phase 1–3 cleanup complete (CI hardening, Electron removal, SentenceChunker merged into sentence_id, docs restructured). 137 tests passing (127 locally — 10 `TestTokenAwareChunker` skipped due to SSL/tiktoken download issue on corporate network; all pass in CI). Docker Compose support added. Retrieval tested end-to-end in Docker.
+
+### CI Green Again + Dependency Cleanup (2026-08-17)
+
+- **Lint workflow** was red on master for 21 days: `pip install ruff black mypy` in `lint.yml` was unpinned, so CI silently picked up ruff 0.16.0 with a broader default rule set than the code was written against (37 findings: import-sort, `typing.X`→builtin generics, blind-except, etc). Fixed with `ruff --fix` + 6 justified `noqa: BLE001` (external-service-probe boundaries in `model_detector.py`, `tokenizer.py`, `main.py` — kept broad on purpose). `ruff`/`black`/`mypy` now pinned to exact versions in `lint.yml` so this can't silently drift again.
+- **Security Scan**: `axios` `1.16.0 → 1.19.0`, `js-yaml` `4.3.0 → 4.3.1` (new high-severity CVEs beyond the 2026-07-26 patch round; both within existing `package.json` semver ranges, `npm audit fix` only).
+- **Dependabot** (68 → 0 open alerts): root-level `package-lock.json` was an orphan from before Electron removal — `package.json` at repo root has had zero dependencies since Phase 2.1, but the lockfile (and local gitignored `node_modules/`) still had the full electron-builder toolchain locked at long-unpatched versions (electron, node-tar, brace-expansion, extract-zip, etc). Deleted and regenerated to a clean 0-package lockfile — cleared 45 alerts. The remaining 10 (`mistune` under `requirements-retrieval.txt`) were a GitHub dependency-graph mis-attribution — that file has only ever declared `sentence-transformers`/`numpy`, never mistune — dismissed via API as `inaccurate`.
+- **Local repo cleanup**: removed ~2.1GB of dead artifacts — `dist_electron/`, `build/`, `dist/`, `backend.spec` (Electron/PyInstaller leftovers, dated April, zero references in source) and a stale `backend/.venv` (~1GB, untouched since April — local dev already runs on system Python). All gitignored; nothing tracked was touched. `internal_use/` kept (working notes, not build artifacts).
 
 ### Dependency Security Patches (2026-07-26)
 

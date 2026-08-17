@@ -1,6 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. It covers permanent working guidance (commands, architecture, constraints). Status, decisions, gotchas, and issues change more often and live in `docs/` instead — read them at session start:
+
+- `docs/CONTEXT.md` — current status, what's in progress, next steps (top entry = where we are)
+- `docs/DECISIONS.md` — locked / pending / never structural decisions
+- `docs/GOTCHAS.md` — known traps in this codebase and tooling, don't repeat them
+- `docs/ISSUES.md` — open and closed issues
+- `CHANGELOG.md` — user-facing release notes (Keep a Changelog format)
 
 ## What This App Does
 
@@ -106,109 +112,6 @@ RETRIEVAL_MODEL=intfloat/multilingual-e5-large  # Override embedding model for R
 | `dco.yml` | PR to master | DCO sign-off check (`Signed-off-by` in commits) |
 
 `pip-audit` and `npm audit` **will fail the workflow** if vulnerabilities at high/critical severity are found — keep dependencies patched.
-
-## Windows Terminal Gotchas (PowerShell 5.1)
-
-These are real failures that happened during this project. Do not repeat them.
-
-### 1. Heredoc `>` causes silent redirection failure
-
-PowerShell 5.1 treats `>` as a redirection operator **inside heredoc commit messages**, even when the `>` appears inside a quoted string passed to a native executable like `git`.
-
-**Symptom:** `git commit` exits with `error: pathspec '>' did not match any file(s)` — no actual commit is created.
-
-**Example of broken commit message text:**
-```
-feat: add H1 > H2 header path metadata
-```
-
-**Fix:** Rephrase to avoid `>` entirely:
-```
-feat: add H1-to-H2 header path metadata
-```
-
-Never use `>` or `<` in git commit messages written via PowerShell heredoc (`@'...'@` or `@"..."@`).
-
-### 2. `&&` is not available in PowerShell 5.1
-
-`&&` is a pipeline chain operator that does **not exist** in Windows PowerShell 5.1 (only in PowerShell 7+).
-
-**Fix:** Chain commands with `; if ($?) { ... }` or split into separate Bash tool calls.
-
-### 3. Always use absolute paths for linting tools
-
-When running `ruff`, `black`, `mypy`, `pytest` from PowerShell, always pass the **absolute path** to the target directory or file. Relative paths like `backend/` may silently fail or target the wrong directory depending on working directory state.
-
-```powershell
-# Correct
-ruff check "D:\PROYEK\ChunkingSanbox\backend"
-black --check "D:\PROYEK\ChunkingSanbox\backend"
-pytest "D:\PROYEK\ChunkingSanbox\backend\tests" -v
-
-# Avoid
-ruff check backend/
-```
-
-### 4. Use the Bash tool (not PowerShell) for multi-step shell chains
-
-For sequences like `cd frontend && npm run type-check`, use the **Bash tool** with POSIX syntax rather than the PowerShell tool. The Bash tool is available and avoids PowerShell operator pitfalls for these kinds of chains.
-
-### 5. Node.js v24+ requires `--use-system-ca` on Windows with corporate proxy
-
-Node.js v24 no longer uses the Windows system certificate store by default. On machines with SSL inspection / corporate CA, all `npm install` / `npm audit` calls will fail with `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
-
-**Fix (already applied):** `NODE_OPTIONS=--use-system-ca` is set as a permanent Windows user environment variable. For PowerShell tool calls, set it in the session:
-```powershell
-$env:NODE_OPTIONS = "--use-system-ca"; npm install ...
-```
-For Bash tool calls, prefix the command:
-```bash
-NODE_OPTIONS=--use-system-ca npm install ...
-```
-`npm audit fix` also hits the SSL endpoint — same fix applies.
-
-### 6. Bash tool `cd` persists across calls — breaks `ruff` import-sort detection
-
-The Bash tool's working directory persists between calls. A `cd frontend && ...` command leaves subsequent calls running from `frontend/`, even ones that pass absolute paths.
-
-**Symptom:** `ruff check "D:\...\backend"` (absolute path) gives *different* `I001` (import-block-unsorted) results depending on whether the shell's cwd is repo root or `frontend/` — this repo has no `pyproject.toml`/`ruff.toml`, so ruff's known-first-party detection for `backend.*` imports falls back to cwd-relative heuristics, not just the target path.
-
-**Fix:** Always `cd` back to repo root (or open a fresh Bash call) before running `ruff check` after any command that changed directory. Don't trust an absolute target path alone to make the result cwd-independent.
-
-## Current Status (v0.2.3 — as of 2026-08-17)
-
-Phase 1–3 cleanup complete (CI hardening, Electron removal, SentenceChunker merged into sentence_id, docs restructured). 137 tests passing (127 locally — 10 `TestTokenAwareChunker` skipped due to SSL/tiktoken download issue on corporate network; all pass in CI). Docker Compose support added. Retrieval tested end-to-end in Docker.
-
-### CI Green Again + Dependency Cleanup (2026-08-17)
-
-- **Lint workflow** was red on master for 21 days: `pip install ruff black mypy` in `lint.yml` was unpinned, so CI silently picked up ruff 0.16.0 with a broader default rule set than the code was written against (37 findings: import-sort, `typing.X`→builtin generics, blind-except, etc). Fixed with `ruff --fix` + 6 justified `noqa: BLE001` (external-service-probe boundaries in `model_detector.py`, `tokenizer.py`, `main.py` — kept broad on purpose). `ruff`/`black`/`mypy` now pinned to exact versions in `lint.yml` so this can't silently drift again.
-- **Security Scan**: `axios` `1.16.0 → 1.19.0`, `js-yaml` `4.3.0 → 4.3.1` (new high-severity CVEs beyond the 2026-07-26 patch round; both within existing `package.json` semver ranges, `npm audit fix` only).
-- **Dependabot** (68 → 0 open alerts): root-level `package-lock.json` was an orphan from before Electron removal — `package.json` at repo root has had zero dependencies since Phase 2.1, but the lockfile (and local gitignored `node_modules/`) still had the full electron-builder toolchain locked at long-unpatched versions (electron, node-tar, brace-expansion, extract-zip, etc). Deleted and regenerated to a clean 0-package lockfile — cleared 45 alerts. The remaining 10 (`mistune` under `requirements-retrieval.txt`) were a GitHub dependency-graph mis-attribution — that file has only ever declared `sentence-transformers`/`numpy`, never mistune — dismissed via API as `inaccurate`.
-- **Local repo cleanup**: removed ~2.1GB of dead artifacts — `dist_electron/`, `build/`, `dist/`, `backend.spec` (Electron/PyInstaller leftovers, dated April, zero references in source) and a stale `backend/.venv` (~1GB, untouched since April — local dev already runs on system Python). All gitignored; nothing tracked was touched. `internal_use/` kept (working notes, not build artifacts).
-
-### Dependency Security Patches (2026-07-26)
-
-- `mistune` bumped `3.0.2 → 3.3.4` (fixes CVE-2026-33079, CVE-2026-44897, plus 19 CVEs fixed in 3.3.0: CVE-2026-59922–59930, CVE-2026-44708, CVE-2026-44896, and 7 more — all previously unfixed CVEs now resolved)
-- `axios` bumped `1.15.0 → 1.16.0` (fixes 13 high-severity CVEs)
-
-### mypy Fix (2026-07-26)
-
-`markdown_struct.py:45` — mistune 3.3.4 exposes explicit return type `str | list[...]` for `md(text)`. Fixed by replacing `if not ast_nodes` with `if not isinstance(ast_nodes, list) or not ast_nodes`, which narrows the type and satisfies mypy. (Originally applied for 3.2.1, still valid for 3.3.x.)
-
-### legal_id PDF Artifact Handling
-
-PDF-converted Indonesian legal documents frequently have malformed line structure. Three known issues and their fixes:
-
-1. **Inline Pasal headers** — PDF converters merge `Pasal N` and content onto one line.
-   Fixed via `_RE_PASAL = re.compile(r"^Pasal\s+(\d+[A-Z]?)(?:\s*$|\s+(?=[A-Z][a-z]))", _M)`.
-
-2. **is_amendment false positive** — `_RE_AMENDMENT.search(text)` scans the full body, falsely triggering when PENJELASAN quotes an amendment UU. Fixed by scoping the search to the first line (document title) only.
-
-3. **Mid-line section headers** — PENJELASAN ATAS and LAMPIRAN markers appear mid-line when PDF page breaks are not preserved as newlines. Fixed by `_normalize_pdf_lines()` preprocessing step in `_segment()`.
-
-### Retrieval Timeout
-
-`retrieveChunks()` in `frontend/src/services/api.js` uses a 120s timeout override (global axios default is 30s). The retrieval model (`intfloat/multilingual-e5-large`) warms up at startup via FastAPI `lifespan` context in `backend/main.py`.
 
 ## Docker
 

@@ -33,7 +33,7 @@ __all__ = [
     "FixedSizeChunker",
     "IndonesianSentenceSplitter",
     "LegalStructureChunker",
+    "MarkdownStructureChunker",
     "RecursiveCharacterChunker",
     "TokenAwareChunker",
-    "MarkdownStructureChunker",
 ]

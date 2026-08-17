@@ -19,7 +19,7 @@ jobs:
           
       - name: Install linting tools
         run: |
-          pip install ruff black mypy types-setuptools types-requests
+          pip install ruff==0.16.0 black==26.5.1 mypy==2.3.0 types-setuptools types-requests
           pip install -r backend/requirements.txt
           
       - name: Run Ruff

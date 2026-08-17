@@ -26,7 +26,7 @@ Limitations:
 """
 
 import re
-from typing import Callable
+from collections.abc import Callable
 
 try:
     import pysbd as _pysbd

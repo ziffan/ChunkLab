@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from fastapi import APIRouter, Query
+
 from backend.services.model_detector import detect_models
 
 router = APIRouter()

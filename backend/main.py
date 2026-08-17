@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import logging
-import os
 import multiprocessing
+import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -22,7 +22,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models.responses import HealthResponse
-from backend.routers import chunk, tokenize, regex, models, retrieve
+from backend.routers import chunk, models, regex, retrieve, tokenize
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
         try:
             retriever._get_model()
             logger.info("Retrieval model loaded: %s", retriever.MODEL_NAME)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.warning("Retrieval model warmup failed: %s", e)
     yield
 

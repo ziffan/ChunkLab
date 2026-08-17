@@ -15,8 +15,9 @@
 import re
 
 from fastapi import APIRouter
+
 from backend.models.requests import RegexTestRequest
-from backend.models.responses import RegexTestResponse, RegexMatch, RegexError
+from backend.models.responses import RegexError, RegexMatch, RegexTestResponse
 from backend.services.metadata_extractor import validate_pattern
 
 router = APIRouter()

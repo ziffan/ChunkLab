@@ -119,7 +119,7 @@ class MarkdownStructureChunker(BaseChunker):
     def _ast_to_text(self, nodes: list[dict]) -> str:
         return "".join(self._node_to_text(n) for n in nodes)
 
-    def _node_to_text(self, node: dict) -> str:  # noqa: PLR0911
+    def _node_to_text(self, node: dict) -> str:
         t = node.get("type", "")
         children: list[dict] = node.get("children") or []
         raw: str = node.get("raw", "")

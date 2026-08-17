@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import logging
 import asyncio
+import logging
+import os
+
 import httpx
 
-from backend.models.responses import TokenizeResponse, TokenizeError
 from backend.mocks.mock_tokenizer import mock_estimate
+from backend.models.responses import TokenizeError, TokenizeResponse
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +140,7 @@ async def estimate_tokens(
                 is_mock=False,
                 error=proxy_error,
             )
-        except Exception:
+        except Exception:  # noqa: BLE001
             counts = mock_estimate(texts)
             base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
             return TokenizeResponse(

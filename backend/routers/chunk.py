@@ -13,17 +13,19 @@
 # limitations under the License.
 
 import re
+
 from fastapi import APIRouter
+
 from backend.models.requests import ChunkRequest
-from backend.models.responses import ChunkResponse, ChunkData, ChunkError, MetadataItem
+from backend.models.responses import ChunkData, ChunkError, ChunkResponse, MetadataItem
 from backend.services.chunker import chunk_by_strategy, chunk_text
+from backend.services.md_metadata import md_path_metadata
 from backend.services.metadata_extractor import extract_metadata_from_compiled
 from backend.services.quality_metrics import (
     boundary_quality,
     information_density,
     is_complete,
 )
-from backend.services.md_metadata import md_path_metadata
 
 router = APIRouter()
 

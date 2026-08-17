@@ -13,12 +13,11 @@
 # limitations under the License.
 
 import re
-from typing import Optional, Dict, List, Tuple
 
 
 def extract_metadata_from_compiled(
-    text: str, compiled_patterns: List[Tuple[Dict, re.Pattern]]
-) -> List[Dict]:
+    text: str, compiled_patterns: list[tuple[dict, re.Pattern]]
+) -> list[dict]:
     metadata_list = []
 
     for p, compiled in compiled_patterns:
@@ -46,9 +45,7 @@ def extract_metadata_from_compiled(
     return metadata_list
 
 
-def extract_metadata(
-    text: str, patterns: List[Dict]
-) -> Tuple[List[Dict], Optional[Dict]]:
+def extract_metadata(text: str, patterns: list[dict]) -> tuple[list[dict], dict | None]:
     # Legacy wrapper or for single calls
     compiled_patterns = []
     for p in patterns:
@@ -68,7 +65,7 @@ def extract_metadata(
     return (extract_metadata_from_compiled(text, compiled_patterns), None)
 
 
-def validate_pattern(pattern: str) -> Tuple[bool, Optional[str]]:
+def validate_pattern(pattern: str) -> tuple[bool, str | None]:
     try:
         re.compile(pattern)
         return (True, None)

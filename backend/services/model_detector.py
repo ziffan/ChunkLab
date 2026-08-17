@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import logging
+import os
 
 import httpx
 
@@ -62,7 +62,7 @@ async def detect_ollama_models() -> dict:
                 for m in data.get("models", [])
             ]
             return {"available": True, "models": models, "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.debug(f"Ollama not reachable: {e}")
         return {"available": False, "models": [], "error": str(e)}
 
@@ -79,7 +79,7 @@ async def detect_lmstudio_models() -> dict:
                 for m in data.get("data", [])
             ]
             return {"available": True, "models": models, "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.debug(f"LM Studio not reachable: {e}")
         return {"available": False, "models": [], "error": str(e)}
 
@@ -105,7 +105,7 @@ async def detect_openai_models(api_key: str | None = None) -> dict:
             ]
             embedding_models.sort(key=lambda x: x["id"])
             return {"available": True, "models": embedding_models, "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.debug(f"OpenAI models fetch failed: {e}")
         return {"available": False, "models": OPENAI_EMBEDDING_MODELS, "error": str(e)}
 
@@ -129,7 +129,7 @@ async def detect_openrouter_models(api_key: str | None = None) -> dict:
             ]
             embedding_models.sort(key=lambda x: x["id"])
             return {"available": True, "models": embedding_models, "error": None}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.debug(f"OpenRouter models fetch failed: {e}")
         return {"available": False, "models": [], "error": str(e)}
 

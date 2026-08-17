@@ -13,11 +13,13 @@ backend, termasuk `requirements-retrieval.txt` yang CI tidak pernah cek sama sek
 
 **Yang dikerjakan:**
 - Lint CI (merah 21 hari) — fixed, root cause unpinned ruff/black/mypy. Detail:
-  docs/ISSUES.md I-0.9, docs/DECISIONS.md (pin tool versions).
-- axios/js-yaml CVE baru di frontend — dipatch. docs/ISSUES.md I-0.8.
+  docs/ISSUES.md I-3, docs/DECISIONS.md (pin tool versions).
+- axios/js-yaml CVE baru di frontend — dipatch. docs/ISSUES.md I-4.
 - 68 Dependabot alert — 45 dari root `package-lock.json` orphan (diregenerate bersih),
-  10 dari mis-atribusi mistune (di-dismiss). docs/ISSUES.md I-0.7,
+  10 dari mis-atribusi mistune (di-dismiss). docs/ISSUES.md I-5,
   docs/DECISIONS.md (root lockfile locked nol-dependency).
+- Full dependency audit (moderate/low severity, semua manifest) — 0 temuan.
+  docs/ISSUES.md I-1 (closed).
 - Local cleanup: hapus `dist_electron/`, `build/`, `dist/`, `backend.spec` (~1.8GB,
   sisa Electron/PyInstaller, 0 referensi di source), `backend/.venv` (~1GB, basi 4
   bulan). `internal_use/` dan `frontend/node_modules` dipertahankan (masih dipakai).

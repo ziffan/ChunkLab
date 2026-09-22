@@ -97,3 +97,39 @@ masalah yang sudah ditemukan dan fix-nya, di `backend/services/chunkers/legal_id
 (default global axios 30s). Model retrieval (`intfloat/multilingual-e5-large`) warm-up
 saat startup via FastAPI `lifespan` context di `backend/main.py` — kalau timeout
 default dipakai, request pertama sering 504 sebelum model selesai load.
+
+## Git / symlink repo
+
+### 10. `AGENTS.md` adalah symlink asli — butuh `core.symlinks=true`
+`AGENTS.md` tersimpan di git sebagai symlink (mode `120000`) menunjuk ke `CLAUDE.md`,
+supaya agent yang baca `AGENTS.md` (Codex/OpenCode/Cursor) melihat isi identik tanpa
+harus mengikuti instruksi pointer. Sebelumnya file ini adalah pointer 23-byte
+`read /CLAUDE.md in full` — sudah diganti.
+
+**Kenapa rapuh:** kalau `core.symlinks=false` (default git di Windows tanpa Developer
+Mode), checkout menulis `AGENTS.md` sebagai **file teks biasa berisi string
+`CLAUDE.md`** — bukan link, dan bukan instruksi. Agent yang baca file itu tidak dapat
+apa-apa.
+
+**Symptom:** `git ls-files -s AGENTS.md` menunjukkan `100644` (bukan `120000`), atau
+`Get-Item AGENTS.md` tidak menampilkan `LinkType: SymbolicLink`.
+
+**Fix (Windows, Developer Mode ON — tidak perlu admin):**
+```powershell
+git config core.symlinks true      # repo-local, jangan --global
+Remove-Item AGENTS.md -Force
+cmd /c mklink AGENTS.md CLAUDE.md
+git checkout -- AGENTS.md          # verifikasi git bisa recreate link
+```
+
+Jangan pakai `ln -s` dari Git Bash — di MSYS tanpa dukungan symlink native, perintah
+itu **menyalin** file dan exit 0 tanpa warning, jadi dua file terpisah yang akan
+drift. Pakai `cmd /c mklink` dari PowerShell.
+
+**Jangan "perbaiki" `AGENTS.md` dengan menulis ulang jadi file berisi pointer** — itu
+mengembalikan symlink jadi file biasa (`100644`) dan merusak sinkronisasi.
+
+**Catatan:** `core.symlinks` di-set repo-local, bukan global. Clone baru di mesin
+Windows perlu `git config core.symlinks true` sebelum checkout, atau clone dengan
+`git clone -c core.symlinks=true`. Di Linux (CI, VPS) symlink bekerja native tanpa
+config tambahan.

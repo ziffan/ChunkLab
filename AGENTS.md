@@ -1,1 +1,1 @@
-read /CLAUDE.md in full
+CLAUDE.md

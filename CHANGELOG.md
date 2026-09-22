@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `browserslist` bumped `4.28.2 → 4.29.0` — fixes [GHSA-73wf-gq98-2v4g](https://github.com/advisories/GHSA-73wf-gq98-2v4g) (CVE-2026-73088, high: uncaught crash / prototype write via untrusted custom stats in `normalizeStats`)
 - `baseline-browser-mapping` bumped `2.10.19 → 2.11.25` — fixes [GHSA-w5vr-8v7q-w6rv](https://github.com/advisories/GHSA-w5vr-8v7q-w6rv) (CVE-2026-45819, medium: process termination on invalid input)
 - `postcss-selector-parser` bumped `6.1.2 → 6.1.4` — fixes [GHSA-w9m9-85wc-3x92](https://github.com/advisories/GHSA-w9m9-85wc-3x92) (CVE-2026-9358, low: DoS via uncontrolled AST recursion)
+- CI security gates hardened against the blind spot that let these advisories accumulate unnoticed:
+  - `requirements-retrieval.txt` is now audited by `pip-audit` and fully pinned. It is installed into the **production** image (`backend/Dockerfile`) and resolves to 42 packages including `torch`, `transformers`, and `huggingface-hub` — the largest dependency surface in the repo, previously audited zero times and resolved fresh (unpinned `>=`) on every Docker build
+  - The frontend npm gate is now asymmetric: production tree gated at **every** severity (`npm audit --omit=dev`), devDependencies at high+. The previous `--production --audit-level=high` combination was blind to devDependency advisories entirely, which is how 3 of the 4 advisories above were invisible to CI
+  - `bandit` and `pip-audit` are now version-pinned in `security.yml`. They were installed unpinned — the same class of failure that left Lint CI red for 21 days in 0.2.3
 
 ### Fixed
 - CI Security Scan (`security.yml`) had been failing on master since 2026-09-13: `npm audit --production --audit-level=high` tripped on the `js-yaml` advisory. The other three advisories were devDependency-only and never reached the gate — which is why the repo accumulated 4 open Dependabot alerts (from 0) while only one of them actually broke CI

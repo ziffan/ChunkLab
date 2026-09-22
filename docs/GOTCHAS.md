@@ -167,3 +167,24 @@ NODE_OPTIONS=--use-system-ca npm audit                                  # termas
 
 Kebijakan apakah devDependency severity perlu di-gate di CI masih pending decision —
 lihat `docs/DECISIONS.md`.
+
+## Bash tool / Node
+
+### 12. Node tidak bisa membaca `/tmp` milik Bash tool — di-resolve jadi `D:\tmp`
+Bash tool (Git Bash/MSYS) memetakan `/tmp` ke direktori temp MSYS, tapi `node` yang
+dijalankan dari shell yang sama **tidak** MSYS-aware: `fs.readFileSync('/tmp/x.json')`
+di-resolve jadi `D:\tmp\x.json` dan gagal. Shell redirect (`> /tmp/x.json`) tetap
+berhasil menulis, jadi file-nya benar-benar ada — yang salah cuma cara node membacanya.
+Menyesatkan karena errornya terbaca seperti "file tidak jadi ditulis".
+
+**Symptom:** `ls -la /tmp/x.json` menunjukkan file ada dan berisi, tapi node gagal
+`ENOENT: no such file or directory, open 'D:\tmp\x.json'`.
+
+**Fix:** alirkan lewat stdin, jangan lewat path.
+
+```bash
+node -e "const j=JSON.parse(require('fs').readFileSync(0,'utf8')); /* ... */" < /tmp/x.json
+```
+
+`readFileSync(0)` membaca stdin dan tidak bergantung pada pemetaan path MSYS. Berlaku
+juga untuk `python -c` yang menerima path `/tmp` sebagai argumen.

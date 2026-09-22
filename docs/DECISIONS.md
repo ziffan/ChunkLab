@@ -52,6 +52,65 @@ predictable.
 **Alternatives rejected:** Biarkan unpinned dan andalkan review manual tiap kali CI
 merah — sudah terbukti gagal (21 hari tidak ketahuan).
 
+### Gate keamanan dependency di CI bersifat asimetris (prod semua severity, devDep high+)
+**Context:** `security.yml` memakai satu gate `npm audit --production --audit-level=high`,
+dan kombinasi `--production` + ambang `high` membuatnya buta terhadap devDependency
+sama sekali. Blind spot itu terbukti bocor pada 2026-09-22 (docs/ISSUES.md I-9): 4
+Dependabot alert menumpuk selama repo idle ~5 minggu, dan **3 di antaranya tidak
+pernah terlihat CI** — termasuk `browserslist` yang high. Kelas rot ini sudah pernah
+terjadi dua kali di repo ini (I-3 lint merah 21 hari, I-5 68 alert numpuk).
+Frontend production tree cuma 4 dependency langsung (butuh waktu 5 minggu untuk
+menghasilkan 1 advisory), sementara devDependency tree ~120 paket lewat chain
+vite/tailwind/postcss yang data-package-nya (`browserslist`, `caniuse-lite`,
+`electron-to-chromium`) rilis nyaris mingguan.
+**Decision:** Dua gate terpisah di `security.yml`: `npm audit --omit=dev` tanpa
+`--audit-level` (production tree, **semua** severity — default npm adalah `low`), dan
+`npm audit --audit-level=high` (seluruh tree, jadi devDependency ikut ter-gate di high+).
+**Consequences:** Production tree ter-gate ketat — masuk akal karena kecil dan CVE-nya
+user-facing (`js-yaml` DoS mempengaruhi app yang jalan). DevDependency ter-gate di high
+saja — cukup untuk menangkap `browserslist` dan `js-yaml`, tanpa merah permanen dari
+DoS build-tool yang tidak pernah ikut terkirim. Konsekuensi negatif yang diterima:
+medium/low di devDependency chain tetap tidak ter-gate CI dan hanya muncul sebagai
+Dependabot alert — jadi "CI hijau" **masih bukan** bukti dependency bersih
+(docs/GOTCHAS.md #11). Semantik kedua gate diverifikasi 2026-09-22 dengan advisory low
+asli (`postcss-selector-parser@6.1.2`): `--omit=dev` → exit 1, `--audit-level=high` → exit 0.
+**Alternatives rejected:** (a) Status quo `--production --audit-level=high` — ditolak,
+sudah terbukti bocor. (b) Hapus `--production` saja tanpa step kedua — ditolak, tetap
+buta ke medium/low di production tree, padahal tree-nya kecil dan murah di-gate penuh.
+(c) Semua severity di mana pun — ditolak, menukar satu mode kegagalan (merah yang tidak
+dilihat) dengan mode lain: merah permanen yang diabaikan, yang justru melatih orang
+mengabaikan CI.
+
+### `requirements-retrieval.txt` adalah permukaan produksi — diaudit CI dan di-pin penuh
+**Context:** Manifest ini sebelumnya tidak pernah diaudit CI sama sekali. Verifikasi
+2026-09-22 menunjukkan itu salah kategori: `backend/Dockerfile:20-21` meng-`pip install`
+file ini ke image produksi, dan resolusi Linux-nya menarik **42 paket** termasuk
+`torch`, `transformers`, `huggingface-hub`, `scipy`, `scikit-learn` — permukaan
+dependency terbesar di repo ini (bandingkan `backend/requirements.txt`: 9 paket).
+Isinya dulu `>=` lower bounds, jadi setiap build Docker me-resolve ulang ke versi
+terbaru: image yang jalan memuat set berbeda dari yang diaudit, dan patch upstream
+(baik maupun berbahaya) masuk tanpa langkah yang bisa ditinjau.
+**Decision:** `requirements-retrieval.txt` diaudit `pip-audit` di `security.yml`, dan
+di-pin penuh dengan `==` untuk seluruh 42 paket hasil resolusi `python:3.12-slim`
+(CPython 3.12, manylinux x86_64). Dua dependency langsung (`sentence-transformers`,
+`numpy`) ditandai terpisah dari transitive.
+**Consequences:** Versi yang diaudit = versi yang diinstal, dan rebuild image jadi
+deterministik. Konsekuensi negatif yang diterima: patch keamanan upstream pada 42 paket
+itu tidak lagi masuk otomatis — bump harus dilakukan sengaja, dan gate audit-lah yang
+memberi tahu kapan. File ini sekarang harus di-regenerate, bukan diedit sebagian
+(prosedurnya ada di header file). Verifikasi 2026-09-22: file terpin di-resolve ulang
+untuk target Linux menghasilkan set **identik** (42 masuk, 42 keluar, tidak ada yang
+mengapung atau hilang) — artinya pin-nya lengkap dan saling-konsisten. `pip-audit`
+terhadap file terpin → exit 0. **Belum diverifikasi:** build image Docker sungguhan
+(daemon Docker tidak jalan saat itu) — CI Docker Build akan jadi verifikasi pertama.
+**Alternatives rejected:** (a) Biarkan `>=` dan andalkan `pip-audit` — ditolak, gate-nya
+jadi mengukur resolusi hari ini sementara image bisa memuat resolusi bulan lalu.
+(b) Pin hasil resolusi Windows — ditolak, resolusi Linux menarik set berbeda
+(`packaging`, `setuptools`) dan `torch` punya wheel platform-specific. (c) Hanya pin dua
+dependency langsung — ditolak, transitive (torch/transformers/huggingface-hub) justru
+bagian yang paling sering kena CVE. (d) Pakai `pip-compile`/`uv` — ditunda, bukan
+ditolak; lihat Pending.
+
 ## JANGAN PERNAH
 
 - **Jangan rename `CLAUDE.md` → `AGENTS.md`.** Claude Code membaca nama file
@@ -70,7 +129,8 @@ merah — sudah terbukti gagal (21 hari tidak ketahuan).
 | Keputusan | Owner | Deadline | Catatan |
 |---|---|---|---|
 | Tambah `pyproject.toml`/`ruff.toml` untuk pin rule-set ruff eksplisit (bukan cuma versi tool) | belum ditentukan | belum ada | Juga akan memperbaiki docs/GOTCHAS.md #6 — tanpa config file, deteksi known-first-party ruff bergantung pada cwd saat invoke, bukan cuma target path. |
-| Kebijakan severity Dependabot/CI: `npm audit`/`pip-audit` di CI cuma gate di high+, dan `security.yml` tidak pernah audit root `requirements-retrieval.txt` sama sekali. Apakah moderate/low perlu di-gate juga, dan apakah `requirements-retrieval.txt` perlu masuk `pip-audit` di CI? | belum ditentukan | belum ada | Audit manual penuh dijalankan 2026-08-17 (docs/ISSUES.md I-1, closed) — 0 temuan di semua severity/manifest saat ini, jadi tidak mendesak, tapi gap kebijakannya (apa yang di-gate CI) masih belum diputuskan untuk ke depan. |
+| Pakai tooling lockfile Python (`pip-compile` / `uv pip compile`) menggantikan pin manual di `requirements-retrieval.txt` | ziffan | sebelum bump dependency pertama di file itu | Pin manual 42 baris tidak membedakan mana transitive dari mana dan setiap bump harus diedit tangan sambil menjaga set tetap konsisten (lihat header file untuk prosedur regenerate). Tooling lockfile menghasilkan file itu dari intent, plus `--upgrade-package` untuk bump bertarget. Ditunda — bukan ditolak — karena menambah toolchain baru (CI + dev) untuk repo yang belum punya. |
+| Aktifkan `.github/dependabot.yml` untuk PR update otomatis | ziffan | 2026-10-31 | Repo ini **tidak punya** config Dependabot, jadi alert cuma jadi notifikasi dependency graph — tidak ada PR otomatis yang memperbaikinya. I-9 terjadi justru karena tidak ada yang melihat alert itu selama ~5 minggu. Trade-off: PR otomatis menambah noise, dan repo ini sudah punya pengalaman buruk dengan lockfile yang "dikotori" (lihat Locked, root lockfile nol dependency) — jadi perlu diputuskan apakah security-only, atau security + version. |
 
 ## Change Log (obsolete / superseded)
 

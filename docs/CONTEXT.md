@@ -20,21 +20,38 @@ sejak 2026-08-17; keempatnya tertutup oleh satu `npm audit fix` di `frontend/`.
   docs/GOTCHAS.md #11 (termasuk perintah `gh api` untuk cek alert langsung).
 - `AGENTS.md` diganti dari pointer file 23-byte jadi symlink asli ke `CLAUDE.md`
   (git mode `120000`). Butuh `core.symlinks=true` — docs/GOTCHAS.md #10. Commit `b05710c`.
+- **Kebijakan gate keamanan dependency diputuskan** — keluar dari Pending, dua entri
+  Locked baru di docs/DECISIONS.md. Gate npm jadi asimetris: production tree semua
+  severity, devDependency high+. Semantiknya diverifikasi dengan advisory low asli
+  (`postcss-selector-parser@6.1.2` → `--omit=dev` exit 1, `--audit-level=high` exit 0),
+  bukan diasumsikan dari dokumentasi.
+- `requirements-retrieval.txt` ternyata **permukaan produksi** — `backend/Dockerfile:20-21`
+  meng-`pip install`-nya ke image, resolve ke 42 paket termasuk `torch`, `transformers`,
+  `huggingface-hub`, dan CI tidak pernah mengauditnya sekali pun. Sekarang diaudit
+  `pip-audit` + di-pin penuh ke resolusi Linux (manylinux x86_64, CPython 3.12).
+  Verifikasi: re-resolve file terpin → set **identik** (42 masuk, 42 keluar).
+- `security.yml`: `bandit` dan `pip-audit` di-pin versinya. Sebelumnya keduanya
+  `pip install` unpinned — melanggar aturan JANGAN PERNAH repo ini sendiri, dan persis
+  kelas kegagalan yang membuat Lint merah 21 hari (I-3).
 
 **Belum selesai:**
-- Konfirmasi 4 Dependabot alert auto-close setelah push ke `origin` (belum dipush saat
-  entri ini ditulis).
-- Commit `b05710c` (symlink) dan commit fix dependency belum dipush.
-- Pending decision #2 di `docs/DECISIONS.md` (kebijakan severity gate) sekarang punya
-  data nyata — 4 alert, 3 di antaranya devDependency-only — tapi belum diputuskan.
+- Push ke `origin` — commit lokal belum dipush. Security Scan hijau dan 4 Dependabot
+  alert auto-close baru bisa dikonfirmasi setelah push.
+- **Tidak terverifikasi:** build image Docker dengan `requirements-retrieval.txt` yang
+  sudah di-pin — daemon Docker tidak jalan saat sesi ini. CI Docker Build akan jadi
+  verifikasi pertama; kalau merah, tersangka utamanya pin yang spesifik-platform.
 
 **Next step (urutan disarankan):**
-1. Push ke `origin`, verifikasi Security Scan hijau di GitHub Actions dan 4 Dependabot
-   alert benar-benar auto-close (kalau tidak, dismiss dengan alasan yang benar).
-2. Putuskan pending decision #2 — sekarang ada data konkret, bukan hipotetis. Minimal
-   catat keputusannya dengan data ini walau tetap di-pending.
-3. Pending decision #1 (`pyproject.toml`/`ruff.toml` untuk pin rule-set ruff + fix
-   gotcha cwd-dependent import-sort docs/GOTCHAS.md #6).
+1. Push, lalu konfirmasi tiga hal: Security Scan hijau, 4 Dependabot alert auto-close,
+   dan Docker Build tetap hijau dengan file retrieval terpin. Kalau alert tidak
+   auto-close, dismiss dengan alasan yang benar.
+2. Pending decision: aktifkan `.github/dependabot.yml` — repo ini tidak punya sama
+   sekali, dan itulah kenapa 4 alert cuma jadi notifikasi yang tidak dilihat siapa pun
+   selama ~5 minggu.
+3. Pending decision: `pyproject.toml`/`ruff.toml` untuk pin rule-set ruff
+   (docs/GOTCHAS.md #6).
+4. Pending decision: tooling lockfile Python (`pip-compile`/`uv`) menggantikan pin
+   manual 42 baris di `requirements-retrieval.txt`.
 
 ---
 

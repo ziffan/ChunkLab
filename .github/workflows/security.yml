@@ -11,23 +11,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
+      # Tool versions are pinned deliberately - an unpinned `pip install` here
+      # silently picked up a broader ruff rule set once and left CI red for 21
+      # days (docs/DECISIONS.md, docs/ISSUES.md I-3). Bump these explicitly and
+      # re-run the workflow locally before changing them.
       - name: Run Bandit (Python Security)
         run: |
-          pip install bandit
+          pip install bandit==1.9.4
           bandit -r backend/ -lll --skip B101 --exclude backend/.venv
-          
+
+      # Both manifests are audited: requirements-retrieval.txt is installed into
+      # the production image (backend/Dockerfile), so it is runtime surface, not
+      # a dev extra. Leaving it unaudited was the gap behind docs/ISSUES.md I-1.
       - name: Run pip-audit (Python Dependencies)
         run: |
-          pip install pip-audit
+          pip install pip-audit==2.10.0
           pip-audit --requirement backend/requirements.txt
-          
-      - name: Run npm audit (Frontend Dependencies)
+          pip-audit --requirement requirements-retrieval.txt
+
+      # Asymmetric npm gate, decided 2026-09-22 (docs/DECISIONS.md). The two
+      # steps together gate production at every severity and devDependencies at
+      # high+. Gating devDependencies at low would leave CI permanently red on
+      # build-tool advisories in fast-moving data packages that never ship.
+      - name: Run npm audit - production tree (all severities)
         run: |
           cd frontend
-          npm audit --production --audit-level=high
+          npm audit --omit=dev
+
+      - name: Run npm audit - devDependencies (high and above)
+        run: |
+          cd frontend
+          npm audit --audit-level=high

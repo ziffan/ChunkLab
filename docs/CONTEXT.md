@@ -33,13 +33,21 @@ sejak 2026-08-17; keempatnya tertutup oleh satu `npm audit fix` di `frontend/`.
 - `security.yml`: `bandit` dan `pip-audit` di-pin versinya. Sebelumnya keduanya
   `pip install` unpinned — melanggar aturan JANGAN PERNAH repo ini sendiri, dan persis
   kelas kegagalan yang membuat Lint merah 21 hari (I-3).
+- Push ke `origin` (`406180a..58b5275`). Kelima workflow hijau (Security Scan, Docker
+  Build, Test, Lint, Graph Update) dan 4 Dependabot alert auto-close → 0. Docker Build
+  sekaligus memverifikasi manifest retrieval yang di-pin benar-benar terinstal di image
+  Linux (layer `RUN pip install -r requirements-retrieval.txt` dieksekusi, bukan cache).
+- Dua run Security Scan merah — keduanya commit lama `406180a` (pre-fix), termasuk satu
+  re-run manual terhadap kode lama — dihapus dari Actions atas permintaan owner supaya
+  tab Actions bersih (sekarang 0 non-success). Dicatat sebagai catatan integritas di
+  docs/ISSUES.md I-9, karena record-nya jadi tidak bisa diverifikasi lagi.
 
 **Belum selesai:**
-- Push ke `origin` — commit lokal belum dipush. Security Scan hijau dan 4 Dependabot
-  alert auto-close baru bisa dikonfirmasi setelah push.
-- **Tidak terverifikasi:** build image Docker dengan `requirements-retrieval.txt` yang
-  sudah di-pin — daemon Docker tidak jalan saat sesi ini. CI Docker Build akan jadi
-  verifikasi pertama; kalau merah, tersangka utamanya pin yang spesifik-platform.
+- Tidak ada item teknis yang menggantung. Dua hal yang tadi ditandai "belum" sudah
+  tertutup: push selesai dan terverifikasi, dan pin manifest retrieval terbukti
+  terinstal di image Linux lewat Docker Build. Sisa pekerjaan adalah tiga pending
+  decision di `docs/DECISIONS.md` (Dependabot config, `ruff.toml`/`pyproject.toml`,
+  tooling lockfile Python) — semuanya punya owner + deadline, tidak ada yang lewat.
 
 **Next step (urutan disarankan):**
 1. Push, lalu konfirmasi tiga hal: Security Scan hijau, 4 Dependabot alert auto-close,

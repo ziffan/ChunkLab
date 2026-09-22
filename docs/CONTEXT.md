@@ -50,16 +50,17 @@ sejak 2026-08-17; keempatnya tertutup oleh satu `npm audit fix` di `frontend/`.
   tooling lockfile Python) — semuanya punya owner + deadline, tidak ada yang lewat.
 
 **Next step (urutan disarankan):**
-1. Push, lalu konfirmasi tiga hal: Security Scan hijau, 4 Dependabot alert auto-close,
-   dan Docker Build tetap hijau dengan file retrieval terpin. Kalau alert tidak
-   auto-close, dismiss dengan alasan yang benar.
-2. Pending decision: aktifkan `.github/dependabot.yml` — repo ini tidak punya sama
-   sekali, dan itulah kenapa 4 alert cuma jadi notifikasi yang tidak dilihat siapa pun
-   selama ~5 minggu.
+1. Verifikasi terjadwal: run cron Security Scan berikutnya (Minggu 2026-09-27 00:00 UTC)
+   akan jadi kali pertama workflow yang baru berjalan terjadwal, bukan lewat push.
+   Harus hijau — kalau tidak, bedanya ada di `schedule` event, bukan di step-nya.
+2. Pending decision: aktifkan `.github/dependabot.yml` (deadline 2026-10-31) — repo ini
+   tidak punya sama sekali, dan itulah kenapa 4 alert cuma jadi notifikasi yang tidak
+   dilihat siapa pun selama ~5 minggu.
 3. Pending decision: `pyproject.toml`/`ruff.toml` untuk pin rule-set ruff
    (docs/GOTCHAS.md #6).
 4. Pending decision: tooling lockfile Python (`pip-compile`/`uv`) menggantikan pin
-   manual 42 baris di `requirements-retrieval.txt`.
+   manual 42 baris di `requirements-retrieval.txt` — deadline berupa trigger: sebelum
+   bump dependency pertama di file itu.
 
 ---
 

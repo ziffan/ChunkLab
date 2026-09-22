@@ -4,6 +4,22 @@ All notable changes to ChunkLab will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-09-22
+
+### Security
+- `js-yaml` bumped `4.3.1 → 4.3.2` — fixes [GHSA-2883-xcg3-v3hh](https://github.com/advisories/GHSA-2883-xcg3-v3hh) (CVE-2026-84375, high: `maxTotalMergeKeys` does not limit CPU use for empty merge sources). This is a production dependency — it backs the YAML export in `ExportButton.jsx`
+- `browserslist` bumped `4.28.2 → 4.29.0` — fixes [GHSA-73wf-gq98-2v4g](https://github.com/advisories/GHSA-73wf-gq98-2v4g) (CVE-2026-73088, high: uncaught crash / prototype write via untrusted custom stats in `normalizeStats`)
+- `baseline-browser-mapping` bumped `2.10.19 → 2.11.25` — fixes [GHSA-w5vr-8v7q-w6rv](https://github.com/advisories/GHSA-w5vr-8v7q-w6rv) (CVE-2026-45819, medium: process termination on invalid input)
+- `postcss-selector-parser` bumped `6.1.2 → 6.1.4` — fixes [GHSA-w9m9-85wc-3x92](https://github.com/advisories/GHSA-w9m9-85wc-3x92) (CVE-2026-9358, low: DoS via uncontrolled AST recursion)
+
+### Fixed
+- CI Security Scan (`security.yml`) had been failing on master since 2026-09-13: `npm audit --production --audit-level=high` tripped on the `js-yaml` advisory. The other three advisories were devDependency-only and never reached the gate — which is why the repo accumulated 4 open Dependabot alerts (from 0) while only one of them actually broke CI
+
+### Changed
+- `AGENTS.md` is now a real symlink to `CLAUDE.md` (git mode `120000`), replacing the previous 23-byte pointer file. Requires `core.symlinks=true`; see `docs/GOTCHAS.md` #10
+
+---
+
 ## [0.2.3] - 2026-08-17
 
 ### Security

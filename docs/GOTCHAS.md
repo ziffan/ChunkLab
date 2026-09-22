@@ -133,3 +133,37 @@ mengembalikan symlink jadi file biasa (`100644`) dan merusak sinkronisasi.
 Windows perlu `git config core.symlinks true` sebelum checkout, atau clone dengan
 `git clone -c core.symlinks=true`. Di Linux (CI, VPS) symlink bekerja native tanpa
 config tambahan.
+
+## CI / dependency
+
+### 11. Gate `npm audit --production` buta terhadap devDependency — CI hijau ≠ Dependabot bersih
+`security.yml` menjalankan `npm audit --production --audit-level=high` di `frontend/`.
+Flag `--production` membatasi audit ke production tree saja, jadi CVE **high** di
+devDependency chain (vite/postcss/tailwind → `browserslist`,
+`baseline-browser-mapping`, `postcss-selector-parser`) **tidak pernah menembus gate**.
+CI bisa hijau berminggu-minggu sementara Dependabot alert menumpuk.
+
+**Symptom:** CI Security Scan hijau tapi jumlah open Dependabot alert naik. Atau
+sebaliknya: CI merah hanya karena satu paket produksi, padahal alert yang terbuka
+lebih banyak (2026-09-22: 4 alert, hanya `js-yaml` yang menembus gate).
+
+**Implikasi:** jangan pakai "CI hijau" sebagai bukti dependency bersih. Kalau repo
+idle beberapa minggu, **cek Dependabot alert langsung** sebagai langkah pertama —
+itu satu-satunya sinyal yang mencakup devDependency:
+
+```bash
+gh api "repos/ziffan/ChunkLab/dependabot/alerts?state=open&per_page=50" \
+  --jq '.[] | "\(.security_advisory.severity)\t\(.dependency.package.name)\t\(.dependency.manifest_path)"'
+```
+
+**Fix:** `npm audit fix` (tanpa `--force`) menutup devDependency chain juga, selama
+versi patch-nya masih dalam range semver yang dideklarasikan. Verifikasi dengan
+**dua** gate, bukan satu:
+
+```bash
+NODE_OPTIONS=--use-system-ca npm audit --production --audit-level=high  # gate CI
+NODE_OPTIONS=--use-system-ca npm audit                                  # termasuk devDeps
+```
+
+Kebijakan apakah devDependency severity perlu di-gate di CI masih pending decision —
+lihat `docs/DECISIONS.md`.
